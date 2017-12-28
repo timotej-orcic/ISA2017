@@ -3,7 +3,7 @@ using Isa2017Cinema.Models;
 
 namespace Isa2017Cinema.Models
 {
-    public abstract class User : ApplicationUser
+    public class User : ApplicationUser
     {
         public String Name { get; set; }
         public String LastName { get; set; }
