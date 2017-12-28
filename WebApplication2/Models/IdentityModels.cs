@@ -18,7 +18,7 @@ namespace Isa2017Cinema.Models
         }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext()
             : base("DatabaseContext", throwIfV1Schema: false)
