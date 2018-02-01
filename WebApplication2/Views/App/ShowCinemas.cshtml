@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Isa2017Cinema.Models
+@model List<Location>
+<h3>@ViewBag.Message</h3>
+    <div>
+        <ul>
+            @foreach (Location l in Model)
+            {
+                <li> @l.Name </li>
+            }
+            
+        </ul>
+        <ul>
+            <li ng-repeat="user in CinemasList"><p>{{user.Name}}</p></li>
+        </ul> 
+    </div>
+

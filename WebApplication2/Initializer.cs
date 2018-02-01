@@ -14,12 +14,32 @@ namespace Isa2017Cinema
 
         protected override void Seed(ApplicationDbContext context)
         {
-            var rooms = new List<Hall>
+            FanZone fz1 = new FanZone
             {
-                new Hall { Id=Guid.NewGuid(), ColsCount=2,RowsCount=3,ParentLocation=new Location(),SeatsList = new List<List<SeatType>>()}
-              
+                Id = Guid.NewGuid(),
+                PostsList = new List<Post>(),
+                RequisitsList = new List<ThemeRequisit>()
             };
-            rooms.ForEach(room => context.Halls.Add(room));
+            FanZone fz2 = new FanZone
+            {
+                Id = Guid.NewGuid(),
+                PostsList = new List<Post>(),
+                RequisitsList = new List<ThemeRequisit>()
+            };
+            var locations = new List<Location>
+            {
+                new Models.Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Arena Cineplex", Address = "Novosadskog sajma" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
+                ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), LocationFanZone = fz1
+                   },
+                 new Models.Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Big Cinestar", Address = "Bulevar" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
+                 ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), LocationFanZone = fz2
+                 }
+
+            };
+            
+
+            locations.ForEach(location => context.Locations.Add(location));
+        
             context.SaveChanges();
         }
     }

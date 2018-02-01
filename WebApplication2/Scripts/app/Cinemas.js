@@ -1,19 +1,22 @@
 ﻿var app = angular.module('myApp', ['ui.bootstrap', 'ngRoute']);
 
-app.controller("UsersController", function ($scope, $http, $window) {
+app.controller("CinemaController", function ($scope, $http, $window) {
 
-    $scope.usersList = [];
+    $scope.alerts = [];
+    $scope.currAlert = {};
 
-    $scope.loadUsers = function () {
-        var url = '/App/Users';
+    $scope.CinemasList = [];
+
+    $scope.loadCinemas = function () {
+        var url = '/App/ShowCinemas';
 
         $http({
             method: "POST",
             url: url
         })
             .success(function (data, status, headers, config) {
-                if (data && data.Success == true) {
-                    usersList = data;S
+                if (data) {
+                    $scope.CinemasList = data;
                 } else if (data && data.Success == false) {
                     $scope.currAlert = { type: "danger", msg: data.Message };
                     $scope.alerts.push($scope.currAlert);
@@ -28,6 +31,6 @@ app.controller("UsersController", function ($scope, $http, $window) {
             });
     };
 
-    $scope.loadUsers();
+    $scope.loadCinemas();
 
 });

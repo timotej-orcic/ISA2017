@@ -6,7 +6,7 @@ namespace Isa2017Cinema.Models
     {
         public Guid Id { get; set; }
         public Object RecensionObject { get; set; }
-        public RegUser RecensionUser { get; set; }
+        public ApplicationUser RecensionUser { get; set; }
         public Double Rating { get; set; }
     }
 }

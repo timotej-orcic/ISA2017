@@ -1,0 +1,24 @@
+﻿@model Isa2017Cinema.Models.ChangePhoneViewModel
+@{
+    ViewBag.Title = "Change phone number";
+}
+<h3>@ViewBag.Title.</h3>
+
+@using (Html.BeginForm("ChangeNumber", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(mod => mod.PhoneNumber, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Change Phone number" class="btn btn-default" />
+        </div>
+    </div>
+}
+

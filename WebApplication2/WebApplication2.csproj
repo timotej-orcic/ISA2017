@@ -197,6 +197,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppController.cs" />
+    <Compile Include="Controllers\FriendsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
@@ -206,6 +207,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\FanZone.cs" />
     <Compile Include="Models\FanZoneAdmin.cs" />
+    <Compile Include="Models\FriendsViewModels.cs" />
     <Compile Include="Models\Hall.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Licitation.cs" />
@@ -215,7 +217,6 @@
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\Projection.cs" />
     <Compile Include="Models\Recension.cs" />
-    <Compile Include="Models\RegUser.cs" />
     <Compile Include="Models\SystemAdmin.cs" />
     <Compile Include="Models\ThemeRequisit.cs" />
     <Compile Include="Models\Ticket.cs" />
@@ -256,6 +257,7 @@
     <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\app\Cinemas.js" />
     <Content Include="Scripts\app\myPage.js" />
     <Content Include="Scripts\app\users.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -1012,6 +1014,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Views\Shared\HtmlPage1.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1048,10 +1051,16 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\PartialViews\Users.cshtml" />
     <Content Include="Scripts\version.json" />
+    <Content Include="Views\Shared\Proba.cshtml" />
+    <Content Include="Views\App\ShowCinemas.cshtml" />
+    <Content Include="Views\Manage\ChangeName.cshtml" />
+    <Content Include="Views\Manage\ChangeLastName.cshtml" />
+    <Content Include="Views\Manage\ChangeCity.cshtml" />
+    <Content Include="Views\Manage\ChangeNumber.cshtml" />
+    <Content Include="Views\Friends\ShowFriends.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\App\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

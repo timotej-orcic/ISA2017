@@ -61,16 +61,27 @@ namespace Isa2017Cinema.Controllers
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.ChangeNameSuccess ? "Your name has been changed."
+                : message == ManageMessageId.ChangeLastNameSuccess ? "Your lastname has been changed."
+                : message == ManageMessageId.ChangeCitySuccess ? "Your city has been changed."
+                : message == ManageMessageId.ChangePhoneSuccess ? "Your phone has been changed."
                 : "";
 
             var userId = User.Identity.GetUserId();
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(userId);
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
+                FirstName = user.Name,
+                LastName = user.LastName,
+                City = user.City,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                UserName = user.UserName
+                /*TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
                 Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)*/
             };
             return View(model);
         }
@@ -214,6 +225,131 @@ namespace Isa2017Cinema.Controllers
         }
 
         //
+        // GET: /Manage/ChangeName
+        public ActionResult ChangeName()
+        {
+         
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            ChangeFieldViewModel model = new ChangeFieldViewModel
+            {
+                Field = user.Name
+            };
+            return View(model);
+        }
+
+        
+
+        //
+        // POST: /Manage/ChangeName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeName(ChangeFieldViewModel model)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            if (model.Field == null)
+            {
+                ModelState.AddModelError("", "Name can not be empty.");
+                return View(model);
+            }
+            user.Name = model.Field;
+            ctx.SaveChanges();
+            return RedirectToAction("Index", new { Message = ManageMessageId.ChangeNameSuccess });
+        }
+
+        //GET; /Manage/ChangeLastName
+        public ActionResult ChangeLastName()
+        {
+
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            ChangeFieldViewModel model = new ChangeFieldViewModel
+            {
+                Field = user.LastName
+            };
+            return View(model);
+        }
+
+        //POST: /Manage/ChangeLastName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeLastName(ChangeFieldViewModel model)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            if (model.Field == null)
+            {
+                ModelState.AddModelError("", "Lastname can not be empty.");
+                return View(model);
+            }
+            user.LastName = model.Field;
+            ctx.SaveChanges();
+            return RedirectToAction("Index", new { Message = ManageMessageId.ChangeLastNameSuccess });
+        }
+
+        //GET; /Manage/ChangeCity
+        public ActionResult ChangeCity()
+        {
+
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            ChangeFieldViewModel model = new ChangeFieldViewModel
+            {
+                Field = user.City
+            };
+            return View(model);
+        }
+
+        //POST: /Manage/ChangeCity
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeCity(ChangeFieldViewModel model)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            if (model.Field == null)
+            {
+                ModelState.AddModelError("", "Name of the city can not be empty.");
+                return View(model);
+            }
+            user.City = model.Field;
+            ctx.SaveChanges();
+            return RedirectToAction("Index", new { Message = ManageMessageId.ChangeCitySuccess });
+        }
+
+        //GET; /Manage/ChangeNumber
+        public ActionResult ChangeNumber()
+        {
+
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            ChangePhoneViewModel model = new ChangePhoneViewModel
+            {
+                PhoneNumber = user.PhoneNumber,
+                
+            };
+            return View(model);
+        }
+
+        //POST: /Manage/ChangePhoneNumber
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeNumber(ChangePhoneViewModel model)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId()); 
+            if (model.PhoneNumber == null)
+            {
+                ModelState.AddModelError("", "Number can not be empty.");
+                return View(model);
+            }
+            user.PhoneNumber = model.PhoneNumber;
+            ctx.SaveChanges();
+            return RedirectToAction("Index", new { Message = ManageMessageId.ChangePhoneSuccess });
+        }
+
+        //
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
@@ -230,16 +366,25 @@ namespace Isa2017Cinema.Controllers
             {
                 return View(model);
             }
-            var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+           var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+            
             if (result.Succeeded)
             {
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+               
+                
                 if (user != null)
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
+
+                user.Password = model.NewPassword;
+                
+                ctx.SaveChanges();
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
+            
             AddErrors(result);
             return View(model);
         }
@@ -377,10 +522,15 @@ namespace Isa2017Cinema.Controllers
         {
             AddPhoneSuccess,
             ChangePasswordSuccess,
+            ChangeNameSuccess,
+            ChangeLastNameSuccess,
+            ChangeCitySuccess,
+            ChangePhoneSuccess,
             SetTwoFactorSuccess,
             SetPasswordSuccess,
             RemoveLoginSuccess,
             RemovePhoneSuccess,
+
             Error
         }
 

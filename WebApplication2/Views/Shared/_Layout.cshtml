@@ -12,7 +12,9 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Scripts/angular.min.js")
     @Scripts.Render("~/Scripts/angular-route.min.js")
-    @Scripts.Render("~/Scripts/angular-ui/ui-bootstrap-tpls.min.js")    
+    @Scripts.Render("~/Scripts/angular-ui/ui-bootstrap-tpls.min.js")  
+
+    @Scripts.Render("~/Scripts/App/Cinemas.js")  
     @Scripts.Render("~/Scripts/App/myPage.js")
 
 </head>
@@ -29,8 +31,10 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Cinemas", "ShowCinemas", "App")</li>
+                    <li>@Html.ActionLink("Theaters", "ShowTheatres", "App")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
+                    
                     <li><a href="#users">Users</a></li>
                 </ul>
                 @Html.Partial("_LoginPartial")
@@ -40,10 +44,10 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
+        
     </div>
+    <div ng-view></div>
+
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

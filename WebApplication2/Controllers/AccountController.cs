@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Isa2017Cinema.Models;
+using System.Collections.Generic;
 
 namespace Isa2017Cinema.Controllers
 {
@@ -75,7 +76,13 @@ namespace Isa2017Cinema.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var user = UserManager.FindByEmail(model.Email);
+            if(user == null)
+            {
+                ModelState.AddModelError("", "User with that email is not registered.");
+                return View(model);
+            }
+            var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password,false, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -83,7 +90,7 @@ namespace Isa2017Cinema.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
@@ -151,8 +158,9 @@ namespace Isa2017Cinema.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User { Name = model.FirstName, LastName = model.LastName, UserName = model.UserName, Email = model.Email, Password = model.Password, City = model.City, PhoneNum = model.PhoneNumber };
-
+                var user = new ApplicationUser { Name = model.FirstName, LastName = model.LastName, UserName = model.UserName, Email = model.Email, Password = model.Password, City = model.City, PhoneNumber = model.PhoneNumber,
+                    Points = 0.0, UserType = Models.Type.DEFAULT, FriendList = new List<ApplicationUser>(), RequestsList = new List<ApplicationUser>(), ReservationsList = new List<Ticket>(), RecensionList = new List<Recension>(), PostsList = new List<Post>() };
+                 
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

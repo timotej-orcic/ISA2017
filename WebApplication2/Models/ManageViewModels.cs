@@ -8,10 +8,27 @@ namespace Isa2017Cinema.Models
     public class IndexViewModel
     {
         public bool HasPassword { get; set; }
-        public IList<UserLoginInfo> Logins { get; set; }
+     
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Display(Name = "City")]
+        public string City { get; set; }
+
+        [Phone]
+        [Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
-        public bool TwoFactor { get; set; }
-        public bool BrowserRemembered { get; set; }
+
+        [Display(Name = "User Name")]
+        public string UserName { get; set; }
+
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+        
     }
 
     public class ManageLoginsViewModel
@@ -56,6 +73,20 @@ namespace Isa2017Cinema.Models
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+    }
+    public class ChangeFieldViewModel
+    {
+        public string Field { get; set; }
+
+    }
+    public class ChangePhoneViewModel
+    {
+        
+        public string PhoneNumber { get; set; }
+
+        [Display(Name = "Change phone number: ")]
+        public string Name { get; set; }
+
     }
 
     public class AddPhoneNumberViewModel
