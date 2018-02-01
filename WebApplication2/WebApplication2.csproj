@@ -205,6 +205,7 @@
     </Compile>
     <Compile Include="Initializer.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\FanZone.cs" />
     <Compile Include="Models\FanZoneAdmin.cs" />
     <Compile Include="Models\FriendsViewModels.cs" />
@@ -257,9 +258,6 @@
     <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\app\Cinemas.js" />
-    <Content Include="Scripts\app\myPage.js" />
-    <Content Include="Scripts\app\users.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -1048,7 +1046,6 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Home\PartialViews\Users.cshtml" />
     <Content Include="Scripts\version.json" />
     <Content Include="Views\App\ShowCinemas.cshtml" />
     <Content Include="Views\Manage\ChangeName.cshtml" />

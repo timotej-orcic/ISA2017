@@ -1,8 +1,11 @@
 ﻿using Isa2017Cinema.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebApplication2.Models;
 
 namespace Isa2017Cinema
 {
@@ -28,18 +31,17 @@ namespace Isa2017Cinema
             };
             var locations = new List<Location>
             {
-                new Models.Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Arena Cineplex", Address = "Novosadskog sajma" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
+                new Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Arena Cineplex", Address = "Novosadskog sajma" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
                 ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), LocationFanZone = fz1
                    },
-                 new Models.Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Big Cinestar", Address = "Bulevar" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
+                 new Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Big Cinestar", Address = "Bulevar" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
                  ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), LocationFanZone = fz2
                  }
 
             };
-            
 
             locations.ForEach(location => context.Locations.Add(location));
-        
+
             context.SaveChanges();
         }
     }

@@ -16,17 +16,19 @@ namespace WebApplication2.Controllers
             return View();
         }
 
-        // POST: App/Users
-        public JsonResult getUsers()
-        {
-            List<ApplicationUser> retVal = new List<ApplicationUser>();
+        /*        // POST: App/Users
+                public JsonResult getUsers()
+                {
+                    List<ApplicationUser> retVal = new List<ApplicationUser>();
 
-            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+                    ApplicationDbContext dbCtx = ApplicationDbContext.Create();
 
-            retVal = dbCtx.Users.ToList();
+                    retVal = dbCtx.Users.ToList();
 
-            return Json(retVal, JsonRequestBehavior.AllowGet);
-        }
+                    return Json(retVal, JsonRequestBehavior.AllowGet);
+                }
+        */
+
         public ActionResult ShowCinemas()
         {
             ViewBag.Message = "Cinemas :";
@@ -64,6 +66,7 @@ namespace WebApplication2.Controllers
             }
             return View("ShowCinemas",theatres);
         }
+
         public ActionResult getCinemas()
         {
             List<Location> retVal = new List<Location>();

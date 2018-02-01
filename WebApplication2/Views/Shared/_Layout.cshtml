@@ -14,11 +14,8 @@
     @Scripts.Render("~/Scripts/angular-route.min.js")
     @Scripts.Render("~/Scripts/angular-ui/ui-bootstrap-tpls.min.js")  
 
-    @Scripts.Render("~/Scripts/App/Cinemas.js")  
-    @Scripts.Render("~/Scripts/App/myPage.js")
-
 </head>
-<body ng-app="myApp">
+<body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -33,9 +30,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Cinemas", "ShowCinemas", "App")</li>
                     <li>@Html.ActionLink("Theaters", "ShowTheatres", "App")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    
-                    <li><a href="#users">Users</a></li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>                    
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
