@@ -3,7 +3,7 @@
     ViewBag.Title = "ShowFriends";
 }
 
-<h2>Find your friends</h2>
+<h2 style="color:white">Find your friends</h2>
 @using (Html.BeginForm("Search", "Friends", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
  @Html.AntiForgeryToken()
@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-sm-5">
             <div class="form-group">
-                <label  class="control-label col-xs-3">First name</label>
+                <label  class="control-label col-xs-3" style="color:white">First name</label>
                 <div class="col-xs-9">
                     @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
                 </div>
@@ -21,7 +21,7 @@
         </div>
         <div class="col-sm-5">
             <div class="form-group">
-                <label  class="control-label col-xs-3">Last name</label>
+                <label  class="control-label col-xs-3" style="color:white">Last name</label>
                 <div class="col-xs-9">
                     @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
                 </div>
@@ -36,30 +36,62 @@
 <div>@if (ViewBag.usersToShow.Count>0)
 {
     foreach(var reg in ViewBag.usersToShow)
-    {   
+    {
+        int br = 0;
         <div class="jumbotron" style="background-color:lightgray;  width: 400px; " >
             <dl class="dl-horizontal">
-                <dt><label style="font-size: 16px; ">First name:</label> </dt>
+                <dt><label style="font-size: 16px; color:white ">First name:</label> </dt>
                 <dd><label style="font-size: 16px;">@reg.Name </label> </dd>
 
-                <dt><label style="font-size: 16px;">Last name: </label></dt>
+                <dt><label style="font-size: 16px;color:white">Last name: </label></dt>
                 <dd><label style="font-size: 16px;">@reg.LastName  </label></dd>
 
-                <dt><label style="font-size: 16px;">Username:</label> </dt>
+                <dt><label style="font-size: 16px;color:white">Username:</label> </dt>
                 <dd><label style="font-size: 16px;">@reg.UserName </label> </dd>
             </dl>
-            @foreach (var friend in ViewBag.FriendList)
-            {
-                if (reg.Equals(friend))
-                {
-                    <label>Prijatelji ste.</label>
+            @if(ViewBag.FriendList.Count > 0 || ViewBag.pendinglist.Count>0) {
+                if (ViewBag.FriendList.Count > 0) { 
+                    foreach (var friend in ViewBag.FriendList)
+                    {
+                        if (reg.Equals(friend))
+                        {
+                            br++;
+                            <input type="button" value="Remove Friend" onclick="location.href='@Url.Action("RemoveFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
+                                break;
+                        }
+
+                    }
                 }
-                else
+                if (br == 0)
                 {
-                    <label>Dodaj prijatelja</label>
+                    if (ViewBag.pendinglist.Count > 0)
+                    {
+
+                        foreach (var wait in ViewBag.pendinglist)
+                        {
+                            if (reg.Id.Equals(wait.Id))
+                            {
+                                br++;
+                                <label>Pending request.</label>
+                                break;
+                            }
+
+                        }
+                    }
+                }
+                if(br==0)
+                {
+                    <input type="button" value="Add Friend" onclick="location.href='@Url.Action("AddFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
                 }
 
-            } 
+            }
+            else
+            {
+                <input type="button" value="Add Friend" onclick="location.href='@Url.Action("AddFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
+
+            }
+
+            
 </div>
     }
 }</div>
