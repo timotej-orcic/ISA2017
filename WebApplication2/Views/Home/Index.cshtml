@@ -3,11 +3,21 @@
 }
 @using Isa2017Cinema.Models
 @model List<ApplicationUser>
-@if (Request.IsAuthenticated)
-{
-    <div>
-        <h2>Ulogovan si</h2>
-    </div>
-}else{
-    <h2>Tralala</h2>
-}
+<br />
+<div class="jumbotron" style="background-color: transparent">
+    <a href="@Url.Action("ShowCinemas", "App")">
+
+        <img src="~/images/cinema.jpg"  width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
+    </a>
+    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  </label>
+    <a href="@Url.Action("ShowTheatres", "App")">
+        <img src="~/images/theater.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white"/>
+    </a>    
+    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+     <label style="color:white">Cinemas</label>
+    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+
+    <label style="color:white">Theatres</label>
+</div>

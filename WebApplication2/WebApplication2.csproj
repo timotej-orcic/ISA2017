@@ -218,6 +218,7 @@
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\Projection.cs" />
     <Compile Include="Models\Recension.cs" />
+    <Compile Include="Models\Request.cs" />
     <Compile Include="Models\SystemAdmin.cs" />
     <Compile Include="Models\ThemeRequisit.cs" />
     <Compile Include="Models\Ticket.cs" />
@@ -233,6 +234,10 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="images\back2.jpg" />
+    <Content Include="images\background.jpg" />
+    <Content Include="images\cinema.jpg" />
+    <Content Include="images\theater.jpg" />
     <Content Include="Scripts\ai.0.22.9-build00167.js" />
     <Content Include="Scripts\ai.0.22.9-build00167.min.js" />
     <Content Include="Scripts\angular-animate.js" />

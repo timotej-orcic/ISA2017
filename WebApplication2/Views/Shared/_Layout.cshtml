@@ -14,9 +14,18 @@
     @Scripts.Render("~/Scripts/angular-route.min.js")
     @Scripts.Render("~/Scripts/angular-ui/ui-bootstrap-tpls.min.js")  
 
+    @Scripts.Render("~/Scripts/App/Cinemas.js")  
+    @Scripts.Render("~/Scripts/App/myPage.js")
+    <style type="text/css">
+        .bgimg {
+            background-image: url('../images/back2.jpg');
+        }
+    </style>
 </head>
-<body>
+<body ng-app="myApp" class="bgimg">
+    
     <div class="navbar navbar-inverse navbar-fixed-top">
+        
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -24,24 +33,27 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Cinemas", "ShowCinemas", "App")</li>
-                    <li>@Html.ActionLink("Theaters", "ShowTheatres", "App")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>                    
+                    
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    
+                 
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="container body-content "  >
         @RenderBody()
-        <hr />
+        
         
     </div>
-    <div ng-view></div>
+    <div ng-view>
+        <label>dsadasaaaaaaaaaaaa</label>
+    </div>
 
 
     @Scripts.Render("~/bundles/jquery")

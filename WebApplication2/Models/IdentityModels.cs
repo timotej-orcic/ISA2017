@@ -15,6 +15,7 @@ namespace Isa2017Cinema.Models
 
     public enum Type { GOLD, SILVER, BRONZE, DEFAULT }
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
+    
     public class ApplicationUser : IdentityUser
     {
         public String Name { get; set; }
@@ -24,10 +25,11 @@ namespace Isa2017Cinema.Models
         public Double Points { get; set; }
         public Type UserType { get; set; }
         public List<ApplicationUser> FriendList { get; set; }
-        public List<ApplicationUser> RequestsList { get; set; }
+        public List<ApplicationUser> RequestsUserNames { get; set; }
         public List<Ticket> ReservationsList { get; set; }
         public List<Recension> RecensionList { get; set; }
         public List<Post> PostsList { get; set; }
+        public List<Request> RequestsList { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
