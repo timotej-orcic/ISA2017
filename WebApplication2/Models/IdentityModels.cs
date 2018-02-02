@@ -49,26 +49,8 @@ namespace Isa2017Cinema.Models
         public static ApplicationDbContext Create()
         {
             ApplicationDbContext ctx = new ApplicationDbContext();
-            setRoles(ctx);
+            //setRoles();
             return ctx;
-        }
-
-        public static string CreateMD5(string input)
-        {
-            // Use input string to calculate MD5 hash
-            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            {
-                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-                // Convert the byte array to hexadecimal string
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2"));
-                }
-                return sb.ToString();
-            }
         }
 
         public DbSet<Hall> Halls { get; set; }
@@ -78,7 +60,7 @@ namespace Isa2017Cinema.Models
             base.OnModelCreating(mb);
         }
 
-        public static async void setRoles(ApplicationDbContext ctx)
+        public async void setRoles()
         {
             List<string> Roles = new List<string>
             {
@@ -113,8 +95,6 @@ namespace Isa2017Cinema.Models
                         LastName = "Main",
                         Email = "main.admin@isa.com",
                         UserName = "AdminMain",
-                        //Password = "MAdmin123!",
-                        //PasswordHash = CreateMD5("MAdmin123!"),
                         IsMainAdmin = true
                     };
                     admin = await um.CreateAsync(mainAdmin, "MAdmin123!");

@@ -14,6 +14,7 @@ namespace Isa2017Cinema
             ApplicationDbContext AppContext = ApplicationDbContext.Create();
             Initializer Initializer = new Initializer();
             Initializer.InitializeDatabase(AppContext);
+            AppContext.setRoles();
         }
     }
 }
