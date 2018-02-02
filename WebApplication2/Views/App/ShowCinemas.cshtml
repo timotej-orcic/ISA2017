@@ -1,16 +1,60 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using Isa2017Cinema.Models
-@model List<Location>
-<h3>@ViewBag.Message</h3>
-    <div>
-        <ul>
-            @foreach (Location l in Model)
-            {
-                <li> @l.Name </li>
-            }
+@model WebApplication2.Models.CinemaViewModel
+<div class="container" style="background-color:black;  left:0; right:0">
+    <label style="color:white; font-size:40px; font-style:italic; font-family:'Times New Roman', Times, serif ">@ViewBag.Message</label>
+</div>
+<div class="container" style="margin: 0 auto; left:0; right:0">
+    
+    @using (Html.BeginForm("Search", "App", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+       
+        @Html.ValidationSummary("", new { @class = "text-danger" })
+        <form class="form-horizontal">
+            <div class="row container">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-5">
+                    <div class="form-group">
+                        <label class="control-label col-xs-3" style="color:white; "> </label>
+                            
+                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder="Search" , align="right" })
+                        @Html.TextBoxFor(m => m.Type, new { @class = "form-control", align = "right", @Value=ViewBag.type, style="visibility:hidden"  })
+                         
+                    </div>
+                </div>
             
-        </ul>
-    </div>
+                <div class="col-sm-2 input-group-btn">
+                    <button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+                <div class="col-sm-1"></div>
+            </div>
+        </form>
+    }
+    <hr />
+    <ul>
+        @foreach (var l in ViewBag.locations)
+        {
+            <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                <div style="background-color:gray">
+                    <h2 style="color:white">@l.Name</h2>
+                </div>
+                    <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
+                    
+                        <a href="https://maps.google.com/?q=58250 @l.Address">
+                            <h3 style="color:white;font-size: 14px"> @l.Address</h3>
+                        </a>
+                    
+                        <label style="color:white; font-weight:bold; font-size: 14px">Description:  </label>
+                    
+                        <label style="color:white; font-size: 14px"> @l.Description </label>
+                   
+            </div>
+            <br />
+        }
+
+    </ul>
+
+</div>
 

@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
@@ -28,10 +30,45 @@ namespace WebApplication2.Controllers
                     return Json(retVal, JsonRequestBehavior.AllowGet);
                 }
         */
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Search(CinemaViewModel model)
+        {
+            
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var locations = ctx.Locations.ToList();
+            List<Location> locToShow = new List<Location>();
+            if (model.Type.Equals(LocationType.CINEMA))
+            {
+                foreach (Location l in locations)
+                {
+                    if (l.LocType.Equals(LocationType.CINEMA) && l.Name.ToLower().Contains(model.Name.ToLower()))
+                    {
+                        locToShow.Add(l);
+                    }
+                }
+                ViewBag.type = LocationType.CINEMA;
+                ViewBag.Message = "Cinemas";
+            }else
+            {
+                foreach (Location l in locations)
+                {
+                    if (l.LocType.Equals(LocationType.THEATRE) && l.Name.ToLower().Contains(model.Name.ToLower()))
+                    {
+                        locToShow.Add(l);
+                    }
+                }
+                ViewBag.type = LocationType.THEATRE;
+                ViewBag.Message = "Theatres";
+            }
+            ViewBag.locations = locToShow;
+
+            return View("ShowCinemas", model);
+        }
 
         public ActionResult ShowCinemas()
         {
-            ViewBag.Message = "Cinemas :";
+            ViewBag.Message = "Cinemas ";
             List<Location> retVal = new List<Location>();
 
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
@@ -45,7 +82,9 @@ namespace WebApplication2.Controllers
                     cinemas.Add(loc);
                 }
             }
-            return View(cinemas);
+            ViewBag.type = LocationType.CINEMA;
+            ViewBag.locations = cinemas;
+            return View();
         }
 
         public ActionResult ShowTheatres()
@@ -64,7 +103,9 @@ namespace WebApplication2.Controllers
                     theatres.Add(loc);
                 }
             }
-            return View("ShowCinemas",theatres);
+            ViewBag.type = LocationType.THEATRE;
+            ViewBag.locations = theatres;
+            return View("ShowCinemas");
         }
 
         public ActionResult getCinemas()
