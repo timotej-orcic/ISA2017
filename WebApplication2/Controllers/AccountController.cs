@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Isa2017Cinema.Models;
 using System.Collections.Generic;
+using System.Web.Security;
 
 namespace Isa2017Cinema.Controllers
 {
@@ -79,7 +80,6 @@ namespace Isa2017Cinema.Controllers
             var user = UserManager.FindByEmail(model.Email);
             if(user == null)
             {
-                //PROVERI I ADMINE???
                 ModelState.AddModelError("", "User with that email is not registered.");
                 return View(model);
             }
@@ -87,7 +87,10 @@ namespace Isa2017Cinema.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    RedirectToRouteResult retRes = RedirectToAction("Index", "Home");
+                    if (UserManager.IsInRole(user.Id, "System_Admin"))
+                        retRes = RedirectToAction("AdminPage", "System_Admin");
+                    return retRes;
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -168,6 +171,11 @@ namespace Isa2017Cinema.Controllers
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     var roleresult = UserManager.AddToRole(user.Id, "Regular_User");
+
+                    var updatedUser = await UserManager.FindByEmailAsync(user.Email);
+                    var newIdentity = await updatedUser.GenerateUserIdentityAsync(UserManager);
+                    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link

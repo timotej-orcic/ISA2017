@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "System_Admin Page";
+}
+
+<div class="row">
+    <h2>System Administrator page</h2>
+</div>
+@if (TempData["success"] != null)
+{
+    <div id="SuccessMessage" class="row">
+        <h3>@TempData["success"]</h3>
+    </div>
+}
+

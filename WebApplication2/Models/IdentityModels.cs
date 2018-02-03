@@ -49,7 +49,6 @@ namespace Isa2017Cinema.Models
         public static ApplicationDbContext Create()
         {
             ApplicationDbContext ctx = new ApplicationDbContext();
-            //setRoles();
             return ctx;
         }
 

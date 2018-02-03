@@ -1,15 +1,27 @@
-﻿@using Microsoft.AspNet.Identity
-@if (Request.IsAuthenticated)
+﻿@if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
     @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Friends", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
-        <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </ul>
+        if (User.IsInRole("Regular_User"))
+        {
+            <ul class="nav navbar-nav navbar-right">
+                <li>@Html.ActionLink("Friends", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+            </ul>
+        }
+        else if (User.IsInRole("System_Admin"))
+        {
+            <ul class="nav navbar-nav navbar-right">
+                <li>@Html.ActionLink("Add new admin", "AddNewAdmin", "System_Admin", routeValues: null, htmlAttributes: new { title = "System_Admin" })</li>
+                <li>@Html.ActionLink("Register new location", "RegisterNewLocation", "System_Admin", routeValues: null, htmlAttributes: new { title = "System_Admin" })</li>
+                <li>@Html.ActionLink("Change points scale", "ChangePointsScale", "System_Admin", routeValues: null, htmlAttributes: new { title = "System_Admin" })</li>
+                <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+            </ul>
+        }
     }
 }
 else
