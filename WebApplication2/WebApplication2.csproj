@@ -199,6 +199,7 @@
     <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\FriendsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\CinemaController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\System_AdminController.cs" />
     <Compile Include="Global.asax.cs">
@@ -207,6 +208,7 @@
     <Compile Include="Initializer.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Admin.cs" />
+    <Compile Include="Models\CinemaViewModels.cs" />
     <Compile Include="Models\FanZone.cs" />
     <Compile Include="Models\FanZoneAdmin.cs" />
     <Compile Include="Models\FriendsViewModels.cs" />
@@ -304,6 +306,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\AddNewAdmin\" />
+    <Folder Include="Views\Location\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
