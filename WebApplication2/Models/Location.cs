@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Isa2017Cinema.Models
 {
     public enum LocationType { CINEMA, THEATRE }
     public class Location
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public Guid Id { get; set; }
+
         public LocationType LocType { get; set; }
         public String Name { get; set; }
         public String Address { get; set; }

@@ -31,16 +31,37 @@ namespace Isa2017Cinema
             };
             var locations = new List<Location>
             {
-                new Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Arena Cineplex", Address = "Novosadskog sajma" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
+                new Location { LocType = LocationType.CINEMA, Name = "Arena Cineplex", Address = "Novosadskog sajma" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
                 ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), LocationFanZone = fz1
                    },
-                 new Location { Id = Guid.NewGuid(), LocType = LocationType.CINEMA, Name = "Big Cinestar", Address = "Bulevar" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
+                 new Location { LocType = LocationType.CINEMA, Name = "Big Cinestar", Address = "Bulevar" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
                  ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), LocationFanZone = fz2
                  }
 
             };
 
             locations.ForEach(location => context.Locations.Add(location));
+
+            Points bronzePoints = new Points
+            {
+                Points_Type = PointsType.BRONZE,
+                PointsCount = 100
+            };
+            context.DiscountPoints.Add(bronzePoints);
+
+            Points silverPoints = new Points
+            {
+                Points_Type = PointsType.SILVER,
+                PointsCount = 400
+            };
+            context.DiscountPoints.Add(silverPoints);
+
+            Points goldPoints = new Points
+            {
+                Points_Type = PointsType.GOLD,
+                PointsCount = 1000
+            };
+            context.DiscountPoints.Add(goldPoints);
 
             context.SaveChanges();
         }

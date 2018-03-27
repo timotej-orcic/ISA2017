@@ -208,6 +208,7 @@
     <Compile Include="Initializer.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Admin.cs" />
+    <Compile Include="Models\ChangePointsScaleViewModels.cs" />
     <Compile Include="Models\CinemaViewModels.cs" />
     <Compile Include="Models\FanZone.cs" />
     <Compile Include="Models\FanZoneAdmin.cs" />
@@ -218,9 +219,11 @@
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\LocationAdmin.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Points.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\Projection.cs" />
     <Compile Include="Models\Recension.cs" />
+    <Compile Include="Models\RegisterNewLocationViewModels.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\SystemAdmin.cs" />
     <Compile Include="Models\AddNewAdminViewModels.cs" />
@@ -302,10 +305,11 @@
     <Content Include="Views\Friends\ShowFriends.cshtml" />
     <Content Include="Views\System_Admin\AdminPage.cshtml" />
     <Content Include="Views\System_Admin\AddNewAdmin.cshtml" />
+    <Content Include="Views\System_Admin\RegisterNewLocation.cshtml" />
+    <Content Include="Views\System_Admin\ChangePointsScale.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\AddNewAdmin\" />
     <Folder Include="Views\Location\" />
   </ItemGroup>
   <ItemGroup>

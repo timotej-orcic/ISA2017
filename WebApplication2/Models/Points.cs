@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Isa2017Cinema.Models
+namespace WebApplication2.Models
 {
-    public class FanZone
+    public enum PointsType { BRONZE, SILVER, GOLD }
+
+    public class Points
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public Guid Id { get; set; }
 
-        public List<ThemeRequisit> RequisitsList { get; set; }
-        public List<Post> PostsList { get; set; }
+        public PointsType Points_Type { get; set; }
+        public int PointsCount { get; set; }
     }
 }

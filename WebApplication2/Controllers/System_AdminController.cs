@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using WebApplication2.Models;
 
@@ -13,134 +12,333 @@ namespace WebApplication2.Controllers
 {
     public class System_AdminController : Controller
     {
-        // GET: System_Admin
+        // GET: System_Admin/AdminPage
         public ActionResult AdminPage()
         {
-            return View();
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("System_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                    return View();
+            }
         }
 
         // GET: System_Admin/AddNewAdmin
         public ActionResult AddNewAdmin()
         {
-            return View();
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("System_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                    return View();
+            }
+        }
+
+        // GET: System_Admin/RegisterNewLocation
+        public ActionResult RegisterNewLocation()
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("System_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                    return View();
+            }
+        }
+
+        // GET: System_Admin/ChangePointsScale
+        public ActionResult ChangePointsScale()
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("System_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                    return View();
+            }
         }
 
         public async Task<ActionResult> AddAdmin(AddNewAdminViewModel adminVM)
         {
-            if(adminVM.Name != null && adminVM.LastName != null && adminVM.Email != null && adminVM.UserName != null)
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
             {
-                Admin newAdmin = null;
-                if (adminVM.Admin_Type == AdminType.SYSTEM_ADMIN)
+                if (!User.IsInRole("System_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
                 {
-                    newAdmin = new SystemAdmin
+                    if (adminVM.Name != null && adminVM.LastName != null && adminVM.Email != null && adminVM.UserName != null)
                     {
-                        Admin_Type = adminVM.Admin_Type,
-                        Name = adminVM.Name,
-                        LastName = adminVM.LastName,
-                        Email = adminVM.Email,
-                        UserName = adminVM.UserName,
-                        IsMainAdmin = false
-                    };
-                }
-                else if (adminVM.Admin_Type == AdminType.FANZONE_ADMIN)
-                {
-                    newAdmin = new FanZoneAdmin
-                    {
-                        Admin_Type = adminVM.Admin_Type,
-                        Name = adminVM.Name,
-                        LastName = adminVM.LastName,
-                        Email = adminVM.Email,
-                        UserName = adminVM.UserName,
-                        PendingPostsList = new List<Post>()
-                    };
-                }
-                else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
-                {
-                    newAdmin = new LocationAdmin
-                    {
-                        Admin_Type = adminVM.Admin_Type,
-                        Name = adminVM.Name,
-                        LastName = adminVM.LastName,
-                        Email = adminVM.Email,
-                        UserName = adminVM.UserName,
-                        AdminLocationsList = new List<Location>()
-                    };
-                }
-
-                if (newAdmin != null)
-                {
-                    using (var um = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
-                    {
-                        IdentityResult result;
-                        if (um.Users.FirstOrDefault(usr => usr.Email == newAdmin.Email) == null)
+                        Admin newAdmin = null;
+                        if (adminVM.Admin_Type == AdminType.SYSTEM_ADMIN)
                         {
-                            result = await um.CreateAsync(newAdmin, RandomString());
-                            if (result.Succeeded)
+                            newAdmin = new SystemAdmin
                             {
-                                if (adminVM.Admin_Type == AdminType.SYSTEM_ADMIN)
-                                {
-                                    if (!um.IsInRole(newAdmin.Id, "System_Admin"))
-                                    {
-                                        var userResult = um.AddToRole(newAdmin.Id, "System_Admin");
-                                        if (!userResult.Succeeded)
-                                        {
-                                            ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "System_Admin" + "' role failed with error(s): " + userResult.Errors);
-                                            return View("AddNewAdmin");
-                                        }
-                                    }
-                                }
-                                else if (adminVM.Admin_Type == AdminType.FANZONE_ADMIN)
-                                {
-                                    if (!um.IsInRole(newAdmin.Id, "Fanzone_Admin"))
-                                    {
-                                        var userResult = um.AddToRole(newAdmin.Id, "Fanzone_Admin");
-                                        if (!userResult.Succeeded)
-                                        {
-                                            ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Fanzone_Admin" + "' role failed with error(s): " + userResult.Errors);
-                                            return View("AddNewAdmin");
-                                        }
-                                    }
-                                }
-                                else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
-                                {
-                                    if (!um.IsInRole(newAdmin.Id, "Location_Admin"))
-                                    {
-                                        var userResult = um.AddToRole(newAdmin.Id, "Location_Admin");
-                                        if (!userResult.Succeeded)
-                                        {
-                                            ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Location_Admin" + "' role failed with error(s): " + userResult.Errors);
-                                            return View("AddNewAdmin");
-                                        }
-                                    }
-                                }
-                            }
-                            else
+                                Admin_Type = adminVM.Admin_Type,
+                                Name = adminVM.Name,
+                                LastName = adminVM.LastName,
+                                Email = adminVM.Email,
+                                UserName = adminVM.UserName,
+                                IsMainAdmin = false
+                            };
+                        }
+                        else if (adminVM.Admin_Type == AdminType.FANZONE_ADMIN)
+                        {
+                            newAdmin = new FanZoneAdmin
                             {
-                                ModelState.AddModelError("", "Error while trying to create new admin");
-                                return View("AddNewAdmin");
+                                Admin_Type = adminVM.Admin_Type,
+                                Name = adminVM.Name,
+                                LastName = adminVM.LastName,
+                                Email = adminVM.Email,
+                                UserName = adminVM.UserName,
+                                MyFanzone = null,
+                                PendingPostsList = new List<Post>()
+                            };
+                        }
+                        else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
+                        {
+                            newAdmin = new LocationAdmin
+                            {
+                                Admin_Type = adminVM.Admin_Type,
+                                Name = adminVM.Name,
+                                LastName = adminVM.LastName,
+                                Email = adminVM.Email,
+                                UserName = adminVM.UserName,
+                                MyLocation = null
+                            };
+                        }
+
+                        if (newAdmin != null)
+                        {
+                            using (var um = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+                            {
+                                IdentityResult result;
+                                if (um.Users.FirstOrDefault(usr => usr.Email == newAdmin.Email) == null)
+                                {
+                                    result = await um.CreateAsync(newAdmin, RandomString());
+                                    if (result.Succeeded)
+                                    {
+                                        if (adminVM.Admin_Type == AdminType.SYSTEM_ADMIN)
+                                        {
+                                            if (!um.IsInRole(newAdmin.Id, "System_Admin"))
+                                            {
+                                                var userResult = um.AddToRole(newAdmin.Id, "System_Admin");
+                                                if (!userResult.Succeeded)
+                                                {
+                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "System_Admin" + "' role failed with error(s): " + userResult.Errors);
+                                                    return View("AddNewAdmin");
+                                                }
+                                            }
+                                        }
+                                        else if (adminVM.Admin_Type == AdminType.FANZONE_ADMIN)
+                                        {
+                                            if (!um.IsInRole(newAdmin.Id, "Fanzone_Admin"))
+                                            {
+                                                var userResult = um.AddToRole(newAdmin.Id, "Fanzone_Admin");
+                                                if (!userResult.Succeeded)
+                                                {
+                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Fanzone_Admin" + "' role failed with error(s): " + userResult.Errors);
+                                                    return View("AddNewAdmin");
+                                                }
+                                            }
+                                        }
+                                        else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
+                                        {
+                                            if (!um.IsInRole(newAdmin.Id, "Location_Admin"))
+                                            {
+                                                var userResult = um.AddToRole(newAdmin.Id, "Location_Admin");
+                                                if (!userResult.Succeeded)
+                                                {
+                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Location_Admin" + "' role failed with error(s): " + userResult.Errors);
+                                                    return View("AddNewAdmin");
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ModelState.AddModelError("", "Error while trying to create new admin");
+                                        return View("AddNewAdmin");
+                                    }
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError("", "User with this email adress already exists");
+                                    return View("AddNewAdmin");
+                                }
                             }
                         }
                         else
                         {
-                            ModelState.AddModelError("", "User with this email adress already exists");
+                            ModelState.AddModelError("", "Error while trying to add new admin (newAdmin is null)");
                             return View("AddNewAdmin");
                         }
                     }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error while trying to add new admin (some fields are null)");
+                        return View("AddNewAdmin");
+                    }
+
+                    TempData["success"] = "Succesfully added a new: " + adminVM.Admin_Type.ToString();
+                    return View("AdminPage");
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Error while trying to add new admin (newAdmin is null)");
-                    return View("AddNewAdmin");
-                }
-            }
+            }            
+        }
+
+        public async Task<ActionResult> AddLocation(RegisterNewLocationViewModel locationVM)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
             else
             {
-                ModelState.AddModelError("", "Error while trying to add new admin (some fields are null)");
-                return View("AddNewAdmin");
-            }
+                if (!User.IsInRole("System_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    if (locationVM.Name != null && locationVM.Address != null && locationVM.Location_Admin_Id != null && locationVM.FanZone_Admin_Id != null)
+                    {
+                        if (locationVM.Location_Type == LocationType.CINEMA || locationVM.Location_Type == LocationType.THEATRE)
+                        {
+                            ApplicationDbContext ctx = ApplicationDbContext.Create();
+                            bool exists = false;
 
-            TempData["success"] = "Succesfully added a new: " + adminVM.Admin_Type.ToString();
-            return View("AdminPage");
+                            if (locationVM.Location_Type == LocationType.CINEMA)
+                            {
+                                var queryData = ctx.Locations.FirstOrDefault(x => x.LocType == LocationType.CINEMA && x.Name == locationVM.Name);
+                                if (queryData != null)
+                                    exists = true;
+                            }
+                            else if (locationVM.Location_Type == LocationType.THEATRE)
+                            {
+                                var queryData = ctx.Locations.FirstOrDefault(x => x.LocType == LocationType.THEATRE && x.Name == locationVM.Name);
+                                if (queryData != null)
+                                    exists = true;
+                            }
+
+                            if (!exists)
+                            {
+                                string description = "";
+                                if (locationVM.Description != null)
+                                    description = locationVM.Description;
+
+                                Location newLocation = new Location
+                                {
+                                    LocType = locationVM.Location_Type,
+                                    Name = locationVM.Name,
+                                    Address = locationVM.Address,
+                                    Description = description,
+                                    DiscountedTicketsList = new List<Ticket>(),
+                                    ProjectionsList = new List<Projection>(),
+                                    HallsList = new List<Hall>(),
+                                    RecensionsList = new List<Recension>(),
+                                    LocationFanZone = new FanZone { RequisitsList = new List<ThemeRequisit>(), PostsList = new List<Post>() }
+                                };
+
+                                ctx.Locations.Add(newLocation);
+
+                                LocationAdmin locAdmin = (LocationAdmin)ctx.Users.FirstOrDefault(x => x.Id == locationVM.Location_Admin_Id);
+                                if (locAdmin != null)
+                                    locAdmin.MyLocation = newLocation;
+                                else
+                                {
+                                    ModelState.AddModelError("", "Error: location admin not found.");
+                                    return View("RegisterNewLocation");
+                                }
+
+                                FanZoneAdmin fzAdmin = (FanZoneAdmin)ctx.Users.FirstOrDefault(x => x.Id == locationVM.FanZone_Admin_Id);
+                                if (fzAdmin != null)
+                                    fzAdmin.MyFanzone = newLocation.LocationFanZone;
+                                else
+                                {
+                                    ModelState.AddModelError("", "Error: fanzone admin not found.");
+                                    return View("RegisterNewLocation");
+                                }
+
+                                ctx.SaveChanges();
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("", "A " + locationVM.Location_Type.ToString() + " with this name already exists.");
+                                return View("RegisterNewLocation");
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Error: wrong location type.");
+                            return View("RegisterNewLocation");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: some inputs are null.");
+                        return View("RegisterNewLocation");
+                    }
+
+                    TempData["success"] = "Succesfully added a new: " + locationVM.Location_Type.ToString();
+                    return View("AdminPage");
+                }
+            }           
+        }
+
+        public async Task<ActionResult> SetPointsScale(ChangePointsScaleViewModels pointsVM)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("System_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    if (pointsVM.BronzeCount == 0 || pointsVM.SilverCount == 0 || pointsVM.GoldCount == 0)
+                    {
+                        ModelState.AddModelError("", "Points can not be 0.");
+                        return View("ChangePointsScale");
+                    }
+                    else if (pointsVM.BronzeCount >= pointsVM.SilverCount)
+                    {
+                        ModelState.AddModelError("", "Bronze points can not be greather then or equal to silver points.");
+                        return View("ChangePointsScale");
+                    }
+                    else if (pointsVM.BronzeCount >= pointsVM.GoldCount)
+                    {
+                        ModelState.AddModelError("", "Bronze points can not be greather then or equal to gold points.");
+                        return View("ChangePointsScale");
+                    }
+                    else if (pointsVM.SilverCount >= pointsVM.GoldCount)
+                    {
+                        ModelState.AddModelError("", "Silver points can not be greather then or equal to gold points.");
+                        return View("ChangePointsScale");
+                    }
+
+                    ApplicationDbContext ctx = ApplicationDbContext.Create();
+                    var bronzeData = ctx.DiscountPoints.FirstOrDefault(x => x.Points_Type == PointsType.BRONZE);
+                    bronzeData.PointsCount = pointsVM.BronzeCount;
+
+                    var silverData = ctx.DiscountPoints.FirstOrDefault(x => x.Points_Type == PointsType.SILVER);
+                    silverData.PointsCount = pointsVM.SilverCount;
+
+                    var goldData = ctx.DiscountPoints.FirstOrDefault(x => x.Points_Type == PointsType.GOLD);
+                    goldData.PointsCount = pointsVM.GoldCount;
+
+                    ctx.SaveChanges();
+
+                    TempData["success"] = "Succesfully updated the points scale";
+                    return View("AdminPage");
+                }
+            }            
         }
 
         private string RandomString()

@@ -54,6 +54,7 @@ namespace Isa2017Cinema.Models
 
         public DbSet<Hall> Halls { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<Points> DiscountPoints { get; set; }
         protected override void OnModelCreating(DbModelBuilder mb)
         {
             base.OnModelCreating(mb);
