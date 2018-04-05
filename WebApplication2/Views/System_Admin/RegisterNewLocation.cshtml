@@ -9,20 +9,10 @@
 
     items.Add(new SelectListItem { Text = "Theatre", Value = "1" });
 
-    List<SelectListItem> fzAdminsSelList = new List<SelectListItem>();
     List<SelectListItem> locAdminsSelList = new List<SelectListItem>();
 
     using (var ctx = new ApplicationDbContext())
     {
-        var fzAdminQueryData = ctx.Database.SqlQuery<FanZoneAdmin>("select * from AspNetUsers where Admin_Type = 0 and MyFanzone_Id IS NULL").ToList();
-        if(fzAdminQueryData.Count > 0)
-        {
-            foreach (var fzAdmin in fzAdminQueryData)
-            {
-                fzAdminsSelList.Add(new SelectListItem() { Text = fzAdmin.Name, Value = fzAdmin.Id });
-            }
-        }
-
         var locAdminQueryData = ctx.Database.SqlQuery<LocationAdmin>("select * from AspNetUsers where Admin_Type = 1 and MyLocation_Id IS NULL").ToList();
         if (locAdminQueryData.Count > 0)
         {
@@ -59,17 +49,6 @@
                     <div class="col-xs-9">
                         @Html.DropDownListFor(m => m.Location_Admin_Id, locAdminsSelList, new { @class = "form-control" });
                         @Html.ValidationMessageFor(m => m.Location_Admin_Id, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-5">
-                <div class="form-group">
-                    <label class="control-label col-xs-3" style="color:white">Fanzone admin</label>
-                    <div class="col-xs-9">
-                        @Html.DropDownListFor(m => m.FanZone_Admin_Id, fzAdminsSelList, new { @class = "form-control" });
-                        @Html.ValidationMessageFor(m => m.FanZone_Admin_Id, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
@@ -116,10 +95,6 @@
                 @if (locAdminsSelList.Count == 0)
                 {
                     <span class="text-danger">There are no available Location Admins, please add a new one before trying to add a new Location.</span><br>
-                }
-                @if (fzAdminsSelList.Count == 0)
-                {
-                    <span class="text-danger">There are no available FanZone Admins, please add a new one before trying to add a new Location.</span>
                 }
             </div>
         </div>

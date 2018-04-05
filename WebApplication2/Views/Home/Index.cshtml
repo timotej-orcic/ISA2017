@@ -1,23 +1,58 @@
-﻿@{
+﻿@model List<ApplicationUser>
+@using Microsoft.AspNet.Identity;
+@using Isa2017Cinema.Models;
+@{
     ViewBag.Title = "Home Page";
+
+    bool enableFanzoneOptions = true;
+    if (User.IsInRole("Fanzone_Admin"))
+    {
+        using (var ctx = new ApplicationDbContext())
+        {
+            var resUsr = ctx.Database.SqlQuery<FanZoneAdmin>("select * from AspNetUsers where id = '" + User.Identity.GetUserId() + "'").FirstOrDefault();
+            if (resUsr != null)
+            {
+                if (!resUsr.HasSetPassword)
+                {
+                    enableFanzoneOptions = false;
+                }
+            }
+            else
+            {
+                enableFanzoneOptions = false;
+            }
+        }
+    }
 }
-@using Isa2017Cinema.Models
-@model List<ApplicationUser>
 <br />
-<div class="jumbotron" style="background-color: transparent">
-    <a href="@Url.Action("ShowCinemas", "App")">
+@if (enableFanzoneOptions)
+{
+    <div class="jumbotron" style="background-color: transparent">
+        <a href="@Url.Action("ShowCinemas", "App")">
 
-        <img src="~/images/cinema.jpg"  width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
-    </a>
-    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  </label>
-    <a href="@Url.Action("ShowTheatres", "App")">
-        <img src="~/images/theater.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white"/>
-    </a>    
-    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
-     <label style="color:white">Cinemas</label>
-    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
-    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
-    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+            <img src="~/images/cinema.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
+        </a>
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  </label>
+        <a href="@Url.Action("ShowTheatres", "App")">
+            <img src="~/images/theater.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
+        </a>
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+        <label style="color:white">Cinemas</label>
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
 
-    <label style="color:white">Theatres</label>
-</div>
+        <label style="color:white">Theatres</label>
+    </div>
+}
+else
+{
+    <h2>Welcome new Fanzone Administrator! <br> As this is your first login, please change your password at the link below:</h2>
+    <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
+}
+@if (TempData["success"] != null)
+{
+    <div id="IndexSuccessMessage" class="row">
+        <h3>@TempData["success"]</h3>
+    </div>
+}

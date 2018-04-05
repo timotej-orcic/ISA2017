@@ -1,6 +1,4 @@
 ﻿using Isa2017Cinema.Models;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System;
 
 namespace WebApplication2.Models
 {

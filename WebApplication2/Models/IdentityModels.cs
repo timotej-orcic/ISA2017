@@ -7,8 +7,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using WebApplication2.Models;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Isa2017Cinema.Models
 {
@@ -18,16 +16,17 @@ namespace Isa2017Cinema.Models
     
     public class ApplicationUser : IdentityUser
     {
-        public String Name { get; set; }
-        public String LastName { get; set; }
-        public String Password { get; set; }
-        public String City { get; set; }
-        public Double Points { get; set; }
+        public string Name { get; set; }
+        public string LastName { get; set; }
+        public string Password { get; set; }
+        public string City { get; set; }
+        public double Points { get; set; }
         public Type UserType { get; set; }
         public List<ApplicationUser> FriendList { get; set; }
         public List<ApplicationUser> RequestsUserNames { get; set; }
         public List<Ticket> ReservationsList { get; set; }
         public List<Recension> RecensionList { get; set; }
+        public List<ThemeRequisit> ReservedRequisitsList { get; set; }
         public List<Post> PostsList { get; set; }
         public List<Request> RequestsList { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
@@ -55,6 +54,9 @@ namespace Isa2017Cinema.Models
         public DbSet<Hall> Halls { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Points> DiscountPoints { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<ThemeRequisit> ThemeRequisits { get; set; }
+        public DbSet<FanZone> Fanzone { get; set; }
         protected override void OnModelCreating(DbModelBuilder mb)
         {
             base.OnModelCreating(mb);

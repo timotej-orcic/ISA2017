@@ -87,10 +87,7 @@ namespace Isa2017Cinema.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    RedirectToRouteResult retRes = RedirectToAction("Index", "Home");
-                    if (UserManager.IsInRole(user.Id, "System_Admin"))
-                        retRes = RedirectToAction("AdminPage", "System_Admin");
-                    return retRes;
+                    return RedirectToAction("Index", "Home");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:

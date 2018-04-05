@@ -1,6 +1,5 @@
-﻿
-using Isa2017Cinema.Models;
-using System;
+﻿using Isa2017Cinema.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication2.Models
@@ -12,9 +11,6 @@ namespace WebApplication2.Models
 
         [Required(ErrorMessage = "The location admin is required")]
         public string Location_Admin_Id { get; set; }
-
-        [Required(ErrorMessage = "The fanzone admin is required")]
-        public string FanZone_Admin_Id { get; set; }
 
         [Required(ErrorMessage = "The location name is required")]
         [MaxLength(20)]

@@ -4,6 +4,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebApplication2.Models;
@@ -12,20 +14,6 @@ namespace WebApplication2.Controllers
 {
     public class System_AdminController : Controller
     {
-        // GET: System_Admin/AdminPage
-        public ActionResult AdminPage()
-        {
-            if (!Request.IsAuthenticated)
-                return RedirectToAction("Login", "Account");
-            else
-            {
-                if (!User.IsInRole("System_Admin"))
-                    return RedirectToAction("Index", "Home");
-                else
-                    return View();
-            }
-        }
-
         // GET: System_Admin/AddNewAdmin
         public ActionResult AddNewAdmin()
         {
@@ -102,8 +90,8 @@ namespace WebApplication2.Controllers
                                 LastName = adminVM.LastName,
                                 Email = adminVM.Email,
                                 UserName = adminVM.UserName,
-                                MyFanzone = null,
-                                PendingPostsList = new List<Post>()
+                                PendingPostsList = new List<Post>(),
+                                HasSetPassword = false
                             };
                         }
                         else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
@@ -126,7 +114,8 @@ namespace WebApplication2.Controllers
                                 IdentityResult result;
                                 if (um.Users.FirstOrDefault(usr => usr.Email == newAdmin.Email) == null)
                                 {
-                                    result = await um.CreateAsync(newAdmin, RandomString());
+                                    string newPassword = RandomString();
+                                    result = await um.CreateAsync(newAdmin, newPassword);
                                     if (result.Succeeded)
                                     {
                                         if (adminVM.Admin_Type == AdminType.SYSTEM_ADMIN)
@@ -151,6 +140,33 @@ namespace WebApplication2.Controllers
                                                     ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Fanzone_Admin" + "' role failed with error(s): " + userResult.Errors);
                                                     return View("AddNewAdmin");
                                                 }
+                                                else
+                                                {
+                                                    //email to isaNS2017@gmail.com from the same address
+                                                    var fromAddress = new MailAddress("isaNS2017@gmail.com", "ISA NS");
+                                                    var toAddress = new MailAddress("isaNS2017@gmail.com", "ISA NS");
+                                                    string fromPassword = "isa2017_123";
+                                                    string subject = "Welcome to ISA2017 Cinemas";
+                                                    string body = "Hello new Fanzone admin!" + System.Environment.NewLine + "Your sign-in credentials are:" + System.Environment.NewLine + "Email: " + adminVM.Email + System.Environment.NewLine + "Password: " + newPassword;
+
+                                                    var smtp = new SmtpClient
+                                                    {
+                                                        Host = "smtp.gmail.com",
+                                                        Port = 587,
+                                                        EnableSsl = true,
+                                                        DeliveryMethod = SmtpDeliveryMethod.Network,
+                                                        UseDefaultCredentials = false,
+                                                        Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+                                                    };
+                                                    using (var message = new MailMessage(fromAddress, toAddress)
+                                                    {
+                                                        Subject = subject,
+                                                        Body = body
+                                                    })
+                                                    {
+                                                        smtp.Send(message);
+                                                    }
+                                                }                                                
                                             }
                                         }
                                         else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
@@ -192,7 +208,7 @@ namespace WebApplication2.Controllers
                     }
 
                     TempData["success"] = "Succesfully added a new: " + adminVM.Admin_Type.ToString();
-                    return View("AdminPage");
+                    return RedirectToAction("Index", "Home");
                 }
             }            
         }
@@ -207,7 +223,7 @@ namespace WebApplication2.Controllers
                     return RedirectToAction("Index", "Home");
                 else
                 {
-                    if (locationVM.Name != null && locationVM.Address != null && locationVM.Location_Admin_Id != null && locationVM.FanZone_Admin_Id != null)
+                    if (locationVM.Name != null && locationVM.Address != null && locationVM.Location_Admin_Id != null)
                     {
                         if (locationVM.Location_Type == LocationType.CINEMA || locationVM.Location_Type == LocationType.THEATRE)
                         {
@@ -242,8 +258,7 @@ namespace WebApplication2.Controllers
                                     DiscountedTicketsList = new List<Ticket>(),
                                     ProjectionsList = new List<Projection>(),
                                     HallsList = new List<Hall>(),
-                                    RecensionsList = new List<Recension>(),
-                                    LocationFanZone = new FanZone { RequisitsList = new List<ThemeRequisit>(), PostsList = new List<Post>() }
+                                    RecensionsList = new List<Recension>()
                                 };
 
                                 ctx.Locations.Add(newLocation);
@@ -254,15 +269,6 @@ namespace WebApplication2.Controllers
                                 else
                                 {
                                     ModelState.AddModelError("", "Error: location admin not found.");
-                                    return View("RegisterNewLocation");
-                                }
-
-                                FanZoneAdmin fzAdmin = (FanZoneAdmin)ctx.Users.FirstOrDefault(x => x.Id == locationVM.FanZone_Admin_Id);
-                                if (fzAdmin != null)
-                                    fzAdmin.MyFanzone = newLocation.LocationFanZone;
-                                else
-                                {
-                                    ModelState.AddModelError("", "Error: fanzone admin not found.");
                                     return View("RegisterNewLocation");
                                 }
 
@@ -287,7 +293,7 @@ namespace WebApplication2.Controllers
                     }
 
                     TempData["success"] = "Succesfully added a new: " + locationVM.Location_Type.ToString();
-                    return View("AdminPage");
+                    return RedirectToAction("Index", "Home");
                 }
             }           
         }
@@ -336,7 +342,7 @@ namespace WebApplication2.Controllers
                     ctx.SaveChanges();
 
                     TempData["success"] = "Succesfully updated the points scale";
-                    return View("AdminPage");
+                    return RedirectToAction("Index", "Home");
                 }
             }            
         }

@@ -1,4 +1,27 @@
-﻿@if (Request.IsAuthenticated)
+﻿@using Microsoft.AspNet.Identity;
+@using Isa2017Cinema.Models;
+@{
+    bool enableFanzoneOptions = true;
+    if (User.IsInRole("Fanzone_Admin"))
+    {
+        using (var ctx = new ApplicationDbContext())
+        {
+            var resUsr = ctx.Database.SqlQuery<FanZoneAdmin>("select * from AspNetUsers where id = '" + User.Identity.GetUserId() + "'").FirstOrDefault();
+            if (resUsr != null)
+            {
+                if (!resUsr.HasSetPassword)
+                {
+                    enableFanzoneOptions = false;
+                }
+            }
+            else
+            {
+                enableFanzoneOptions = false;
+            }
+        }
+    }
+}
+@if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
@@ -8,6 +31,7 @@
         {
             <ul class="nav navbar-nav navbar-right">
                 <li>@Html.ActionLink("Friends", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("Fanzone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Fanzone" })</li>
                 <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
                 <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
             </ul>
@@ -21,6 +45,24 @@
                 <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
                 <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
             </ul>
+        }
+        else if (User.IsInRole("Fanzone_Admin"))
+        {
+            if (enableFanzoneOptions)
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li>@Html.ActionLink("Manage theme requisits", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Manage theme requisits" })</li>
+                    <li>@Html.ActionLink("Manage user offers", "ManageUserOffers", "FanZone", routeValues: null, htmlAttributes: new { title = "Manage user offers" })</li>
+                    <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                </ul>
+            }
+            else
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                </ul>
+            }
         }
     }
 }
