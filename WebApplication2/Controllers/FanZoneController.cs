@@ -34,10 +34,11 @@ namespace WebApplication2.Controllers
                 return RedirectToAction("Login", "Account");
             else
             {
-                if (!User.IsInRole("Fanzone_Admin"))
-                    return RedirectToAction("Index", "Home");
-                else
+                /*if (!User.IsInRole("Fanzone_Admin"))
+                    return RedirectToAction("Index", "Home");*/
+                if (User.IsInRole("Fanzone_Admin") || User.IsInRole("Location_Admin"))
                     return View();
+                else return RedirectToAction("Index", "Home");
             }
         }
 
@@ -118,7 +119,7 @@ namespace WebApplication2.Controllers
                 return RedirectToAction("Login", "Account");
             else
             {
-                if (!User.IsInRole("Fanzone_Admin"))
+                if (!User.IsInRole("Fanzone_Admin") && !User.IsInRole("Location_Admin"))
                     return RedirectToAction("Index", "Home");
                 else
                 {

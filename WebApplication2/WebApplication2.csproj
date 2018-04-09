@@ -247,6 +247,7 @@
     <Content Include="images\back2.jpg" />
     <Content Include="images\background.jpg" />
     <Content Include="images\cinema.jpg" />
+    <Content Include="images\pirati.jpg" />
     <Content Include="images\placeholder4.png" />
     <Content Include="images\theater.jpg" />
     <Content Include="Scripts\ai.0.22.9-build00167.js" />
@@ -318,6 +319,10 @@
     <Content Include="Views\Location\ChangeLocation.cshtml" />
     <Content Include="Views\Location\ChangeProjection.cshtml" />
     <Content Include="Views\Location\ChangeNameProjection.cshtml" />
+    <Content Include="Views\Location\ChangeGenreProjection.cshtml" />
+    <Content Include="Views\Location\ChangeDirectorProjection.cshtml" />
+    <Content Include="Views\Location\ChangeDescriptionProjection.cshtml" />
+    <Content Include="Views\Location\ChangeDurationProjection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

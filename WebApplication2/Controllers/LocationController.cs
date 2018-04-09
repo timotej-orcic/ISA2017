@@ -130,5 +130,218 @@ namespace WebApplication2.Controllers
             dbCtx.SaveChanges();
             return View("ChangeProjection", projectionForEdit);
         }
+
+        public ActionResult ChangeGenreProjection(Guid projekcija)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = projectionForEdit.Id,
+                Field = projectionForEdit.Genre
+            };
+            return View("ChangeGenreProjection", vm);
+        }
+
+        public ActionResult EditGenreProjection(ChangeProjectionViewModel model)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        p.Genre = model.Field;
+                        projectionForEdit = p;
+                    }
+                }
+            }
+
+            /* */
+
+            dbCtx.SaveChanges();
+            return View("ChangeProjection", projectionForEdit);
+        }
+        public ActionResult ChangeDirectorProjection(Guid projekcija)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = projectionForEdit.Id,
+                Field = projectionForEdit.DirectorName
+            };
+            return View("ChangeDirectorProjection", vm);
+        }
+
+        public ActionResult EditDirectorProjection(ChangeProjectionViewModel model)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        p.DirectorName = model.Field;
+                        projectionForEdit = p;
+                    }
+                }
+            }
+
+            /* */
+
+            dbCtx.SaveChanges();
+            return View("ChangeProjection", projectionForEdit);
+        }
+        //GET
+        public ActionResult ChangeDescriptionProjection(Guid projekcija)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = projectionForEdit.Id,
+                Field = projectionForEdit.Description
+            };
+            return View("ChangeDescriptionProjection", vm);
+        }
+        //POST
+        public ActionResult EditDescriptionProjection(ChangeProjectionViewModel model)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        p.Description = model.Field;
+                        projectionForEdit = p;
+                    }
+                }
+            }
+
+            dbCtx.SaveChanges();
+            return View("ChangeProjection", projectionForEdit);
+        }
+        public ActionResult ChangeDurationProjection(Guid projekcija)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = projectionForEdit.Id,
+                Field = projectionForEdit.DurationTime.ToString()
+            };
+            return View("ChangeDurationProjection", vm);
+        }
+        //POST
+        public ActionResult EditDurationProjection(ChangeProjectionViewModel model)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        int duration = -2;
+                        int.TryParse(model.Field, out duration);
+                        if(duration == 0)
+                        {
+                            ModelState.AddModelError("", "Duration can not be empty and must contains only numbers.");
+                            return View("ChangeProjection", projectionForEdit);
+                        }
+                        p.DurationTime = duration;
+                        projectionForEdit = p;
+                    }
+                }
+            }
+
+            dbCtx.SaveChanges();
+            return View("ChangeProjection", projectionForEdit);
+        }
     }
 }

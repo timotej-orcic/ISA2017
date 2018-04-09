@@ -23,12 +23,32 @@
             }
         }
     }
+    bool enableLocationOptions = true;
+   /* if (User.IsInRole("Location_Admin"))
+    {
+        using (var ctx = new ApplicationDbContext())
+        {
+            var resUsr = ctx.Database.SqlQuery<LocationAdmin>("select * from AspNetUsers where id = '" + User.Identity.GetUserId() + "'").FirstOrDefault();
+            if (resUsr != null)
+            {
+                if (!resUsr.HasSetPassword)
+                {
+                    enableLocationOptions = false;
+                }
+            }
+            else
+            {
+                enableLocationOptions = false;
+            }
+        }
+    }*/
+
 }
 <br />
 @{
-    if (enableFanzoneOptions)
+    if (enableFanzoneOptions && enableLocationOptions)
     {
-        if (User.IsInRole("Regular_User"))
+        if (User.IsInRole("Regular_User") || Request.IsAuthenticated==false)
         {
             <div class="jumbotron" style="background-color: transparent">
                 <a href="@Url.Action("ShowCinemas", "App")">
@@ -49,9 +69,14 @@
             </div>
         }
     }
-    else
+    else if(enableFanzoneOptions == false)
     {
         <h2>Welcome new Fanzone Administrator! <br> As this is your first login, please change your password at the link below:</h2>
+        <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
+    }
+    else if (enableLocationOptions == false)
+    {
+        <h2>Welcome new Location Administrator! <br> As this is your first login, please change your password at the link below:</h2>
         <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
     }
 }

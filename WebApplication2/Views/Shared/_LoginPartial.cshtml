@@ -20,6 +20,25 @@
             }
         }
     }
+    bool enableLocationOptions = true;
+   /* if (User.IsInRole("Location_Admin"))
+    {
+        using (var ctx = new ApplicationDbContext())
+        {
+            var resUsr = ctx.Database.SqlQuery<LocationAdmin>("select * from AspNetUsers where id = '" + User.Identity.GetUserId() + "'").FirstOrDefault();
+            if (resUsr != null)
+            {
+                if (!resUsr.HasSetPassword)
+                {
+                    enableLocationOptions = false;
+                }
+            }
+            else
+            {
+                enableLocationOptions = false;
+            }
+        }
+    }*/
 }
 @if (Request.IsAuthenticated)
 {
@@ -37,9 +56,12 @@
         }
         else if (User.IsInRole("Location_Admin"))
         {
-            <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("Change my location properties", "ChangeLocation", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
-            </ul>
+            if (enableLocationOptions)
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li>@Html.ActionLink("Change my location properties", "ChangeLocation", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
+                </ul>
+            }
         }
         else if (User.IsInRole("System_Admin"))
         {
@@ -58,6 +80,7 @@
                 <li>@Html.ActionLink("Manage user offers", "ManageUserOffers", "FanZone", routeValues: null, htmlAttributes: new { title = "Manage user offers" })</li>
             </ul>
             }
+
 
         }
             <ul class="nav navbar-nav navbar-right">
