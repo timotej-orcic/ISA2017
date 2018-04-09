@@ -14,7 +14,7 @@
     <img src="~/images/placeholder4.png" align="middle" width="50" height="50" /> <input type="file" class="btn btn-default" />
     <h2 style="color:white; font-weight:bold; font-size: 14px">Description: @Model.Description [ @Html.ActionLink("Change", "ChangeDescriptionProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
     <h2 style="color:white; font-weight:bold; font-size: 14px">Duration time: @Model.DurationTime [ @Html.ActionLink("Change", "ChangeDurationProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
-    <h2 style="color:white; font-weight:bold; font-size: 14px">Ticket price: @Model.TicketPrice [ @Html.ActionLink("Change", "ChangePriceProjection") ] </h2>
+    <h2 style="color:white; font-weight:bold; font-size: 14px">Ticket price: @Model.TicketPrice [ @Html.ActionLink("Change", "ChangePriceProjection", "Location", new { projekcija = Model.Id }, null)) ] </h2>
 
 
 

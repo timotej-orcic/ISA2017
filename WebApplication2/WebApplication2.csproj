@@ -323,6 +323,8 @@
     <Content Include="Views\Location\ChangeDirectorProjection.cshtml" />
     <Content Include="Views\Location\ChangeDescriptionProjection.cshtml" />
     <Content Include="Views\Location\ChangeDurationProjection.cshtml" />
+    <Content Include="Views\Location\ChangePriceProjection.cshtml" />
+    <Content Include="Views\Location\ChangeNameLocation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

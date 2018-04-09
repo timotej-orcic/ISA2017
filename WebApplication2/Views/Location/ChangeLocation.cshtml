@@ -6,7 +6,7 @@
 <br />
 <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
     <div style="background-color:gray">
-        <h2 style="color:white">@Model.Name</h2>
+        <h2 style="color:white">@Model.Name [ @Html.ActionLink("Change", "ChangeNameLocation", "Location", new { idLocation = Model.Id }, null) ]</h2>
     </div>
     <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
 

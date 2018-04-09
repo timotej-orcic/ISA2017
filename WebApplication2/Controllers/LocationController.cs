@@ -36,8 +36,7 @@ namespace WebApplication2.Controllers
                     locationToShow = loc;
                 }
             }
-            ViewBag.locc = "dasdas";
-            locationToShow.ProjectionsList = projections;
+           locationToShow.ProjectionsList = projections;
             return View("ChangeLocation", locationToShow);
 
         }
@@ -77,7 +76,56 @@ namespace WebApplication2.Controllers
             }
             return View("ChangeProjection", projectionForEdit);
         }
-        
+        public ActionResult ChangeNameLocation(Guid idLocation)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
+
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(idLocation))
+                {
+                    locationForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = locationForEdit.Id,
+                Field = locationForEdit.Name
+            };
+            return View("ChangeNameLocation", vm);
+        }
+
+        public ActionResult EditNameLocation(ChangeProjectionViewModel model)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
+
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        p.Name = model.Field;
+                        locationForEdit = p;
+                    }
+                }
+            }
+
+            /* */
+            dbCtx.SaveChanges();
+            return ChangeLocation();
+        }
         public ActionResult ChangeNameProjection(Guid projekcija)
         {
             List<Projection> allProjections = new List<Projection>();
@@ -335,6 +383,63 @@ namespace WebApplication2.Controllers
                             return View("ChangeProjection", projectionForEdit);
                         }
                         p.DurationTime = duration;
+                        projectionForEdit = p;
+                    }
+                }
+            }
+
+            dbCtx.SaveChanges();
+            return View("ChangeProjection", projectionForEdit);
+        }
+        public ActionResult ChangePriceProjection(Guid projekcija)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = projectionForEdit.Id,
+                Field = projectionForEdit.TicketPrice.ToString()
+            };
+            return View("ChangePriceProjection", vm);
+        }
+        //POST
+        public ActionResult EditPriceProjection(ChangeProjectionViewModel model)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        double price = -2;
+                        double.TryParse(model.Field, out price);
+                        if (price == 0)
+                        {
+                            ModelState.AddModelError("", "Duration can not be empty and must contains only numbers.");
+                            return View("ChangeProjection", projectionForEdit);
+                        }
+                        p.TicketPrice = price;
                         projectionForEdit = p;
                     }
                 }
