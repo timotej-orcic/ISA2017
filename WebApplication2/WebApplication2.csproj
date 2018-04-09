@@ -201,6 +201,7 @@
     <Compile Include="Controllers\FriendsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\CinemaController.cs" />
+    <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\System_AdminController.cs" />
     <Compile Include="Global.asax.cs">
@@ -314,11 +315,13 @@
     <Content Include="Views\FanZone\FirstLoginPasswordChange.cshtml" />
     <Content Include="Views\FanZone\AddNewThemeRequisit.cshtml" />
     <Content Include="Views\FanZone\EditThemeRequisit.cshtml" />
+    <Content Include="Views\Location\ChangeLocation.cshtml" />
+    <Content Include="Views\Location\ChangeProjection.cshtml" />
+    <Content Include="Views\Location\ChangeNameProjection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\themeRequisits\" />
-    <Folder Include="Views\Location\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

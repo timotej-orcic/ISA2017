@@ -25,30 +25,35 @@
     }
 }
 <br />
-@if (enableFanzoneOptions)
-{
-    <div class="jumbotron" style="background-color: transparent">
-        <a href="@Url.Action("ShowCinemas", "App")">
+@{
+    if (enableFanzoneOptions)
+    {
+        if (User.IsInRole("Regular_User"))
+        {
+            <div class="jumbotron" style="background-color: transparent">
+                <a href="@Url.Action("ShowCinemas", "App")">
 
-            <img src="~/images/cinema.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
-        </a>
-        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  </label>
-        <a href="@Url.Action("ShowTheatres", "App")">
-            <img src="~/images/theater.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
-        </a>
-        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
-        <label style="color:white">Cinemas</label>
-        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
-        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
-        <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+                    <img src="~/images/cinema.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
+                </a>
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  </label>
+                <a href="@Url.Action("ShowTheatres", "App")">
+                    <img src="~/images/theater.jpg" width="470" height="300" style="white-space:nowrap; border-width:medium;border:solid; border-color:white" />
+                </a>
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+                <label style="color:white">Cinemas</label>
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;   </label>
 
-        <label style="color:white">Theatres</label>
-    </div>
-}
-else
-{
-    <h2>Welcome new Fanzone Administrator! <br> As this is your first login, please change your password at the link below:</h2>
-    <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
+                <label style="color:white">Theatres</label>
+            </div>
+        }
+    }
+    else
+    {
+        <h2>Welcome new Fanzone Administrator! <br> As this is your first login, please change your password at the link below:</h2>
+        <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
+    }
 }
 @if (TempData["success"] != null)
 {

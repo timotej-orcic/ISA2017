@@ -1,0 +1,19 @@
+﻿@model Isa2017Cinema.Models.Projection
+@{
+    ViewBag.Title = "ChangeProjection";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+    <div style="background-color:gray">
+        <h2 style="color:white">@Model.Name [ @Html.ActionLink("Change", "ChangeNameProjection","Location",new { projekcija = Model.Id },null) ]</h2>
+    </div>
+    <h2 style="font-weight:bold;color:white;font-size: 14px">Genre: @Model.Genre [ @Html.ActionLink("Change", "ChangeGenreProjection") ]</h2>  
+    <h2 style="color:white; font-weight:bold; font-size: 14px">Name of Director: @Model.DirectorName [ @Html.ActionLink("Change", "ChangeDirectorProjection") ] </h2>
+    <img src="~/images/placeholder4.png" width="30" height="30" /> <input type="file" class="btn btn-default" />
+
+    <br />
+
+</div>
+
