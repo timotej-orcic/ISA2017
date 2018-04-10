@@ -64,8 +64,7 @@ namespace WebApplication2.Controllers
                 }
                 else if (model.FirstName == null && model.LastName == null)
                 {
-                    ModelState.AddModelError("", "You didn't type nothing.");
-                    return View("ShowFriends");
+                    usersToShow.Add(regUser);
                 }
             }
             List<ApplicationUser> pendinglist = new List<ApplicationUser>();
@@ -140,8 +139,7 @@ namespace WebApplication2.Controllers
                 }
                 else if (name == null && lastname == null)
                 {
-                    ModelState.AddModelError("", "You didn't type nothing.");
-                    return View("ShowFriends");
+                    usersToShow.Add(regUser);
                 }
             }
             List<ApplicationUser> pendinglist = new List<ApplicationUser>();
@@ -168,6 +166,7 @@ namespace WebApplication2.Controllers
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             String id = User.Identity.GetUserId();
             var user = await ctx.Users.Include(x => x.FriendList).FirstOrDefaultAsync(x => x.Id == id);
+
             Console.WriteLine(username);
             var users = ctx.Users.ToList();
             ApplicationUser forRemove = new ApplicationUser();
@@ -201,8 +200,7 @@ namespace WebApplication2.Controllers
                 }
                 else if (name == null && lastname == null)
                 {
-                    ModelState.AddModelError("", "You didn't type nothing.");
-                    return View("ShowFriends");
+                    usersToShow.Add(regUser);
                 }
             }
             FriendsViewModel model = new FriendsViewModel

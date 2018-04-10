@@ -96,6 +96,17 @@ namespace WebApplication2.Controllers
                         }
                         else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
                         {
+                            List<Location> retVal = new List<Location>();
+                            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+                            retVal = dbCtx.Locations.ToList();
+                            Location lokacija = new Location();
+                            foreach(Location loc in dbCtx.Locations)
+                            {
+                                if (loc.Name.Equals("Arena Cineplex"))
+                                {
+                                    lokacija = loc;
+                                }
+                            }
                             newAdmin = new LocationAdmin
                             {
                                 Admin_Type = adminVM.Admin_Type,
@@ -103,7 +114,7 @@ namespace WebApplication2.Controllers
                                 LastName = adminVM.LastName,
                                 Email = adminVM.Email,
                                 UserName = adminVM.UserName,
-                                MyLocation = null
+                                MyLocation = lokacija.Id
                             };
                         }
 
@@ -114,7 +125,7 @@ namespace WebApplication2.Controllers
                                 IdentityResult result;
                                 if (um.Users.FirstOrDefault(usr => usr.Email == newAdmin.Email) == null)
                                 {
-                                    string newPassword = RandomString();
+                                    string newPassword = "defaultPassword1!";
                                     result = await um.CreateAsync(newAdmin, newPassword);
                                     if (result.Succeeded)
                                     {
@@ -264,8 +275,8 @@ namespace WebApplication2.Controllers
                                 ctx.Locations.Add(newLocation);
 
                                 LocationAdmin locAdmin = (LocationAdmin)ctx.Users.FirstOrDefault(x => x.Id == locationVM.Location_Admin_Id);
-                                if (locAdmin != null)
-                                    locAdmin.MyLocation = newLocation;
+                                if (locAdmin != null) { }
+                                //  locAdmin.MyLocation = newLocation;
                                 else
                                 {
                                     ModelState.AddModelError("", "Error: location admin not found.");

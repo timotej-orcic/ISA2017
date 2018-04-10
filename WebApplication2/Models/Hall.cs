@@ -10,6 +10,7 @@ namespace Isa2017Cinema.Models
         public Location ParentLocation { get; set; }
         public int RowsCount { get; set; }
         public int ColsCount { get; set; }
+        public bool A { get; set; }
         public List<List<SeatType>> SeatsList { get; set; }
     }
 }

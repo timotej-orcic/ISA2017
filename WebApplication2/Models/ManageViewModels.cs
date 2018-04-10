@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using System;
 
 namespace Isa2017Cinema.Models
 {
@@ -76,6 +77,12 @@ namespace Isa2017Cinema.Models
     }
     public class ChangeFieldViewModel
     {
+        public string Field { get; set; }
+
+    }
+    public class ChangeProjectionViewModel
+    {
+        public Guid Id { get; set; }
         public string Field { get; set; }
 
     }

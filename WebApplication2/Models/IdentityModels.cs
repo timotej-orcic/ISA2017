@@ -52,7 +52,9 @@ namespace Isa2017Cinema.Models
         }
 
         public DbSet<Hall> Halls { get; set; }
+        public DbSet<Projection> Projections { get; set; }
         public DbSet<Location> Locations { get; set; }
+        
         public DbSet<Points> DiscountPoints { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<ThemeRequisit> ThemeRequisits { get; set; }
@@ -111,6 +113,33 @@ namespace Isa2017Cinema.Models
                     }
                 }
             }
+           /*using (var um = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+            {
+                IdentityResult locAdmin;
+                if (um.Users.FirstOrDefault(usr => usr.Email == "loc.admin@isa.com") == null)
+                {
+                    LocationAdmin lAdmin = new LocationAdmin
+                    {
+                        Admin_Type = AdminType.LOCATION_ADMIN,
+                        Name = "Admin",
+                        LastName = "Location",
+                        Email = "location.admin@isa.com",
+                        UserName = "AdminLocation", 
+                        MyLocation = "Arena Cineplex"
+
+                    };
+                    locAdmin = await um.CreateAsync(lAdmin, "LAdmin123!");
+                    if (locAdmin.Succeeded)
+                    {
+                        if (!um.IsInRole(lAdmin.Id, "Location_Admin"))
+                        {
+                            var userResult = um.AddToRole(lAdmin.Id, "Location_Admin");
+                            if (!userResult.Succeeded)
+                                throw new ApplicationException("Adding user '" + lAdmin.Id + "' to '" + "Location_Admin" + "' role failed with error(s): " + userResult.Errors);
+                        }
+                    }
+                }
+            }*/
         }
     }
 }

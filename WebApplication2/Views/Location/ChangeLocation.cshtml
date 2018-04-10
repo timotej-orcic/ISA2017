@@ -1,0 +1,47 @@
+﻿@model Isa2017Cinema.Models.Location
+@{
+    ViewBag.Title = "ChangeLocation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+    <div style="background-color:gray">
+        <h2 style="color:white">@Model.Name [ @Html.ActionLink("Change", "ChangeNameLocation", "Location", new { idLocation = Model.Id }, null) ]</h2>
+    </div>
+    <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
+
+    <a href="https://maps.google.com/?q=58250 @Model.Address">
+        <h3 style="color:white;font-size: 14px"> @Model.Address</h3>
+    </a>
+
+    <label style="color:white; font-weight:bold; font-size: 14px">Description:  </label>
+
+    <label style="color:white; font-size: 14px"> @Model.Description </label>
+    <br/>
+    <input type="button" class="btn btn-basic" value="Add projection" onclick="location.href='@Url.Action("AddProjection", "Location",new { name = @Model.Name , id = @Model.Id})'" />
+
+</div>
+
+<br />
+<div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+    <h2 style="color:white">Projekcije: </h2>
+</div>
+    <br />
+    @foreach (var l in Model.ProjectionsList)
+    {
+        <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+            <div style="background-color:gray">
+                <h2 style="color:white">@l.Name</h2>
+                
+            </div>
+                
+                <input type="button" class="btn btn-basic" value="Edit projection" onclick="location.href='@Url.Action("EditProjection", "Location",new { idProj = @l.Id})'" />
+                <input type="button" class="btn btn-basic" value="Delete projection" onclick="location.href='@Url.Action("DeleteProjection", "Location",new { idProj = @l.Id} )'" />
+                </div>
+        <br />
+    }
+
+
+
+
+
