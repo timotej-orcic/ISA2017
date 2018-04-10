@@ -1,6 +1,7 @@
 ﻿using Isa2017Cinema.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
@@ -37,17 +38,42 @@ namespace WebApplication2.Controllers
 
                     ViewBag.requisitsToShow = themeRequisits;
 
-                    if(User.IsInRole("Regular_User"))
+                    if (User.IsInRole("Regular_User"))
                     {
-                        List<Post> posts = new List<Post>();
+                        List<Post> allPosts = new List<Post>();
+                        List<Post> myPosts = new List<Post>();
                         using (var ctx = new ApplicationDbContext())
                         {
-                            var postsData = ctx.Posts;
-                            foreach (var p in postsData)
-                                posts.Add(p);
+                            string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                            var fzData = ctx.Fanzone.Include(x => x.PostsList).FirstOrDefault();
+                            foreach (var p in fzData.PostsList)
+                                allPosts.Add(p);
+
+                            string uID = User.Identity.GetUserId();
+                            var currentUser = ctx.Users.Include(x => x.PostsList).FirstOrDefault(x => x.Id.ToString() == uID);
+                            if (currentUser != null)
+                            {
+                                foreach (var p in currentUser.PostsList)
+                                    myPosts.Add(p);
+                            }
                         }
 
-                        ViewBag.postsToShow = posts;
+                        ViewBag.allPosts = allPosts;
+                        ViewBag.myPosts = myPosts;
+                    }
+                    else if (User.IsInRole("Fanzone_Admin"))
+                    {
+                        List<Post> unapprovedPosts = new List<Post>();
+                        using (var ctx = new ApplicationDbContext())
+                        {
+                            string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                            var fzData = ctx.Fanzone.Include(y => y.UnapprovedPostsList).FirstOrDefault();
+
+                            foreach (var p in fzData.UnapprovedPostsList)
+                                unapprovedPosts.Add(p);
+
+                            ViewBag.unapprovedPosts = unapprovedPosts;
+                        }
                     }
 
                     return View();
@@ -506,6 +532,128 @@ namespace WebApplication2.Controllers
                         return View("FanZonePage");
                     }
                 }
+            }
+        }
+
+        public async Task<ActionResult> AddPost(AddNewPostViewModel anpVM)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Regular_User"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    if(anpVM.Name != null && anpVM.Description != null && anpVM.BiddingDate != null)
+                    {
+                        if(anpVM.BiddingDate > DateTime.Now)
+                        {
+                            using (ApplicationDbContext ctx = new ApplicationDbContext())
+                            {
+                                string uID = User.Identity.GetUserId();
+                                var currentUser = await ctx.Users.Include(x => x.PostsList).FirstOrDefaultAsync(x => x.Id.ToString() == uID);
+
+                                if (currentUser != null)
+                                {
+                                    var searchPost = currentUser.PostsList.FirstOrDefault(x => x.Name == anpVM.Name);
+
+                                    if (searchPost == null)
+                                    {
+                                        string imgUrl = null;
+
+                                        if (anpVM.ImageUpload != null)
+                                        {
+                                            var validImageTypes = new string[]
+                                            {
+                                            "image/gif",
+                                            "image/jpeg",
+                                            "image/pjpeg",
+                                            "image/png"
+                                            };
+
+                                            if (validImageTypes.Contains(anpVM.ImageUpload.ContentType))
+                                            {
+                                                var uploadDir = "~/images/themeRequisits";
+                                                var imagePath = Path.Combine(Server.MapPath(uploadDir), anpVM.ImageUpload.FileName);
+                                                var imageUrl = Path.Combine(uploadDir, anpVM.ImageUpload.FileName);
+                                                anpVM.ImageUpload.SaveAs(imagePath);
+
+                                                imgUrl = imageUrl;
+                                            }
+                                            else
+                                            {
+                                                ModelState.AddModelError("", "Error: Unsuported image type.");
+                                                return View("AddNewPost");
+                                            }
+                                        }
+
+                                        Post newPost = new Post
+                                        {
+                                            Name = anpVM.Name,
+                                            Description = anpVM.Description,
+                                            OfferExpireDate = anpVM.BiddingDate,
+                                            ImageUrl = imgUrl,
+                                            IsChecked = false,
+                                            IsApproved = false,
+                                            LicitationsList = new List<Licitation>()
+                                        };
+
+                                        string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                                        var fanzone = await ctx.Fanzone.Include(x => x.UnapprovedPostsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
+                                        if (fanzone != null)
+                                        {
+                                            currentUser.PostsList.Add(newPost);
+                                            fanzone.UnapprovedPostsList.Add(newPost);
+                                            ctx.SaveChanges();
+
+                                            TempData["success"] = "Succesfully submitted a new post.";
+                                            return RedirectToAction("FanZonePage", "FanZone");
+                                        }
+                                        else
+                                        {
+                                            ModelState.AddModelError("", "Error: Can't load fanzone data.");
+                                            return View("AddNewPost");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ModelState.AddModelError("", "You already have a post with the same name. Plese use a different name for your new post.");
+                                        return View("AddNewPost");
+                                    }
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError("", "Error: Can't find the given user.");
+                                    return View("AddNewPost");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Warning: Some attributes are null.");
+                            return View("AddNewPost");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: Some attributes are null.");
+                        return View("AddNewPost");
+                    }
+                }
+            }
+        }
+
+        public async Task<ActionResult> ManagePost(string postID, string rowVersion)
+        {
+            if(postID != null && rowVersion != null)
+            {
+                //bookmarkovano u folderu Fax
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error: Some attributes are null.");
+                return View("FanZonePage");
             }
         }
 

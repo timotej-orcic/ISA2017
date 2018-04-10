@@ -11,10 +11,16 @@ namespace Isa2017Cinema.Models
         [Key]
         public Guid Id { get; set; }
 
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime OfferExpireDate { get; set; }
         public string ImageUrl { get; set; }
+        public bool IsTakenByAdmin { get; set; }
+        public bool IsChecked { get; set; }
+        public bool IsApproved { get; set; }
         public List<Licitation> LicitationsList { get; set; }
     }
 }
