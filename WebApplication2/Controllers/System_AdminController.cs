@@ -102,7 +102,7 @@ namespace WebApplication2.Controllers
                             Location lokacija = new Location();
                             foreach(Location loc in dbCtx.Locations)
                             {
-                                if (loc.Name.Equals("Arena Cineplex"))
+                                if (loc.Name.Equals("Arenice"))
                                 {
                                     lokacija = loc;
                                 }
