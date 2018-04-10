@@ -1,6 +1,7 @@
 ﻿using Isa2017Cinema.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.IO;
@@ -23,7 +24,34 @@ namespace WebApplication2.Controllers
                 if (!(User.IsInRole("Fanzone_Admin") || User.IsInRole("Regular_User")))
                     return RedirectToAction("Index", "Home");
                 else
+                {
+                    List<ThemeRequisit> themeRequisits = new List<ThemeRequisit>();
+                    using (var ctx = new ApplicationDbContext())
+                    {
+                        var reqs = ctx.Database.SqlQuery<ThemeRequisit>("select * from ThemeRequisits where ApplicationUser_Id is NULL");
+                        foreach (var req in reqs)
+                        {
+                            themeRequisits.Add(req);
+                        }
+                    }
+
+                    ViewBag.requisitsToShow = themeRequisits;
+
+                    if(User.IsInRole("Regular_User"))
+                    {
+                        List<Post> posts = new List<Post>();
+                        using (var ctx = new ApplicationDbContext())
+                        {
+                            var postsData = ctx.Posts;
+                            foreach (var p in postsData)
+                                posts.Add(p);
+                        }
+
+                        ViewBag.postsToShow = posts;
+                    }
+
                     return View();
+                }
             }
         }
 
@@ -109,6 +137,20 @@ namespace WebApplication2.Controllers
                         return View("FanZonePage");
                     }                    
                 }                    
+            }
+        }
+
+        // GET: FanZone/AddNewPost
+        public ActionResult AddNewPost()
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Regular_User"))
+                    return RedirectToAction("Index", "Home");
+                else
+                    return View();
             }
         }
 
@@ -411,17 +453,26 @@ namespace WebApplication2.Controllers
                                         else
                                         {
                                             resCnt++;
-                                            ThemeRequisit copyData = new ThemeRequisit()
-                                            {
-                                                Id = resReq.Id,
-                                                Name = resReq.Name,
-                                                AvailableCount = resCnt,
-                                                Description = resReq.Description,
-                                                ImageUrl = resReq.ImageUrl,
-                                                Price = resReq.Price
-                                            };
 
-                                            currentUser.ReservedRequisitsList.Add(copyData);
+                                            if (alreadyReservedCheck != null)
+                                            {
+                                                alreadyReservedCheck.AvailableCount = resCnt;
+                                            }
+                                            else
+                                            {
+                                                ThemeRequisit copyData = new ThemeRequisit()
+                                                {
+                                                    Id = resReq.Id,
+                                                    Name = resReq.Name,
+                                                    AvailableCount = resCnt,
+                                                    Description = resReq.Description,
+                                                    ImageUrl = resReq.ImageUrl,
+                                                    Price = resReq.Price
+                                                };
+
+                                                currentUser.ReservedRequisitsList.Add(copyData);
+                                            }
+
                                             resReq.AvailableCount--;
                                             ctx.SaveChanges();
 

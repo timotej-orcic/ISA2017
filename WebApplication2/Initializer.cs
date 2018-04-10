@@ -62,7 +62,6 @@ namespace Isa2017Cinema
                 ImageUrl = "~/images/placeholder4.png",
                 Price = 1000
             };
-
             context.ThemeRequisits.Add(thReq1);
 
             context.SaveChanges();

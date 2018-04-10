@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/themes/base/jquery-ui.min.css")
     @Scripts.Render("~/bundles/modernizr")
 
 
-    @Scripts.Render("~/Scripts/jquery-1.10.2.min.js")
+    @Scripts.Render("~/Scripts/jquery-1.12.4.min.js")
+    @Scripts.Render("~/Scripts/jquery-ui-1.12.1.min.js")
     @Scripts.Render("~/bundles/bootstrap")
     <style type="text/css">
         .bgimg{
@@ -50,7 +52,7 @@
     
 
 
-    @Scripts.Render("~/bundles/jquery")
+    <!--@Scripts.Render("~/bundles/jquery")-->
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

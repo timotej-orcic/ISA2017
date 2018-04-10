@@ -1,57 +1,112 @@
-﻿@using Isa2017Cinema.Models;
-@{
-    //prebaci sve u kontrolere!!!!!!
-    List<ThemeRequisit> themeRequisits = new List<ThemeRequisit>();
-    using (var ctx = new ApplicationDbContext())
+﻿<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'ThemeReqs')" id="defaultOpen">Theme requisits</button>
+    @if (User.IsInRole("Regular_User"))
     {
-        /*var reqs = ctx.Database.SqlQuery<ThemeRequisit>("select * from ");*/
-        var reqs = ctx.ThemeRequisits;
-        foreach (var req in reqs)
-        {
-            themeRequisits.Add(req);
-        }
+        <button class="tablinks" onclick="openTab(event, 'Posts')">Posts</button>
+    }
+</div>
+
+<div id="ThemeReqs" class="tabcontent">
+    <h2 style="color:white">Official offers:</h2>
+    @if (TempData["success"] != null)
+    {
+        <div id="IndexSuccessMessage" class="row">
+            <h3>@TempData["success"]</h3>
+        </div>
     }
 
-}
+    @if (User.IsInRole("Fanzone_Admin"))
+    {
+        <input type="button" class="btn btn-success" value="New" onclick="location.href='@Url.Action("AddNewThemeRequisit", "FanZone")'" />
+    }
+    <div style="position:relative">
+        @if (ViewBag.requisitsToShow.Count > 0)
+        {
+            foreach (var thReq in ViewBag.requisitsToShow)
+            {
+                <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                    <div style="background-color:gray">
+                        <h2 style="color:white">@thReq.Name</h2>
+                    </div>
+                    <h3 style="font-weight:bold;color:white;font-size: 14px">Price: @thReq.Price</h3>
 
-<h2 style="color:white">Official offers:</h2>
-@if (TempData["success"] != null)
+                    <label style="color:white; font-weight:bold; font-size: 14px">Available count: @thReq.AvailableCount</label>
+
+                    <img src=@Url.Content(@thReq.ImageUrl) height="32" width="32" />
+
+                    @if (User.IsInRole("Regular_User"))
+                    {
+                        <input type="button" class="btn btn-success" value="Reserve" onclick="location.href='@Url.Action("ReserveRequisit", "FanZone",new { reqID = @thReq.Id })'" />
+                    }
+                    else if (User.IsInRole("Fanzone_Admin"))
+                    {
+                        <input type="button" class="btn btn-success" value="Edit" onclick="location.href='@Url.Action("EditThemeRequisit", "FanZone",new { reqID = @thReq.Id })'" />
+                        <input type="button" class="btn btn-success" value="Delete" onclick="location.href='@Url.Action("DeleteRequisit", "FanZone",new { reqID = @thReq.Id })'" />
+                    }
+                </div>
+                <br />
+            }
+        }
+    </div>
+</div>
+
+@if (User.IsInRole("Regular_User"))
 {
-    <div id="IndexSuccessMessage" class="row">
-        <h3>@TempData["success"]</h3>
+    <div id="Posts" class="tabcontent">
+        <h2 style="color:white">User posts:</h2>
+        @if (TempData["success"] != null)
+        {
+            <div id="IndexSuccessMessage" class="row">
+                <h3>@TempData["success"]</h3>
+            </div>
+        }
+
+        <input type="button" class="btn btn-success" value="New" onclick="location.href='@Url.Action("AddNewPost", "FanZone")'" />
+
+        <div style="position:relative">
+            @if (ViewBag.postsToShow.Count > 0)
+            {
+                foreach (var post in ViewBag.postsToShow)
+                {
+                    <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                        <div style="background-color:gray">
+                            <h2 style="color:white">@post.Name</h2>
+                        </div>
+                        <h3 style="font-weight:bold;color:white;font-size: 14px">Price: @post.OfferExpireDate</h3>
+
+                        <img src=@Url.Content(@post.ImageUrl) height="32" width="32" />
+
+                        <input type="button" class="btn btn-success" value="Bid" onclick="location.href='@Url.Action("BidOnPost", "FanZone",new { postID = @post.Id })'" />
+
+                    </div>
+                    <br />
+                }
+            }
+        </div>
     </div>
 }
 
-@if (User.IsInRole("Fanzone_Admin"))
-{
-    <input type="button" class="btn btn-success" value="New" onclick="location.href='@Url.Action("AddNewThemeRequisit", "FanZone")'" />
-}
-<div style="overflow-y: scroll; position:relative">
-    @if (themeRequisits.Count > 0)
-    {
-        foreach (var thReq in themeRequisits)
-        {
-            <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
-                <div style="background-color:gray">
-                    <h2 style="color:white">@thReq.Name</h2>
-                </div>
-                <h3 style="font-weight:bold;color:white;font-size: 14px">Price: @thReq.Price</h3>
+<script>
+    document.getElementById("defaultOpen").click();
 
-                <label style="color:white; font-weight:bold; font-size: 14px">Available count: @thReq.AvailableCount</label>
+    function openTab(evt, tabName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
 
-                <img src=@Url.Content(@thReq.ImageUrl) height="32" width="32"/>
-
-                @if(User.IsInRole("Regular_User"))
-                {
-                    <input type="button" class="btn btn-success" value="Reserve" onclick="location.href='@Url.Action("ReserveRequisit", "FanZone",new { reqID = @thReq.Id })'" />
-                }
-                else if (User.IsInRole("Fanzone_Admin"))
-                {
-                    <input type="button" class="btn btn-success" value="Edit" onclick="location.href='@Url.Action("EditThemeRequisit", "FanZone",new { reqID = @thReq.Id })'" />
-                    <input type="button" class="btn btn-success" value="Delete" onclick="location.href='@Url.Action("DeleteRequisit", "FanZone",new { reqID = @thReq.Id })'" />
-                }
-            </div>
-            <br />
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
         }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
     }
-</div>
+</script>
