@@ -551,5 +551,6 @@ namespace WebApplication2.Controllers
             dbCtx.SaveChanges();
             return View("ChangeProjection", projectionForEdit);
         }
+       
     }
 }

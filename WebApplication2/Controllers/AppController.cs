@@ -84,7 +84,11 @@ namespace WebApplication2.Controllers
             }
             ViewBag.type = LocationType.CINEMA;
             ViewBag.locations = cinemas;
-            return View();
+            CinemaViewModel cvm = new CinemaViewModel
+            {
+                Type = LocationType.CINEMA
+            };
+            return View(cvm);
         }
 
         public ActionResult ShowTheatres()
@@ -105,7 +109,11 @@ namespace WebApplication2.Controllers
             }
             ViewBag.type = LocationType.THEATRE;
             ViewBag.locations = theatres;
-            return View("ShowCinemas");
+            CinemaViewModel cvm = new CinemaViewModel
+            {
+                Type = LocationType.THEATRE
+            };
+            return View("ShowCinemas",cvm);
         }
 
         public ActionResult getCinemas()
@@ -117,6 +125,113 @@ namespace WebApplication2.Controllers
             retVal = dbCtx.Locations.ToList();
 
             return View(retVal);
+        }
+
+        public ActionResult SortLocationsByName(String name, LocationType type)
+        {
+            if (type.Equals(LocationType.CINEMA))
+            {
+                ViewBag.Message = "Cinemas ";
+                List<Location> retVal = new List<Location>();
+
+                ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+
+                retVal = dbCtx.Locations.ToList();
+                List<Location> cinemas = new List<Location>();
+                foreach (Location loc in retVal)
+                {
+                    if (loc.LocType == LocationType.CINEMA)
+                    {
+                        cinemas.Add(loc);
+                    }
+                }
+                List<Location> SortedList = cinemas.OrderBy(o => o.Name).ToList();
+                ViewBag.type = LocationType.CINEMA;
+                ViewBag.locations = SortedList;
+                CinemaViewModel cvm = new CinemaViewModel
+                {
+                    Type = LocationType.CINEMA
+                };
+                return View("ShowCinemas", cvm);
+            }
+            else
+            {
+                ViewBag.Message = "Theatres :";
+                List<Location> retVal = new List<Location>();
+
+                ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+
+                retVal = dbCtx.Locations.ToList();
+                List<Location> theatres = new List<Location>();
+                foreach (Location loc in retVal)
+                {
+                    if (loc.LocType == LocationType.THEATRE)
+                    {
+                        theatres.Add(loc);
+                    }
+                }
+                List<Location> SortedList = theatres.OrderBy(o => o.Name).ToList();
+                ViewBag.type = LocationType.THEATRE;
+                ViewBag.locations = SortedList;
+                CinemaViewModel cvm = new CinemaViewModel
+                {
+                    Type = LocationType.THEATRE
+                };
+                return View("ShowCinemas", cvm);
+            }
+        }
+        public ActionResult SortLocationsByCity(String name, LocationType type)
+        {
+            if (type.Equals(LocationType.CINEMA))
+            {
+                ViewBag.Message = "Cinemas ";
+                List<Location> retVal = new List<Location>();
+
+                ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+
+                retVal = dbCtx.Locations.ToList();
+                List<Location> cinemas = new List<Location>();
+                foreach (Location loc in retVal)
+                {
+                    if (loc.LocType == LocationType.CINEMA)
+                    {
+                        cinemas.Add(loc);
+                    }
+                }
+                List<Location> SortedList = cinemas.OrderBy(o => o.Address).ToList();
+                ViewBag.type = LocationType.CINEMA;
+                ViewBag.locations = SortedList;
+                CinemaViewModel cvm = new CinemaViewModel
+                {
+                    Type = LocationType.CINEMA
+                };
+                return View("ShowCinemas", cvm);
+            }
+            else
+            {
+                ViewBag.Message = "Theatres :";
+                List<Location> retVal = new List<Location>();
+
+                ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+
+                retVal = dbCtx.Locations.ToList();
+                List<Location> theatres = new List<Location>();
+                foreach (Location loc in retVal)
+                {
+                    if (loc.LocType == LocationType.THEATRE)
+                    {
+                        theatres.Add(loc);
+                    }
+                }
+                List<Location> SortedList = theatres.OrderBy(o => o.Address).ToList();
+                ViewBag.type = LocationType.THEATRE;
+                ViewBag.locations = SortedList;
+                CinemaViewModel cvm = new CinemaViewModel
+                {
+                    Type = LocationType.THEATRE
+                };
+                return View("ShowCinemas", cvm);
+            }
         }
     }
 }

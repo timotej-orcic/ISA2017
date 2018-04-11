@@ -2,18 +2,24 @@
     <button class="tablinks" onclick="openTab(event, 'ThemeReqs')" id="defaultOpen">Theme requisits</button>
     @if (User.IsInRole("Regular_User"))
     {
-        <button class="tablinks" onclick="openTab(event, 'Posts')">Posts</button>
+        <button class="tablinks" onclick="openTab(event, 'All posts')">All posts</button>
+        <button class="tablinks" onclick="openTab(event, 'My posts')">My posts</button>
+    }
+    else if (User.IsInRole("Fanzone_Admin"))
+    {
+        <button class="tablinks" onclick="openTab(event, 'Unapproved posts')">Unapproved posts</button>
     }
 </div>
 
+@if (TempData["success"] != null)
+{
+    <div id="IndexSuccessMessage" class="row">
+        <h3>@TempData["success"]</h3>
+    </div>
+}
+
 <div id="ThemeReqs" class="tabcontent">
     <h2 style="color:white">Official offers:</h2>
-    @if (TempData["success"] != null)
-    {
-        <div id="IndexSuccessMessage" class="row">
-            <h3>@TempData["success"]</h3>
-        </div>
-    }
 
     @if (User.IsInRole("Fanzone_Admin"))
     {
@@ -52,29 +58,24 @@
 
 @if (User.IsInRole("Regular_User"))
 {
-    <div id="Posts" class="tabcontent">
-        <h2 style="color:white">User posts:</h2>
-        @if (TempData["success"] != null)
-        {
-            <div id="IndexSuccessMessage" class="row">
-                <h3>@TempData["success"]</h3>
-            </div>
-        }
-
-        <input type="button" class="btn btn-success" value="New" onclick="location.href='@Url.Action("AddNewPost", "FanZone")'" />
+    <div id="All posts" class="tabcontent">
+        <h2 style="color:white">All posts:</h2>
 
         <div style="position:relative">
-            @if (ViewBag.postsToShow.Count > 0)
+            @if (ViewBag.allPosts.Count > 0)
             {
-                foreach (var post in ViewBag.postsToShow)
+                foreach (var post in ViewBag.allPosts)
                 {
                     <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
                         <div style="background-color:gray">
                             <h2 style="color:white">@post.Name</h2>
                         </div>
-                        <h3 style="font-weight:bold;color:white;font-size: 14px">Price: @post.OfferExpireDate</h3>
+                        <h3 style="font-weight:bold;color:white;font-size: 14px">Offer expires: @post.OfferExpireDate</h3>
 
-                        <img src=@Url.Content(@post.ImageUrl) height="32" width="32" />
+                        @if (@post.ImageUrl != null)
+                        {
+                            <img src=@Url.Content(@post.ImageUrl) height="32" width="32" />
+                        }                        
 
                         <input type="button" class="btn btn-success" value="Bid" onclick="location.href='@Url.Action("BidOnPost", "FanZone",new { postID = @post.Id })'" />
 
@@ -84,7 +85,81 @@
             }
         </div>
     </div>
+    <div id="My posts" class="tabcontent">
+        <h2 style="color:white">My posts:</h2>
+
+        <input type="button" class="btn btn-success" value="New" onclick="location.href='@Url.Action("AddNewPost", "FanZone")'" />
+
+        <div style="position:relative">
+            @if (ViewBag.myPosts.Count > 0)
+            {
+                foreach (var post in ViewBag.myPosts)
+                {
+                    <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                        <div style="background-color:gray">
+                            <h2 style="color:white">@post.Name</h2>
+                        </div>
+                        <h3 style="font-weight:bold;color:white;font-size: 14px">Offer expires: @post.OfferExpireDate</h3>
+
+                        @if (@post.ImageUrl != null)
+                        {
+                            <img src=@Url.Content(@post.ImageUrl) height="64" width="64" />
+                        }
+
+                        @if (!@post.IsChecked)
+                        {
+                            <h3 style="font-weight:bold;color:yellow;font-size: 20px">WAITING FOR ADMIN CHECK</h3>
+                        }
+                        else
+                        {
+                            if (!@post.IsApproved)
+                            {
+                                <h3 style="font-weight:bold;color:red;font-size: 20px">DENIED BY ADMIN</h3>
+                                <input type="button" class="btn btn-success" value="Delete" onclick="location.href='@Url.Action("DeletePost", "FanZone", new { postID = @post.Id })'" />
+                            }
+                            else
+                            {
+                                <h3 style="font-weight:bold;color:green;font-size: 20px">APPROVED BY ADMIN</h3>
+                                <input type="button" class="btn btn-success" value="Check licitations" onclick="location.href='@Url.Action("CheckPostLicitations", "FanZone", new { postID = @post.Id })'" />
+                            }
+                        }                        
+                    </div>
+                    <br />
+                }
+            }
+        </div>
+    </div>
 }
+else if (User.IsInRole("Fanzone_Admin"))
+{
+    <div id="Unapproved posts" class="tabcontent">
+        <h2 style="color:white">Unapproved posts:</h2>
+
+        <div style="position:relative">
+            @if (ViewBag.unapprovedPosts.Count > 0)
+            {
+                foreach (var post in ViewBag.unapprovedPosts)
+                {
+                    <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                        <div style="background-color:gray">
+                            <h2 style="color:white">@post.Name</h2>
+                        </div>
+                        <h3 style="font-weight:bold;color:white;font-size: 14px">Offer expires: @post.OfferExpireDate</h3>
+
+                        @if (@post.ImageUrl != null)
+                        {
+                            <img src=@Url.Content(@post.ImageUrl) height="64" width="64" />
+                        }
+
+                        <input type="button" class="btn btn-success" value="Manage post" onclick="location.href='@Url.Action("ManagePost", "FanZone", new { postID = @post.Id, rowVersion = @post.RowVersion })'" />
+                    </div>
+                    <br />
+                }
+            }
+        </div>
+    </div>
+}
+
 
 <script>
     document.getElementById("defaultOpen").click();
