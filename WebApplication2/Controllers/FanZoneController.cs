@@ -644,7 +644,7 @@ namespace WebApplication2.Controllers
             }
         }
 
-        public async Task<ActionResult> ManagePost(string postID, string rowVersion)
+        /*public async Task<ActionResult> ManagePost(string postID, string rowVersion)
         {
             if(postID != null && rowVersion != null)
             {
@@ -655,7 +655,7 @@ namespace WebApplication2.Controllers
                 ModelState.AddModelError("", "Error: Some attributes are null.");
                 return View("FanZonePage");
             }
-        }
+        }*/
 
     }
 }
