@@ -98,6 +98,50 @@ namespace WebApplication2.Controllers
             return View("ChangeNameLocation", vm);
         }
 
+        public ActionResult ChangeAddressLocation(Guid idLocation)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
+
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(idLocation))
+                {
+                    locationForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = locationForEdit.Id,
+                Field = locationForEdit.Address
+            };
+            return View("ChangeAddressLocation", vm);
+        }
+
+        public ActionResult ChangeDescriptionLocation(Guid idLocation)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
+
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(idLocation))
+                {
+                    locationForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = locationForEdit.Id,
+                Field = locationForEdit.Description
+            };
+            return View("ChangeDescriptionLocation", vm);
+        }
+
         public ActionResult EditNameLocation(ChangeProjectionViewModel model)
         {
             List<Location> allLocations = new List<Location>();
@@ -126,6 +170,65 @@ namespace WebApplication2.Controllers
             dbCtx.SaveChanges();
             return ChangeLocation();
         }
+
+        public ActionResult EditAddressLocation(ChangeProjectionViewModel model)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
+            
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        p.Address = model.Field;
+                        locationForEdit = p;
+                    }
+                }
+            }
+
+            /* */
+            dbCtx.SaveChanges();
+            return ChangeLocation();
+        }
+
+        public ActionResult EditDescriptionLocation(ChangeProjectionViewModel model)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
+
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        p.Description = model.Field;
+                        locationForEdit = p;
+                    }
+                }
+            }
+
+            dbCtx.SaveChanges();
+            return ChangeLocation();
+        }
+
+
         public ActionResult ChangeNameProjection(Guid projekcija)
         {
             List<Projection> allProjections = new List<Projection>();

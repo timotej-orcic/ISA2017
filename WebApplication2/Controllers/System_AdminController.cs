@@ -78,7 +78,8 @@ namespace WebApplication2.Controllers
                                 LastName = adminVM.LastName,
                                 Email = adminVM.Email,
                                 UserName = adminVM.UserName,
-                                IsMainAdmin = false
+                                IsMainAdmin = false,
+                                HasSetPassword = true
                             };
                         }
                         else if (adminVM.Admin_Type == AdminType.FANZONE_ADMIN)
@@ -114,7 +115,8 @@ namespace WebApplication2.Controllers
                                 LastName = adminVM.LastName,
                                 Email = adminVM.Email,
                                 UserName = adminVM.UserName,
-                                MyLocation = lokacija.Id
+                                MyLocation = lokacija.Id,
+                                HasSetPassword = false
                             };
                         }
 

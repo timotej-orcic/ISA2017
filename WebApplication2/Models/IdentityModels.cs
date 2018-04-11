@@ -54,7 +54,7 @@ namespace Isa2017Cinema.Models
         public DbSet<Hall> Halls { get; set; }
         public DbSet<Projection> Projections { get; set; }
         public DbSet<Location> Locations { get; set; }
-        
+        public DbSet<Request> Requests { get; set; }
         public DbSet<Points> DiscountPoints { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<ThemeRequisit> ThemeRequisits { get; set; }
@@ -99,7 +99,7 @@ namespace Isa2017Cinema.Models
                         LastName = "Main",
                         Email = "main.admin@isa.com",
                         UserName = "AdminMain",
-                        IsMainAdmin = true
+                        IsMainAdmin = true,
                     };
                     admin = await um.CreateAsync(mainAdmin, "MAdmin123!");
                     if (admin.Succeeded)

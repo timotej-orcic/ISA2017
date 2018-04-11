@@ -371,6 +371,9 @@
     <Content Include="Views\Location\ChangeDurationProjection.cshtml" />
     <Content Include="Views\Location\ChangePriceProjection.cshtml" />
     <Content Include="Views\Location\ChangeNameLocation.cshtml" />
+    <Content Include="Views\Friends\ShowFriendRequests.cshtml" />
+    <Content Include="Views\Location\ChangeAddressLocation.cshtml" />
+    <Content Include="Views\Location\ChangeDescriptionLocation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

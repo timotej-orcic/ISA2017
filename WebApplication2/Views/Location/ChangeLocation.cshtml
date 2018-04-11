@@ -8,14 +8,15 @@
     <div style="background-color:gray">
         <h2 style="color:white">@Model.Name [ @Html.ActionLink("Change", "ChangeNameLocation", "Location", new { idLocation = Model.Id }, null) ]</h2>
     </div>
-    <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
+    <h3 style="font-weight:bold;color:white;font-size: 14px">Address: [ @Html.ActionLink("Change", "ChangeAddressLocation", "Location", new { idLocation = Model.Id }, null) ] </h3>
 
     <a href="https://maps.google.com/?q=58250 @Model.Address">
         <h3 style="color:white;font-size: 14px"> @Model.Address</h3>
     </a>
 
-    <label style="color:white; font-weight:bold; font-size: 14px">Description:  </label>
 
+    <label style="color:white; font-weight:bold; font-size: 14px">Description: [ @Html.ActionLink("Change", "ChangeDescriptionLocation", "Location", new { idLocation = Model.Id }, null) ] </label>
+    <br />
     <label style="color:white; font-size: 14px"> @Model.Description </label>
     <br/>
     <input type="button" class="btn btn-basic" value="Add projection" onclick="location.href='@Url.Action("AddProjection", "Location",new { name = @Model.Name , id = @Model.Id})'" />

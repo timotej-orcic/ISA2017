@@ -63,7 +63,7 @@
                                 if (reg.Equals(friend))
                                 {
                                     br++;
-                                    <input type="button" value="Remove Friend" onclick="location.href='@Url.Action("RemoveFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
+                                    <input type="button" class="btn btn-danger" value="Remove Friend" onclick="location.href='@Url.Action("RemoveFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
                                     break;
                                 }
 
@@ -79,7 +79,7 @@
                                     if (reg.Id.Equals(wait.Id))
                                     {
                                         br++;
-                                        <input type="button" class="btn btn-danger" value="Cancel request" onclick="location.href='@Url.Action("RemoveFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
+                                        <input type="button" class="btn btn-warning" value="Cancel request" onclick="location.href='@Url.Action("CancelFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
 
                                         break;
                                     }

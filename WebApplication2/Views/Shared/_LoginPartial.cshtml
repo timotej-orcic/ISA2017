@@ -21,7 +21,7 @@
         }
     }
     bool enableLocationOptions = true;
-   /* if (User.IsInRole("Location_Admin"))
+    if (User.IsInRole("Location_Admin"))
     {
         using (var ctx = new ApplicationDbContext())
         {
@@ -38,7 +38,7 @@
                 enableLocationOptions = false;
             }
         }
-    }*/
+    }
 }
 @if (Request.IsAuthenticated)
 {
@@ -49,7 +49,8 @@
         if (User.IsInRole("Regular_User"))
         {
             <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("Friends", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("Find Friends", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("Friend Requests", "ShowFriendRequests", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
                 <li>@Html.ActionLink("Fanzone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Fanzone" })</li>
                 
             </ul>

@@ -1,0 +1,26 @@
+﻿@model Isa2017Cinema.Models.ChangeProjectionViewModel
+@{
+    ViewBag.Title = "ChangeDescriptionLocation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("EditDescriptionLocation", "Location", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="form-group">
+        <label class="col-md-2 control-label" style="color:white">Change location description: </label>
+        <div class="col-md-10">
+            @Html.TextAreaFor(m => m.Field, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Change description" class="btn btn-basic" />
+        </div>
+    </div>
+}
+
