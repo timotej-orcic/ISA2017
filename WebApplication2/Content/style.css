@@ -55,7 +55,9 @@ div.seatCharts-seat.available {
 }
 div.seatCharts-seat.available.first-class {
 /* 	background: url(vip.png); */
-	background-color: #3a78c3;
+	background-color: red;
+    pointer-events: none;
+    
 }
 div.seatCharts-seat.focused {
 	background-color: #76B474;
@@ -65,6 +67,7 @@ div.seatCharts-seat.selected {
 }
 div.seatCharts-seat.unavailable {
 	background-color: #472B34;
+    cursor: not-allowed;
 }
 div.seatCharts-container {
 	border-right: 1px dotted #adadad;

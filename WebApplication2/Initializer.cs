@@ -21,7 +21,7 @@ namespace Isa2017Cinema
 
             context.Fanzone.Add(fanzone);
 
-            
+           
 
             var projections = new List<Projection>
             {

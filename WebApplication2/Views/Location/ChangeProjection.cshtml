@@ -15,7 +15,7 @@
     <h2 style="color:white; font-weight:bold; font-size: 14px">Description: @Model.Description [ @Html.ActionLink("Change", "ChangeDescriptionProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
     <h2 style="color:white; font-weight:bold; font-size: 14px">Duration time: @Model.DurationTime [ @Html.ActionLink("Change", "ChangeDurationProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
     <h2 style="color:white; font-weight:bold; font-size: 14px">Ticket price: @Model.TicketPrice [ @Html.ActionLink("Change", "ChangePriceProjection", "Location", new { projekcija = Model.Id }, null)) ] </h2>
-
+    <input type="button" class="btn btn-basic" value="Add new" onclick="location.href='@Url.Action("AddHallTimeProjection", "Hall",new { projekcija = Model.Id})'" />
 
 
         <br />

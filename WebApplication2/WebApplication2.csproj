@@ -224,6 +224,7 @@
     <Compile Include="Models\Hall.cs" />
     <Compile Include="Models\HallsViewModel.cs" />
     <Compile Include="Models\HallTimeProjection.cs" />
+    <Compile Include="Models\HallTimeViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Licitation.cs" />
     <Compile Include="Models\Location.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="Models\Recension.cs" />
     <Compile Include="Models\RegisterNewLocationViewModels.cs" />
     <Compile Include="Models\Request.cs" />
+    <Compile Include="Models\Row.cs" />
     <Compile Include="Models\SystemAdmin.cs" />
     <Compile Include="Models\AddNewAdminViewModels.cs" />
     <Compile Include="Models\ThemeRequisit.cs" />
@@ -389,6 +391,8 @@
     <Content Include="Views\Location\Seats.cshtml" />
     <Content Include="Views\Hall\Seats.cshtml" />
     <Content Include="Views\Reservation\ShowRepertoar.cshtml" />
+    <Content Include="Views\Hall\AddHallTimeProjection.cshtml" />
+    <Content Include="Views\Reservation\Seats.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
