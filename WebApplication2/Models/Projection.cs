@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication2.Models;
 
 namespace Isa2017Cinema.Models
 {
@@ -11,15 +12,14 @@ namespace Isa2017Cinema.Models
         [Key]
         public Guid Id { get; set; }
         public String Name { get; set; }
-        public List<String> ActorsList { get; set; }
+        public String ActorsList { get; set; }
         public String Genre { get; set; }
         public String DirectorName { get; set; }
         public int DurationTime { get; set; }
         public String PosterUrl { get; set; }
         public Double AvgRating { get; set; }
         public String Description { get; set; }
-        public List<Hall> ProjHallsList { get; set; }
-        public List<DateTime> ProjTimeList { get; set; }
-        public Double TicketPrice { get; set; }
+        public List<HallTimeProjection> ProjHallsTimeList { get; set; }
+        public Double TicketPrice { get; set; } 
     }
 }

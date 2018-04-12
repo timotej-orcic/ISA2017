@@ -1,0 +1,40 @@
+﻿@model Isa2017Cinema.Models.Location
+@{
+    ViewBag.Title = "ShowRepertoar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+    <h2 style="color:white">Repertoar - @Model.Name</h2>
+</div>
+<br />
+@foreach (var l in Model.ProjectionsList)
+{
+    <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+        <div style="background-color:gray">
+            <h2 style="color:white">@l.Name</h2>
+           
+
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+        [ @Html.ActionLink("Reserve", "ViewReservation", "Reservation", new { projectionId = l.Id }, null) ]
+        @if (l.PosterUrl != null)
+        {
+            <img src="@l.PosterUrl" width="70" height="70" />
+        }
+        else
+        {
+            <img src="~/images/placeholder4.png" width="70" height="70" />
+        }
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Name of Director: @l.DirectorName </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Description: @l.Description </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Duration time: @l.DurationTime </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Ticket price: @l.TicketPrice</h2>
+
+     </div>
+     <br />
+}

@@ -25,17 +25,17 @@ namespace Isa2017Cinema
 
             var projections = new List<Projection>
             {
-                new Projection {  Name = "Pirati sa Kariba" , ActorsList = new List<string>() ,
+                new Projection {  Name = "Pirati sa Kariba" , ActorsList = "" ,
                 Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsList = new List<Hall>(), ProjTimeList = new List<DateTime>(),
+                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 },
-                new Projection {  Name = "Indijana Dzouns" , ActorsList = new List<string>() ,
+                new Projection {  Name = "Indijana Dzouns" , ActorsList = "" ,
                 Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsList = new List<Hall>(), ProjTimeList = new List<DateTime>(),
+                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 },
-                new Projection {  Name = "Pirati sa Eureke" , ActorsList = new List<string>() ,
+                new Projection {  Name = "Pirati sa Eureke" , ActorsList = "" ,
                 Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsList = new List<Hall>(), ProjTimeList =new List<DateTime>(),
+                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 }
             };
 

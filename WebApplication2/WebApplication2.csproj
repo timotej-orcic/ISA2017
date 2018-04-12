@@ -199,10 +199,12 @@
     <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\FanZoneController.cs" />
     <Compile Include="Controllers\FriendsController.cs" />
+    <Compile Include="Controllers\HallController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\CinemaController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ReservationController.cs" />
     <Compile Include="Controllers\System_AdminController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -220,6 +222,8 @@
     <Compile Include="Models\FirstPasswordChangeViewModels.cs" />
     <Compile Include="Models\FriendsViewModels.cs" />
     <Compile Include="Models\Hall.cs" />
+    <Compile Include="Models\HallsViewModel.cs" />
+    <Compile Include="Models\HallTimeProjection.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Licitation.cs" />
     <Compile Include="Models\Location.cs" />
@@ -228,6 +232,7 @@
     <Compile Include="Models\Points.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\Projection.cs" />
+    <Compile Include="Models\ProjectionViewModels.cs" />
     <Compile Include="Models\Recension.cs" />
     <Compile Include="Models\RegisterNewLocationViewModels.cs" />
     <Compile Include="Models\Request.cs" />
@@ -241,6 +246,8 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\jquery.seat-charts.css" />
+    <Content Include="Content\style.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -307,6 +314,7 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.seat-charts.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -374,10 +382,19 @@
     <Content Include="Views\Friends\ShowFriendRequests.cshtml" />
     <Content Include="Views\Location\ChangeAddressLocation.cshtml" />
     <Content Include="Views\Location\ChangeDescriptionLocation.cshtml" />
+    <Content Include="Views\Location\AddProjection.cshtml" />
+    <Content Include="Views\Location\AddHall.cshtml" />
+    <Content Include="Views\Location\Projections.cshtml" />
+    <Content Include="Views\Location\Halls.cshtml" />
+    <Content Include="Views\Location\Seats.cshtml" />
+    <Content Include="Views\Hall\Seats.cshtml" />
+    <Content Include="Views\Reservation\ShowRepertoar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="images\projectionPosters\" />
     <Folder Include="images\themeRequisits\" />
+    <Folder Include="Views\Seats\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
