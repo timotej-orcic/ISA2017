@@ -49,7 +49,9 @@
         if (User.IsInRole("Regular_User"))
         {
             <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("Find Friends", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("Friend list", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("Find people", "FindPeople", "Friends", routeValues: null, htmlAttributes: new { title = "Find people" })</li>
+
                 <li>@Html.ActionLink("Friend Requests", "ShowFriendRequests", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
                 <li>@Html.ActionLink("Fanzone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Fanzone" })</li>
                 

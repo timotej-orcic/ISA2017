@@ -13,7 +13,7 @@
 
     using (var ctx = new ApplicationDbContext())
     {
-        var locAdminQueryData = ctx.Database.SqlQuery<LocationAdmin>("select * from AspNetUsers where Admin_Type = 1 and MyLocation_Id IS NULL").ToList();
+        var locAdminQueryData = ctx.Database.SqlQuery<LocationAdmin>("select * from AspNetUsers where Admin_Type = 1 and MyLocation IS NULL").ToList();
         if (locAdminQueryData.Count > 0)
         {
             foreach (var locAdmin in locAdminQueryData)
