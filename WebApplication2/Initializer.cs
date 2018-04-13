@@ -26,16 +26,16 @@ namespace Isa2017Cinema
             var projections = new List<Projection>
             {
                 new Projection {  Name = "Pirati sa Kariba" , ActorsList = "" ,
-                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsTimeList = new List<HallTimeProjection>(),
+                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 123 , PosterUrl = "~/images/placeholder4.png" ,
+                AvgRating = 10 , Description = "Borba pirata protiv kostura" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 },
                 new Projection {  Name = "Indijana Dzouns" , ActorsList = "" ,
-                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
+                Genre = "drama" , DirectorName = "Tarantino" , DurationTime = 119 , PosterUrl = "~/images/placeholder4.png" ,
                 AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 },
                 new Projection {  Name = "Pirati sa Eureke" , ActorsList = "" ,
-                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsTimeList = new List<HallTimeProjection>(),
+                Genre = "horor" , DirectorName = "Spilberg" , DurationTime = 98 , PosterUrl = "~/images/placeholder4.png" ,
+                AvgRating = 10 , Description = "nekada davno" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 }
             };
 

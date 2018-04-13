@@ -6,7 +6,7 @@
 
 <br />
 <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
-    <h2 style="color:white">Projekcije: </h2>
+    <h2 style="color:white">Projections in @Model.Name</h2>
     <input type="button" class="btn btn-basic" value="Add projection" onclick="location.href='@Url.Action("AddProjection", "Location",new { MyLocation = Model.Id})'" />
 
 </div>
@@ -20,15 +20,23 @@
         </div>
         @if (l.PosterUrl != null)
         {
-            <img src="@l.PosterUrl" width="70" height="70" />
+            <img src="@l.PosterUrl" width="200" height="200" />
         }
         else
         {
-            <img src="~/images/placeholder4.png" width="70" height="70" />
+            <img src="~/images/placeholder4.png" width="200" height="200" />
         }
+        <br />
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Name of Director: @l.DirectorName </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Description: @l.Description </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Duration time: @l.DurationTime min </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Actors: @l.ActorsList </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Genre: @l.Genre </h2>
+        <h2 style="color:white; font-weight:bold; font-size: 14px">Average rating: @l.AvgRating </h2>
         <input type="button" class="btn btn-basic" value="Edit projection" onclick="location.href='@Url.Action("EditProjection", "Location",new { idProj = @l.Id})'" />
         <input type="button" class="btn btn-basic" value="Delete projection" onclick="location.href='@Url.Action("DeleteProjection", "Location",new { idProj = @l.Id} )'" />
-    </div>
+        
+     </div>
                 <br />
 }
 

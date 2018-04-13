@@ -113,7 +113,8 @@ namespace WebApplication2.Controllers
                 var imageUrl = Path.Combine(uploadDir, model.ImageUpload.FileName);
                 imageUrl = imageUrl.Replace("\\", "/");
                 model.ImageUpload.SaveAs(imagePath);
-
+                imageUrl = imageUrl.Substring(1);
+                imageUrl = ".." + imageUrl;
                 Projection projectionToAdd = new Projection
                 {
                     Name = model.Name,
