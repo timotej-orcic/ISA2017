@@ -6,6 +6,7 @@ namespace WebApplication2.Models
 
     public class Admin : ApplicationUser
     {
+        public bool HasSetPassword { get; set; }
         public AdminType Admin_Type { get; set; }
     }
 }

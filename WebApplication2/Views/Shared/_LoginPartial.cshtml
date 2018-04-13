@@ -21,7 +21,7 @@
         }
     }
     bool enableLocationOptions = true;
-   /* if (User.IsInRole("Location_Admin"))
+    if (User.IsInRole("Location_Admin"))
     {
         using (var ctx = new ApplicationDbContext())
         {
@@ -38,7 +38,7 @@
                 enableLocationOptions = false;
             }
         }
-    }*/
+    }
 }
 @if (Request.IsAuthenticated)
 {
@@ -49,8 +49,12 @@
         if (User.IsInRole("Regular_User"))
         {
             <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("Friends", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
-                <li>@Html.ActionLink("Fanzone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Fanzone" })</li>                
+                <li>@Html.ActionLink("Friend list", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("Find people", "FindPeople", "Friends", routeValues: null, htmlAttributes: new { title = "Find people" })</li>
+
+                <li>@Html.ActionLink("Friend Requests", "ShowFriendRequests", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
+                <li>@Html.ActionLink("Fanzone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Fanzone" })</li>
+                
             </ul>
         }
         else if (User.IsInRole("Location_Admin"))
@@ -64,32 +68,35 @@
         }
         else if (User.IsInRole("System_Admin"))
         {
-            <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("Add new admin", "AddNewAdmin", "System_Admin", routeValues: null, htmlAttributes: new { title = "Add new admin" })</li>
-                <li>@Html.ActionLink("Register new location", "RegisterNewLocation", "System_Admin", routeValues: null, htmlAttributes: new { title = "Register new location" })</li>
-                <li>@Html.ActionLink("Change points scale", "ChangePointsScale", "System_Admin", routeValues: null, htmlAttributes: new { title = "Change points scale" })</li>
-            </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>@Html.ActionLink("Add new admin", "AddNewAdmin", "System_Admin", routeValues: null, htmlAttributes: new { title = "Add new admin" })</li>
+            <li>@Html.ActionLink("Register new location", "RegisterNewLocation", "System_Admin", routeValues: null, htmlAttributes: new { title = "Register new location" })</li>
+            <li>@Html.ActionLink("Change points scale", "ChangePointsScale", "System_Admin", routeValues: null, htmlAttributes: new { title = "Change points scale" })</li>
+        </ul>
         }
         else if (User.IsInRole("Fanzone_Admin"))
         {
             if (enableFanzoneOptions)
             {
             <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("Manage FanZone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Manage FanZone" })</li>
+                <li>@Html.ActionLink("Manage theme requisits", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Manage theme requisits" })</li>
+                <li>@Html.ActionLink("Manage user offers", "ManageUserOffers", "FanZone", routeValues: null, htmlAttributes: new { title = "Manage user offers" })</li>
             </ul>
             }
-        }
-        <ul class="nav navbar-nav navbar-right">
-            <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
 
+
+        }
+            <ul class="nav navbar-nav navbar-right">
+                <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+
+            </ul>
+        }
+        }
+        else
+        {
+        <ul class="nav navbar-nav navbar-right">
+            <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+            <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
         </ul>
-    }
-}
-else
-{
-    <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
-    </ul>
-}
+        }

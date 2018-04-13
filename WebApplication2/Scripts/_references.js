@@ -4,7 +4,7 @@
 /// <reference path="../client scripts/mvcfoolproofvalidation.min.js" />
 /// <reference path="ai.0.22.9-build00167.min.js" />
 /// <reference path="bootstrap.js" />
-/// <reference path="jquery.unobtrusive-ajax.min.js" />
+/// <reference path="jquery.seat-charts.js" />
 /// <reference path="jquery.validate.js" />
 /// <reference path="jquery.validate.unobtrusive.min.js" />
 /// <reference path="jquery-1.10.2.js" />

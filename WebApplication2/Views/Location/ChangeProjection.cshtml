@@ -9,13 +9,14 @@
     <div style="background-color:gray">
         <h2 style="color:white">@Model.Name [ @Html.ActionLink("Change", "ChangeNameProjection","Location",new { projekcija = Model.Id },null) ]</h2>
     </div>
+    <img src="@Model.PosterUrl" align="middle" width="200" height="200" /> <h2 style="color:white; font-weight:bold; font-size: 14px">[ @Html.ActionLink("Change", "ChangePictureProjection", "Location", new { projekcija = Model.Id }, null) ] </h2>
     <h2 style="font-weight:bold;color:white;font-size: 14px">Genre: @Model.Genre [ @Html.ActionLink("Change", "ChangeGenreProjection","Location", new { projekcija = Model.Id }, null) ]</h2>  
     <h2 style="color:white; font-weight:bold; font-size: 14px">Name of Director: @Model.DirectorName [ @Html.ActionLink("Change", "ChangeDirectorProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
-    <img src="~/images/placeholder4.png" align="middle" width="50" height="50" /> <input type="file" class="btn btn-default" />
     <h2 style="color:white; font-weight:bold; font-size: 14px">Description: @Model.Description [ @Html.ActionLink("Change", "ChangeDescriptionProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
     <h2 style="color:white; font-weight:bold; font-size: 14px">Duration time: @Model.DurationTime [ @Html.ActionLink("Change", "ChangeDurationProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
-    <h2 style="color:white; font-weight:bold; font-size: 14px">Ticket price: @Model.TicketPrice [ @Html.ActionLink("Change", "ChangePriceProjection", "Location", new { projekcija = Model.Id }, null)) ] </h2>
-
+    <h2 style="color:white; font-weight:bold; font-size: 14px">Ticket price: @Model.TicketPrice [ @Html.ActionLink("Change", "ChangePriceProjection", "Location", new { projekcija = Model.Id }, null) ] </h2>
+    <input type="button" class="btn btn-basic" value="Add new time for projection" onclick="location.href='@Url.Action("AddHallTimeProjection", "Hall",new { projekcija = Model.Id})'" />
+    <input type="button" class="btn btn-basic" value="Add fast reserve ticket" onclick="location.href='@Url.Action("AddFastReserveTicket", "Hall",new { projekcija = Model.Id})'" />
 
 
         <br />

@@ -21,21 +21,21 @@ namespace Isa2017Cinema
 
             context.Fanzone.Add(fanzone);
 
-            
+           
 
             var projections = new List<Projection>
             {
-                new Projection {  Name = "Pirati sa Kariba" , ActorsList = new List<string>() ,
-                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsList = new List<Hall>(), ProjTimeList = new List<DateTime>(),
+                new Projection {  Name = "Pirati sa Kariba" , ActorsList = "" ,
+                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 123 , PosterUrl = "~/images/placeholder4.png" ,
+                AvgRating = 10 , Description = "Borba pirata protiv kostura" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 },
-                new Projection {  Name = "Indijana Dzouns" , ActorsList = new List<string>() ,
-                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsList = new List<Hall>(), ProjTimeList = new List<DateTime>(),
+                new Projection {  Name = "Indijana Dzouns" , ActorsList = "" ,
+                Genre = "drama" , DirectorName = "Tarantino" , DurationTime = 119 , PosterUrl = "~/images/placeholder4.png" ,
+                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 },
-                new Projection {  Name = "Pirati sa Eureke" , ActorsList = new List<string>() ,
-                Genre = "mjuzikl" , DirectorName = "Hasan" , DurationTime = 23 , PosterUrl = "~/images/placeholder4.png" ,
-                AvgRating = 10 , Description = "veoma lijep susret" , ProjHallsList = new List<Hall>(), ProjTimeList =new List<DateTime>(),
+                new Projection {  Name = "Pirati sa Eureke" , ActorsList = "" ,
+                Genre = "horor" , DirectorName = "Spilberg" , DurationTime = 98 , PosterUrl = "~/images/placeholder4.png" ,
+                AvgRating = 10 , Description = "nekada davno" , ProjHallsTimeList = new List<HallTimeProjection>(),
                  TicketPrice = 200 }
             };
 

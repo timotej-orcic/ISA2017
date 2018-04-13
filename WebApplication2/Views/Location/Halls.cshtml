@@ -1,0 +1,28 @@
+﻿@model Isa2017Cinema.Models.Location
+@{
+    ViewBag.Title = "Halls";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+    <h2 style="color:white">Halls: </h2>
+    <input type="button" class="btn btn-basic" value="Add hall" onclick="location.href='@Url.Action("AddHall", "Location",new { MyLocation = Model.Id})'" />
+</div>
+<br />
+@foreach (var l in Model.HallsList)
+{
+    <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+        <div style="background-color:gray">
+            <h2 style="color:white">@l.Name</h2>
+
+        </div>
+
+        <input type="button" class="btn btn-basic" value="View hall" onclick="location.href='@Url.Action("ViewHall", "Hall",new { idHall = @l.Id})'" />
+
+       
+    </div>
+    <br />
+}
+
+
