@@ -107,9 +107,12 @@ namespace WebApplication2.Controllers
                     projHalls.Add(projHall);
                 }
                 proj.ProjHallsTimeList = projHalls;
+               
                 projs.Add(proj);
                 projHalls = new List<HallTimeProjection>();
             }
+            string id = User.Identity.GetUserId();
+            ViewBag.user = id;
             locationToShow.ProjectionsList = projs;
             
             return View("ShowRepertoar", locationToShow);
