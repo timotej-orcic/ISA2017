@@ -88,14 +88,16 @@ namespace WebApplication2.Controllers
                 praznic = "";
             }
             DateTime datum = DateTime.Parse(datetime);
+            
+            var projection = await dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefaultAsync(x => x.Id == projekcija);
             HallTimeProjection ToAdd = new HallTimeProjection
             {
                 Hall = h,
                 Time = datum,
-                Seats = seats
-                
+                Seats = seats,
+                Projection = projection
+
             };
-            var projection = await dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefaultAsync(x => x.Id == projekcija);
             projection.ProjHallsTimeList.Add(ToAdd);
             dbCtx.HallTimeProjection.Add(ToAdd);
             dbCtx.SaveChanges();

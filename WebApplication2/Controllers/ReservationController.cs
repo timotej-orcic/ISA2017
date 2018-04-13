@@ -8,6 +8,7 @@ using System.Data.Entity;
 using WebApplication2.Models;
 using System.Threading.Tasks;
 using System.Text;
+using Microsoft.AspNet.Identity;
 
 namespace WebApplication2.Controllers
 {
@@ -27,6 +28,8 @@ namespace WebApplication2.Controllers
 
             var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == id);
             var saHalom = await dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+
+            var saProjekcijom = await dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
             var indexRow = -1;
             var indexColumn = -1;
             if (arr.Length > 1)
@@ -36,28 +39,40 @@ namespace WebApplication2.Controllers
                     string[] redKolona = arr[i].Split('_');
                     int.TryParse(redKolona[0],out indexRow);
                     int.TryParse(redKolona[1], out indexColumn);
-                  //  indexColumn = int.Parse(redKolona[1]) - 1;
-
+                  
                     if (indexRow != -1 && indexColumn != -1)
                     {
-                        Row red = saHalom.Seats[indexRow-1];
-                        
+                        Row red = saProjekcijom.Seats[indexRow-1];
                         var aStringBuilder = new StringBuilder(red.Seats);
                         aStringBuilder.Remove(indexColumn-1, 1);
                         aStringBuilder.Insert(indexColumn-1, "f");
                         red.Seats = aStringBuilder.ToString();
-                        saHalom.Seats[indexRow-1] = red;
+                        saProjekcijom.Seats[indexRow-1] = red;
+                        Ticket newReservation = new Ticket
+                        {
+                            ParentProjection = saProjekcijom.Projection,
+                            ProjectionTime = saProjekcijom.Time,
+                            ProjectionHall = saProjekcijom.Hall,
+                            SeatColumn = indexColumn - 1,
+                            SeatRow = indexRow - 1,
+                            Price = saProjekcijom.Projection.TicketPrice,
+                            DiscountMultiplier = 1.0
+
+                        };
+                        dbCtx.Reservations.Add(newReservation);
+                        string userIdString = User.Identity.GetUserId();
+                        var loggedUser = await dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefaultAsync(x => x.Id == userIdString);
+                        loggedUser.ReservationsList.Add(newReservation);
+
                         indexRow = -1;
                         indexColumn = -1;
                     }
                 }
             }
+           
+            // var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where MyLocation = '" + hala.Id + "'").FirstOrDefault();
+          
             dbCtx.SaveChanges();
-            bool isValid = true; //.. check
-            var obj = new
-            {
-                valid = isValid
-            };
             return View("Seats", saHalom);
         }
 
@@ -93,8 +108,10 @@ namespace WebApplication2.Controllers
                 }
                 proj.ProjHallsTimeList = projHalls;
                 projs.Add(proj);
+                projHalls = new List<HallTimeProjection>();
             }
             locationToShow.ProjectionsList = projs;
+            
             return View("ShowRepertoar", locationToShow);
         }
 
@@ -111,9 +128,12 @@ namespace WebApplication2.Controllers
                     break;
                 }
             }
+            // rezervacija sa halom i sedistima
             var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == projHall);
             var saHalom = await dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
-            return View("Seats", saHalom);
+            var saProjekcijom = await dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+           
+            return View("Seats", saProjekcijom);
         }
     }
 }

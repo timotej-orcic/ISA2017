@@ -34,10 +34,17 @@
        
         @foreach (var projhall in l.ProjHallsTimeList)
          {
-           @Html.ActionLink("Reserve", "ViewReservation", "Reservation", new { projectionId = l.Id , projHall = projhall.Id }, null)
             <div class="jumbotron" style="background-color:white;  width: 300px; margin:0 auto ">
+
+                <h2 style="color:black; font-weight:bold; font-size: 14px"> Projection: @l.Name</h2>
                 <h2 style="color:black; font-weight:bold; font-size: 14px">Time: @projhall.Time </h2>
                 <h2 style="color:black; font-weight:bold; font-size: 14px">Hall: @projhall.Hall.Name </h2>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                @Html.ActionLink("Reserve", "ViewReservation", "Reservation", new { projectionId = l.Id, projHall = projhall.Id }, null)
+
+
+
+
             </div>
             <br />
         }

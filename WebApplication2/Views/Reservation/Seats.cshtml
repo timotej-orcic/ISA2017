@@ -9,23 +9,30 @@
 <div class="wrapper">
 
     <div class="container">
-        <div id="seat-map">
-            <div class="front-indicator">Front</div>
+        <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 500px; margin:0 auto ">
+            <h2 style="color:white">Reserve your place</h2>
+            <p style="color:white">Projection: @Model.Projection.Name</p>
 
+            <p style="color:white">Hall: @Model.Hall.Name</p>
+            <p style="color:white">Time: @Model.Time</p>
         </div>
-        <div class="booking-details">
-            <h2 style="color:white">Booking Details</h2>
+            <div id="seat-map">
+                <div class="front-indicator">Front</div>
 
-            <h3 style="color:white"> Selected Seats (<span id="counter">0</span>):</h3>
-            <ul id="selected-seats" style="color:white"></ul>
+            </div>
+            <div class="booking-details">
+                <h2 style="color:white">Booking Details</h2>
 
-            Total: <b>$<span id="total" style="color:white">0</span></b>
+                <h3 style="color:white"> Selected Seats (<span id="counter">0</span>):</h3>
+                <ul id="selected-seats" style="color:white"></ul>
 
-            <button id="buttonreserve" onclick="Reserve()" class="checkout-button">Rezervisi &raquo;</button>
+                Total: <b>$<span id="total" style="color:white">0</span></b>
 
-            <div id="legend" style="color:white"></div>
+                <button id="buttonreserve" onclick="Reserve()" class="checkout-button">Rezervisi &raquo;</button>
+
+                <div id="legend" style="color:white"></div>
+            </div>
         </div>
-    </div>
 </div>
 
 
@@ -35,7 +42,6 @@
 
 
     var niz = [];
-    var data = [];
 
    @for (int x = 0; x < @Model.Hall.RowsCount; x++) {
        {

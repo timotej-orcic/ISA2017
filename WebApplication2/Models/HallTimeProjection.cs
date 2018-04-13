@@ -16,5 +16,6 @@ namespace WebApplication2.Models
         public Hall Hall { get; set; }
         public DateTime Time { get; set; }
         public List<Row> Seats { get; set; }
+        public Projection Projection { get; set; }
     }
 }
