@@ -1,15 +1,4 @@
-﻿<div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'ThemeReqs')" id="defaultOpen">Theme requisits</button>
-    @if (User.IsInRole("Regular_User"))
-    {
-        <button class="tablinks" onclick="openTab(event, 'All posts')">All posts</button>
-        <button class="tablinks" onclick="openTab(event, 'My posts')">My posts</button>
-    }
-    else if (User.IsInRole("Fanzone_Admin"))
-    {
-        <button class="tablinks" onclick="openTab(event, 'Unapproved posts')">Unapproved posts</button>
-    }
-</div>
+﻿@Html.ValidationSummary("", new { @class = "text-danger" })
 
 @if (TempData["success"] != null)
 {
@@ -17,6 +6,21 @@
         <h3>@TempData["success"]</h3>
     </div>
 }
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'ThemeReqs')" id="defaultOpen">Theme requisits</button>
+    @if (User.IsInRole("Regular_User"))
+    {
+        <button class="tablinks" onclick="openTab(event, 'Reserved requisits')">Reserved requisits</button>
+        <button class="tablinks" onclick="openTab(event, 'All posts')">All posts</button>
+        <button class="tablinks" onclick="openTab(event, 'My posts')">My posts</button>
+    }
+    else if (User.IsInRole("Fanzone_Admin"))
+    {
+        <button class="tablinks" onclick="openTab(event, 'Unapproved posts')">Unapproved posts</button>
+        <button class="tablinks" onclick="openTab(event, 'Manage posts')">Manage posts</button>
+    }
+</div>
 
 <div id="ThemeReqs" class="tabcontent">
     <h2 style="color:white">Official offers:</h2>
@@ -58,6 +62,29 @@
 
 @if (User.IsInRole("Regular_User"))
 {
+    <div id="Reserved requisits" class="tabcontent">
+        <h2 style="color:white">My reservations:</h2>
+
+        <div style="position:relative">
+            @if (ViewBag.myRequisits.Count > 0)
+            {
+                foreach (var thReq in ViewBag.myRequisits)
+                {
+                    <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                        <div style="background-color:gray">
+                            <h2 style="color:white">@thReq.Name</h2>
+                        </div>
+                        <h3 style="font-weight:bold;color:white;font-size: 14px">Price: @thReq.Price</h3>
+
+                        <label style="color:white; font-weight:bold; font-size: 14px">Available count: @thReq.AvailableCount</label>
+
+                        <img src=@Url.Content(@thReq.ImageUrl) height="32" width="32" />
+                    </div>
+                    <br />
+                }
+            }
+        </div>
+    </div>
     <div id="All posts" class="tabcontent">
         <h2 style="color:white">All posts:</h2>
 
@@ -140,20 +167,53 @@ else if (User.IsInRole("Fanzone_Admin"))
             {
                 foreach (var post in ViewBag.unapprovedPosts)
                 {
-                    <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
-                        <div style="background-color:gray">
-                            <h2 style="color:white">@post.Name</h2>
+                    if (!post.IsTakenByAdmin)
+                    {
+                        <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                            <div style="background-color:gray">
+                                <h2 style="color:white">@post.Name</h2>
+                            </div>
+                            <h3 style="font-weight:bold;color:white;font-size: 14px">Offer expires: @post.OfferExpireDate</h3>
+
+                            @if (@post.ImageUrl != null)
+                            {
+                                <img src=@Url.Content(@post.ImageUrl) height="64" width="64" />
+                            }
+
+                            <input type="button" class="btn btn-success" value="Manage post" onclick="location.href='@Url.Action("ManagePost", "FanZone", new { postID = @post.Id})'" />
                         </div>
-                        <h3 style="font-weight:bold;color:white;font-size: 14px">Offer expires: @post.OfferExpireDate</h3>
+                        <br />
+                    }
+                }
+            }
+        </div>
+    </div>
+    <div id="Manage posts" class="tabcontent">
+        <h2 style="color:white">Manage posts:</h2>
 
-                        @if (@post.ImageUrl != null)
-                        {
-                            <img src=@Url.Content(@post.ImageUrl) height="64" width="64" />
-                        }
+        <div style="position:relative">
+            @if (ViewBag.postsToManage.Count > 0)
+            {
+                foreach (var post in ViewBag.postsToManage)
+                {
+                    if (!post.IsChecked)
+                    {
+                        <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                            <div style="background-color:gray">
+                                <h2 style="color:white">@post.Name</h2>
+                            </div>
+                            <h3 style="font-weight:bold;color:white;font-size: 14px">Offer expires: @post.OfferExpireDate</h3>
 
-                        <input type="button" class="btn btn-success" value="Manage post" onclick="location.href='@Url.Action("ManagePost", "FanZone", new { postID = @post.Id, rowVersion = @post.RowVersion })'" />
-                    </div>
-                    <br />
+                            @if (@post.ImageUrl != null)
+                            {
+                                <img src=@Url.Content(@post.ImageUrl) height="64" width="64" />
+                            }
+
+                            <input type="button" class="btn btn-success" value="Approve" onclick="location.href='@Url.Action("ApprovePost", "FanZone", new { postID = @post.Id})'" />
+                            <input type="button" class="btn btn-success" value="Dissmiss" onclick="location.href='@Url.Action("DissmissPost", "FanZone", new { postID = @post.Id})'" />
+                        </div>
+                        <br />
+                    }
                 }
             }
         </div>

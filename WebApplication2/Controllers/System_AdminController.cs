@@ -24,7 +24,39 @@ namespace WebApplication2.Controllers
                 if (!User.IsInRole("System_Admin"))
                     return RedirectToAction("Index", "Home");
                 else
+                {
+                    List<SelectListItem> items = new List<SelectListItem>();
+                    items.Add(new SelectListItem { Text = "Fanzone admin", Value = "0" });
+                    items.Add(new SelectListItem { Text = "Location admin", Value = "1" });
+
+                    List<Location> locations = new List<Location>();
+
+                    using (var ctx = new ApplicationDbContext())
+                    { 
+                        var resUsr = ctx.Database.SqlQuery<SystemAdmin>("select * from AspNetUsers where id = '" + User.Identity.GetUserId() + "'").FirstOrDefault();
+                        if (resUsr != null)
+                        {
+                            if (resUsr.IsMainAdmin)
+                            {
+                                items.Add(new SelectListItem { Text = "System admin", Value = "2" });
+                            }
+                        }
+
+                        var resLocs = ctx.Locations.Where(x => x.MyAdminId == null);
+                        if(resLocs != null)
+                        {
+                            foreach(var resLoc in resLocs)
+                            {
+                                locations.Add(resLoc);
+                            }
+                        }
+                    }
+
+                    ViewBag.items = items;
+                    ViewBag.locations = locations;
+
                     return View();
+                }                    
             }
         }
 
@@ -78,7 +110,7 @@ namespace WebApplication2.Controllers
                                 LastName = adminVM.LastName,
                                 Email = adminVM.Email,
                                 UserName = adminVM.UserName,
-                                IsMainAdmin = false
+                                IsMainAdmin = false                                
                             };
                         }
                         else if (adminVM.Admin_Type == AdminType.FANZONE_ADMIN)
@@ -90,32 +122,28 @@ namespace WebApplication2.Controllers
                                 LastName = adminVM.LastName,
                                 Email = adminVM.Email,
                                 UserName = adminVM.UserName,
-                                PendingPostsList = new List<Post>(),
-                                HasSetPassword = false
+                                HasSetPassword = false                                
                             };
                         }
                         else if (adminVM.Admin_Type == AdminType.LOCATION_ADMIN)
                         {
-                            List<Location> retVal = new List<Location>();
-                            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
-                            retVal = dbCtx.Locations.ToList();
-                            Location lokacija = new Location();
-                            foreach(Location loc in dbCtx.Locations)
+                            if(adminVM.MyLocationId != null)
                             {
-                                if (loc.Name.Equals("Arenice"))
+                                newAdmin = new LocationAdmin
                                 {
-                                    lokacija = loc;
-                                }
+                                    Admin_Type = adminVM.Admin_Type,
+                                    Name = adminVM.Name,
+                                    LastName = adminVM.LastName,
+                                    Email = adminVM.Email,
+                                    UserName = adminVM.UserName,
+                                    MyLocationId = adminVM.MyLocationId
+                                };
                             }
-                            newAdmin = new LocationAdmin
+                            else
                             {
-                                Admin_Type = adminVM.Admin_Type,
-                                Name = adminVM.Name,
-                                LastName = adminVM.LastName,
-                                Email = adminVM.Email,
-                                UserName = adminVM.UserName,
-                                MyLocation = lokacija.Id
-                            };
+                                ModelState.AddModelError("", "Error: Admin location is null.");
+                                return RedirectToAction("AddNewAdmin", "System_Admin");
+                            }
                         }
 
                         if (newAdmin != null)
@@ -125,6 +153,7 @@ namespace WebApplication2.Controllers
                                 IdentityResult result;
                                 if (um.Users.FirstOrDefault(usr => usr.Email == newAdmin.Email) == null)
                                 {
+                                    //RandomString()
                                     string newPassword = "defaultPassword1!";
                                     result = await um.CreateAsync(newAdmin, newPassword);
                                     if (result.Succeeded)
@@ -190,6 +219,23 @@ namespace WebApplication2.Controllers
                                                     ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Location_Admin" + "' role failed with error(s): " + userResult.Errors);
                                                     return View("AddNewAdmin");
                                                 }
+                                                else
+                                                {
+                                                    ApplicationDbContext ctx = new ApplicationDbContext();
+                                                    var resLoc = ctx.Locations.FirstOrDefault(x => x.Id.ToString() == adminVM.MyLocationId);
+
+                                                    if(resLoc != null)
+                                                    {
+                                                        resLoc.MyAdminId = newAdmin.Id;
+                                                        ctx.SaveChanges();
+                                                    }
+                                                    else
+                                                    {
+                                                        um.RemoveFromRole(newAdmin.Id, "Location_Admin");
+                                                        ModelState.AddModelError("", "Error: Given admin location is not found! Please try again.");
+                                                        return View("AddNewAdmin");
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -234,7 +280,7 @@ namespace WebApplication2.Controllers
                     return RedirectToAction("Index", "Home");
                 else
                 {
-                    if (locationVM.Name != null && locationVM.Address != null && locationVM.Location_Admin_Id != null)
+                    if (locationVM.Name != null && locationVM.Address != null)
                     {
                         if (locationVM.Location_Type == LocationType.CINEMA || locationVM.Location_Type == LocationType.THEATRE)
                         {
@@ -269,20 +315,11 @@ namespace WebApplication2.Controllers
                                     DiscountedTicketsList = new List<Ticket>(),
                                     ProjectionsList = new List<Projection>(),
                                     HallsList = new List<Hall>(),
-                                    RecensionsList = new List<Recension>()
+                                    RecensionsList = new List<Recension>(),
+                                    MyAdminId = null
                                 };
 
                                 ctx.Locations.Add(newLocation);
-
-                                LocationAdmin locAdmin = (LocationAdmin)ctx.Users.FirstOrDefault(x => x.Id == locationVM.Location_Admin_Id);
-                                if (locAdmin != null) { }
-                                //  locAdmin.MyLocation = newLocation;
-                                else
-                                {
-                                    ModelState.AddModelError("", "Error: location admin not found.");
-                                    return View("RegisterNewLocation");
-                                }
-
                                 ctx.SaveChanges();
                             }
                             else

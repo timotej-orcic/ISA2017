@@ -160,7 +160,7 @@ namespace Isa2017Cinema.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { Name = model.FirstName, LastName = model.LastName, UserName = model.UserName, Email = model.Email, Password = model.Password, City = model.City, PhoneNumber = model.PhoneNumber,
-                    Points = 0.0, UserType = Models.Type.DEFAULT, FriendList = new List<ApplicationUser>(), ReservationsList = new List<Ticket>(), RecensionList = new List<Recension>(), PostsList = new List<Post>() };
+                    Points = 0.0, UserType = Models.Type.DEFAULT, FriendList = new List<ApplicationUser>(), ReservationsList = new List<Ticket>(), RecensionList = new List<Recension>()};
                  
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
