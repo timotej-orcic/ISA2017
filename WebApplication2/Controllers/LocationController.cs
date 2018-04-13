@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
+using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
@@ -17,6 +19,22 @@ namespace WebApplication2.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        public ActionResult ProjectionsShow()
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            string id = User.Identity.GetUserId();
+            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            return Projections(locationId);
+        }
+
+        public ActionResult HallsShow()
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            string id = User.Identity.GetUserId();
+            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            return Halls(locationId);
         }
 
         public ActionResult Projections(Guid MyLocation)
@@ -133,6 +151,78 @@ namespace WebApplication2.Controllers
             }
             return Projections(MyLocation);
         }
+
+        public ActionResult ChangePictureProjection(Guid projekcija)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            ChangeProjectionPictureViewModel vm = new ChangeProjectionPictureViewModel
+            {
+                Id = projectionForEdit.Id,
+                ImageUpload = null
+            };
+            return View("ChangePictureProjection",vm);
+        }
+
+        public ActionResult EditPictureProjection(ChangeProjectionPictureViewModel model)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.ImageUpload == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        var validImageTypes = new string[]
+                           {
+                                "image/gif",
+                                "image/jpeg",
+                                "image/pjpeg",
+                                "image/png"
+                           };
+                        
+                        if (validImageTypes.Contains(model.ImageUpload.ContentType))
+                        {
+                            var uploadDir = "~/images/projectionPosters";
+                            var imagePath = Path.Combine(Server.MapPath(uploadDir), model.ImageUpload.FileName);
+                            var imageUrl = Path.Combine(uploadDir, model.ImageUpload.FileName);
+                            imageUrl = imageUrl.Replace("\\", "/");
+                            model.ImageUpload.SaveAs(imagePath);
+                            imageUrl = imageUrl.Substring(1);
+                            imageUrl = ".." + imageUrl;
+
+                            p.PosterUrl = imageUrl;
+
+                        }
+
+                        projectionForEdit = p;
+                    }
+                }
+            }
+
+            dbCtx.SaveChanges();
+            return EditProjection(projectionForEdit.Id);
+        }
         
         public ActionResult AddProjection(Guid MyLocation)
         {
@@ -182,6 +272,33 @@ namespace WebApplication2.Controllers
 
         }
 
+        public ActionResult DeleteTimeHallProjection(Guid projekcija, Guid timehall)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            Projection proj = new Projection();
+            proj = dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefault(x => x.Id == projectionForEdit.Id);
+            foreach (HallTimeProjection htp in proj.ProjHallsTimeList)
+            {
+                if (htp.Id.Equals(timehall))
+                {
+                    proj.ProjHallsTimeList.Remove(htp);
+                    break;
+                }
+            }
+            dbCtx.SaveChanges();
+            return EditProjection(projectionForEdit.Id);
+        }
+
         public ActionResult EditProjection(Guid idProj)
         {
             List<Projection> allProjections = new List<Projection>();
@@ -195,7 +312,17 @@ namespace WebApplication2.Controllers
                     projectionForEdit = p;
                 }
             }
-            return View("ChangeProjection", projectionForEdit);
+            var projHalls = new List<HallTimeProjection>();
+            Projection proj = new Projection();
+            proj = dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefault(x => x.Id == projectionForEdit.Id);
+            foreach (HallTimeProjection htp in proj.ProjHallsTimeList)
+            {
+                HallTimeProjection projHall = new HallTimeProjection();
+                projHall = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == htp.Id);
+                projHalls.Add(projHall);
+            }
+            proj.ProjHallsTimeList = projHalls;
+            return View("ChangeProjection", proj);
         }
         public ActionResult ChangeNameLocation(Guid idLocation)
         {
@@ -400,7 +527,7 @@ namespace WebApplication2.Controllers
            /* */
           
             dbCtx.SaveChanges();
-            return View("ChangeProjection", projectionForEdit);
+            return EditProjection(projectionForEdit.Id);
         }
 
         public ActionResult ChangeGenreProjection(Guid projekcija)
@@ -453,7 +580,7 @@ namespace WebApplication2.Controllers
             /* */
 
             dbCtx.SaveChanges();
-            return View("ChangeProjection", projectionForEdit);
+            return EditProjection(projectionForEdit.Id);
         }
         public ActionResult ChangeDirectorProjection(Guid projekcija)
         {
@@ -505,7 +632,7 @@ namespace WebApplication2.Controllers
             /* */
 
             dbCtx.SaveChanges();
-            return View("ChangeProjection", projectionForEdit);
+            return EditProjection(projectionForEdit.Id);
         }
         //GET
         public ActionResult ChangeDescriptionProjection(Guid projekcija)
@@ -556,7 +683,7 @@ namespace WebApplication2.Controllers
             }
 
             dbCtx.SaveChanges();
-            return View("ChangeProjection", projectionForEdit);
+            return EditProjection(projectionForEdit.Id);
         }
         public ActionResult ChangeDurationProjection(Guid projekcija)
         {
@@ -613,7 +740,7 @@ namespace WebApplication2.Controllers
             }
 
             dbCtx.SaveChanges();
-            return View("ChangeProjection", projectionForEdit);
+            return EditProjection(projectionForEdit.Id);
         }
         public ActionResult ChangePriceProjection(Guid projekcija)
         {
@@ -670,7 +797,7 @@ namespace WebApplication2.Controllers
             }
 
             dbCtx.SaveChanges();
-            return View("ChangeProjection", projectionForEdit);
+            return EditProjection(projectionForEdit.Id);
         }
        
     }

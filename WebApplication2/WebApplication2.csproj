@@ -393,6 +393,7 @@
     <Content Include="Views\Reservation\ShowRepertoar.cshtml" />
     <Content Include="Views\Hall\AddHallTimeProjection.cshtml" />
     <Content Include="Views\Reservation\Seats.cshtml" />
+    <Content Include="Views\Location\ChangePictureProjection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -8,7 +8,7 @@
 @using (Html.BeginForm("HallTimeSubmit", "Hall", new { MyLocation = ViewBag.location, projekcija = ViewBag.projekcija }, FormMethod.Post, new { @class = "form-horizontal", role = "form", style = "color:white" }))
 {
     @Html.AntiForgeryToken()
-    <h4 style="color:white">Create a new</h4>
+    <h4 style="color:white">Create a new time for projection</h4>
     <hr />
     @Html.ValidationSummary("", new { @class = "text-danger" })
 
@@ -17,7 +17,7 @@
         <div class="col-md-10">
             
             @Html.DropDownListFor(n => n.Hall,
-            new SelectList(ViewBag.Halls,"Name"))
+            new SelectList(Model.Hale,"Name"))
 
         </div>
     </div>

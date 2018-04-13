@@ -18,6 +18,8 @@ namespace WebApplication2.Controllers
             return View();
         }
 
+        
+
         public ActionResult ViewHall(Guid IdHall)
         {
             List<Hall> allHalls = new List<Hall>();
@@ -52,11 +54,21 @@ namespace WebApplication2.Controllers
             foreach (Hall h in location.HallsList)
             {
                 items.Add(new SelectListItem { Text = h.Name });
+                halls.Add(h.Name);
             }
+            
+            HallTimeViewModel halle = new HallTimeViewModel
+            {
+                Date = "",
+                Hall = "",
+                Hale = halls, 
+                Time = ""
+                
+            };
             ViewBag.location = locationId;
             ViewBag.Halls = items;
             ViewBag.projekcija = projekcija;
-            return View("AddHallTimeProjection");
+            return View("AddHallTimeProjection", halle);
         }
         public async Task<ActionResult> HallTimeSubmit(Models.HallTimeViewModel model, Guid MyLocation, Guid projekcija)
         {
@@ -67,6 +79,14 @@ namespace WebApplication2.Controllers
             h = location.HallsList[0];
             var rows = h.RowsCount;
             var columns = h.ColsCount;
+            string imehale = model.Hall ;
+            foreach(Hall hall in location.HallsList)
+            {
+                if (hall.Name.Equals(imehale))
+                {
+                    h = hall;
+                }
+            }
 
             string date = model.Date;
             string time = model.Time;
@@ -104,7 +124,28 @@ namespace WebApplication2.Controllers
             var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == x.Id);
 
             ViewBag.location = MyLocation;
-            return View("");
+            List<Projection> allProjections = new List<Projection>();
+            
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            var projHalls = new List<HallTimeProjection>();
+            Projection proj = new Projection();
+            proj = dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefault(x => x.Id == projectionForEdit.Id);
+            foreach (HallTimeProjection htp in proj.ProjHallsTimeList)
+            {
+                HallTimeProjection projHall = new HallTimeProjection();
+                projHall = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == htp.Id);
+                projHalls.Add(projHall);
+            }
+            proj.ProjHallsTimeList = projHalls;
+            return View("../Location/ChangeProjection",proj);
 
         }
     }

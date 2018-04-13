@@ -73,7 +73,7 @@ namespace WebApplication2.Controllers
             // var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where MyLocation = '" + hala.Id + "'").FirstOrDefault();
           
             dbCtx.SaveChanges();
-            return View("Seats", saHalom);
+            return await ViewReservation(saProjekcijom.Projection.Id,saProjekcijom.Id);
         }
 
         public ActionResult ViewRepertoar(Guid locationId)

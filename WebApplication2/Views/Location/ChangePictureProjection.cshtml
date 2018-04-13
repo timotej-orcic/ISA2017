@@ -1,0 +1,31 @@
+﻿@model Isa2017Cinema.Models.ChangeProjectionPictureViewModel
+@{
+    ViewBag.Title = "ChangePictureProjection";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("EditPictureProjection", "Location", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label class="control-label col-xs-3" style="color:white">Projection image</label>
+                <div class="col-xs-9">
+                    @Html.TextBoxFor(m => m.ImageUpload, new { type = "file", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.ImageUpload, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Change image" class="btn btn-basic" />
+        </div>
+    </div>
+}
+

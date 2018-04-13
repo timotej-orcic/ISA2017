@@ -19,5 +19,7 @@ namespace WebApplication2.Models
         [Required]
         [Display(Name = "Time")]
         public string Time { get; set; }
+
+        public List<String> Hale { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using System;
+using System.Web;
 
 namespace Isa2017Cinema.Models
 {
@@ -84,6 +85,13 @@ namespace Isa2017Cinema.Models
     {
         public Guid Id { get; set; }
         public string Field { get; set; }
+
+    }
+    public class ChangeProjectionPictureViewModel
+    {
+        public Guid Id { get; set; }
+        [DataType(DataType.Upload)]
+        public HttpPostedFileBase ImageUpload { get; set; }
 
     }
     public class ChangePhoneViewModel

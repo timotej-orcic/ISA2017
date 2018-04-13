@@ -5,9 +5,9 @@
 }
 
 <br />
-<div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
-    <h2 style="color:white">Halls: </h2>
-    <input type="button" class="btn btn-basic" value="Add hall" onclick="location.href='@Url.Action("AddHall", "Location",new { MyLocation = Model.Id})'" />
+<div class="jumbotron" style="background-color:transparent;  width: 600px; margin:0 auto ">
+    <h2 style="color:white; font-size: 60px; margin:0 auto">Halls: </h2>
+    <input type="button" class="btn btn-success" value="Add hall" onclick="location.href='@Url.Action("AddHall", "Location",new { MyLocation = Model.Id})'" />
 </div>
 <br />
 @foreach (var l in Model.HallsList)

@@ -9,7 +9,7 @@
 @using (Html.BeginForm("ProjectionSubmit", "Location",new { MyLocation = ViewBag.location }, FormMethod.Post, new { @class = "form-horizontal", role = "form", style = "color:white", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-    <h4 style="color:white">Create a new account.</h4>
+    <h4 style="color:white">New projection.</h4>
     <hr />
     @Html.ValidationSummary("", new { @class = "text-danger" })
  

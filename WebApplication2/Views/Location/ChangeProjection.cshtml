@@ -17,9 +17,15 @@
     <h2 style="color:white; font-weight:bold; font-size: 14px">Ticket price: @Model.TicketPrice [ @Html.ActionLink("Change", "ChangePriceProjection", "Location", new { projekcija = Model.Id }, null) ] </h2>
     <input type="button" class="btn btn-basic" value="Add new time for projection" onclick="location.href='@Url.Action("AddHallTimeProjection", "Hall",new { projekcija = Model.Id})'" />
     <input type="button" class="btn btn-basic" value="Add fast reserve ticket" onclick="location.href='@Url.Action("AddFastReserveTicket", "Hall",new { projekcija = Model.Id})'" />
+    <h1 style="color:white; font-weight:bold; font-size: 24px"><i>Schedule :</i></h1>
 
+    <ul>
+        @foreach (var projhall in Model.ProjHallsTimeList)
+        {
+            <li style="color:white; font-weight:bold; font-size: 18px"> @projhall.Time , @projhall.Hall.Name [ @Html.ActionLink("Delete", "DeleteTimeHallProjection", "Location", new { projekcija = Model.Id , timehall = projhall.Id }, null) ]</li>
 
-        <br />
-
+        }
+    </ul>
+  <br />
 </div>
 
