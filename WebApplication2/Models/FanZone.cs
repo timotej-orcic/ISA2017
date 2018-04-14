@@ -13,6 +13,5 @@ namespace Isa2017Cinema.Models
 
         public List<ThemeRequisit> RequisitsList { get; set; }
         public List<Post> PostsList { get; set; }
-        public List<Post> UnapprovedPostsList { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -29,53 +30,70 @@ namespace WebApplication2.Controllers
                     List<ThemeRequisit> themeRequisits = new List<ThemeRequisit>();
                     using (var ctx = new ApplicationDbContext())
                     {
-                        var reqs = ctx.Database.SqlQuery<ThemeRequisit>("select * from ThemeRequisits where ApplicationUser_Id is NULL");
-                        foreach (var req in reqs)
+                        string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                        var fzData = ctx.Fanzone.Include(x => x.RequisitsList).FirstOrDefault();
+                        foreach (var req in fzData.RequisitsList)
                         {
-                            themeRequisits.Add(req);
+                            if(req.ParentUserId == null)
+                                themeRequisits.Add(req);
                         }
                     }
 
                     ViewBag.requisitsToShow = themeRequisits;
 
+                    string uID = User.Identity.GetUserId();
+
                     if (User.IsInRole("Regular_User"))
                     {
+                        List<ThemeRequisit> myRequisits = new List<ThemeRequisit>();
                         List<Post> allPosts = new List<Post>();
                         List<Post> myPosts = new List<Post>();
                         using (var ctx = new ApplicationDbContext())
                         {
                             string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
-                            var fzData = ctx.Fanzone.Include(x => x.PostsList).FirstOrDefault();
-                            foreach (var p in fzData.PostsList)
-                                allPosts.Add(p);
+                            var fzData = ctx.Fanzone.Include(x => x.PostsList).Include(y => y.RequisitsList).FirstOrDefault();
 
-                            string uID = User.Identity.GetUserId();
-                            var currentUser = ctx.Users.Include(x => x.PostsList).FirstOrDefault(x => x.Id.ToString() == uID);
-                            if (currentUser != null)
+                            foreach (var p in fzData.PostsList)
                             {
-                                foreach (var p in currentUser.PostsList)
+                                if (p.ParentUserId != uID)
+                                    allPosts.Add(p);
+                                else
                                     myPosts.Add(p);
+                            }
+
+                            foreach (var req in fzData.RequisitsList)
+                            {
+                                if(req.ParentUserId == uID)
+                                    myRequisits.Add(req);
                             }
                         }
 
+                        ViewBag.myRequisits = myRequisits;
                         ViewBag.allPosts = allPosts;
                         ViewBag.myPosts = myPosts;
                     }
                     else if (User.IsInRole("Fanzone_Admin"))
                     {
                         List<Post> unapprovedPosts = new List<Post>();
+                        List<Post> postsToManage = new List<Post>();
                         using (var ctx = new ApplicationDbContext())
                         {
-                            string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
-                            var fzData = ctx.Fanzone.Include(y => y.UnapprovedPostsList).FirstOrDefault();
+                            var fzData = ctx.Fanzone.Include(y => y.PostsList).FirstOrDefault();
 
-                            foreach (var p in fzData.UnapprovedPostsList)
-                                unapprovedPosts.Add(p);
+                            foreach (var p in fzData.PostsList)
+                            {
+                                if (!p.IsTakenByAdmin)
+                                    unapprovedPosts.Add(p);
+                                else if (uID == p.ParentAdminId)
+                                    postsToManage.Add(p);
+                            }                               
 
                             ViewBag.unapprovedPosts = unapprovedPosts;
+                            ViewBag.postsToManage = postsToManage;
                         }
                     }
 
+                    ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
                     return View();
                 }
             }
@@ -139,7 +157,7 @@ namespace WebApplication2.Controllers
                                         ImageUpload = null,
                                         OldImageUrl = resReq.ImageUrl,
                                         Description = resReq.Description,
-                                        RequisitID = reqID
+                                        RequisitID = reqID,                                        
                                     };
 
                                     return View(thReqVM);
@@ -265,50 +283,63 @@ namespace WebApplication2.Controllers
                     {
                         ApplicationDbContext ctx = new ApplicationDbContext();
 
-                        var searchReq = ctx.ThemeRequisits.FirstOrDefault(x => x.Name == ntrVM.Name);
+                        string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                        var fanzone = await ctx.Fanzone.Include(x => x.RequisitsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
 
-                        if(searchReq == null)
+                        if(fanzone != null)
                         {
-                            var validImageTypes = new string[]
+                            var searchReq = fanzone.RequisitsList.FirstOrDefault(x => x.Name == ntrVM.Name);
+
+                            if (searchReq == null)
                             {
+                                var validImageTypes = new string[]
+                                {
                                 "image/gif",
                                 "image/jpeg",
                                 "image/pjpeg",
                                 "image/png"
-                            };
-
-                            if (validImageTypes.Contains(ntrVM.ImageUpload.ContentType))
-                            {
-                                var uploadDir = "~/images/themeRequisits";
-                                var imagePath = Path.Combine(Server.MapPath(uploadDir), ntrVM.ImageUpload.FileName);
-                                var imageUrl = Path.Combine(uploadDir, ntrVM.ImageUpload.FileName);
-                                ntrVM.ImageUpload.SaveAs(imagePath);
-
-                                ThemeRequisit thReq = new ThemeRequisit
-                                {
-                                    Name = ntrVM.Name,
-                                    Price = ntrVM.Price,
-                                    AvailableCount = ntrVM.AvailableCount,
-                                    ImageUrl = imageUrl,
-                                    Description = ntrVM.Description
                                 };
 
-                                ctx.ThemeRequisits.Add(thReq);
-                                ctx.SaveChanges();
+                                if (validImageTypes.Contains(ntrVM.ImageUpload.ContentType))
+                                {
+                                    var uploadDir = "~/images/themeRequisits";
+                                    var imagePath = Path.Combine(Server.MapPath(uploadDir), ntrVM.ImageUpload.FileName);
+                                    var imageUrl = Path.Combine(uploadDir, ntrVM.ImageUpload.FileName);
+                                    ntrVM.ImageUpload.SaveAs(imagePath);
 
-                                TempData["success"] = "Succesfully added a new theme requisit.";
-                                return RedirectToAction("FanZonePage","FanZone");
+                                    ThemeRequisit thReq = new ThemeRequisit
+                                    {
+                                        Name = ntrVM.Name,
+                                        Price = ntrVM.Price,
+                                        AvailableCount = ntrVM.AvailableCount,
+                                        ImageUrl = imageUrl,
+                                        Description = ntrVM.Description,
+                                        ParentUserId = null
+                                    };
+
+                                    fanzone.RequisitsList.Add(thReq);
+                                    ctx.SaveChanges();
+
+                                    TempData["success"] = "Succesfully added a new theme requisit.";
+                                    return RedirectToAction("FanZonePage", "FanZone");
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError("", "Error: Unsuported image type.");
+                                    return View("AddNewThemeRequisit");
+                                }
                             }
                             else
                             {
-                                ModelState.AddModelError("", "Error: Unsuported image type.");
+                                ModelState.AddModelError("", "The requisit with a given name already existst. Please try a different name.");
                                 return View("AddNewThemeRequisit");
                             }
                         }
                         else
                         {
-                            ModelState.AddModelError("", "The requisit with a given name already existst. Please try a different name.");
+                            ModelState.AddModelError("", "Error: Can't load fanzone data.");
                             return View("AddNewThemeRequisit");
+
                         }
                     }
                     else
@@ -336,59 +367,72 @@ namespace WebApplication2.Controllers
                     if(ntrVM.Name != null)
                     {
                         ApplicationDbContext ctx = new ApplicationDbContext();
-                        var resReq = ctx.ThemeRequisits.FirstOrDefault(x => x.Id.ToString() == ntrVM.RequisitID);
 
-                        if(resReq != null)
+                        string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                        var fanzone = await ctx.Fanzone.Include(x => x.RequisitsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
+
+                        if(fanzone != null)
                         {
-                            var newNameCheckReq = ctx.ThemeRequisits.FirstOrDefault(x => x.Name == ntrVM.Name);
-                            if (resReq.Name == ntrVM.Name || newNameCheckReq == null)
-                            {
-                                resReq.Name = ntrVM.Name;
-                                resReq.Price = ntrVM.Price;
-                                resReq.AvailableCount = ntrVM.AvailableCount;
-                                resReq.Description = ntrVM.Description;
+                            var resReq = fanzone.RequisitsList.FirstOrDefault(x => x.Id.ToString() == ntrVM.RequisitID);
 
-                                if (ntrVM.ImageUpload != null)
+                            if (resReq != null)
+                            {
+                                var newNameCheckReq = ctx.ThemeRequisits.FirstOrDefault(x => x.Name == ntrVM.Name);
+                                if (resReq.Name == ntrVM.Name || newNameCheckReq == null)
                                 {
-                                    var validImageTypes = new string[]
+                                    resReq.Name = ntrVM.Name;
+                                    resReq.Price = ntrVM.Price;
+                                    resReq.AvailableCount = ntrVM.AvailableCount;
+                                    resReq.Description = ntrVM.Description;
+
+                                    if (ntrVM.ImageUpload != null)
                                     {
+                                        var validImageTypes = new string[]
+                                        {
                                         "image/gif",
                                         "image/jpeg",
                                         "image/pjpeg",
                                         "image/png"
-                                    };
+                                        };
 
-                                    if (validImageTypes.Contains(ntrVM.ImageUpload.ContentType))
-                                    {
-                                        var uploadDir = "~/images/themeRequisits";
-                                        var imagePath = Path.Combine(Server.MapPath(uploadDir), ntrVM.ImageUpload.FileName);
-                                        var imageUrl = Path.Combine(uploadDir, ntrVM.ImageUpload.FileName);
-                                        ntrVM.ImageUpload.SaveAs(imagePath);
+                                        if (validImageTypes.Contains(ntrVM.ImageUpload.ContentType))
+                                        {
+                                            var uploadDir = "~/images/themeRequisits";
+                                            var imagePath = Path.Combine(Server.MapPath(uploadDir), ntrVM.ImageUpload.FileName);
+                                            var imageUrl = Path.Combine(uploadDir, ntrVM.ImageUpload.FileName);
+                                            ntrVM.ImageUpload.SaveAs(imagePath);
 
-                                        resReq.ImageUrl = imageUrl;
+                                            resReq.ImageUrl = imageUrl;
+                                        }
+                                        else
+                                        {
+                                            ModelState.AddModelError("", "Error: Unsuported image type.");
+                                            TempData["ModelState"] = ModelState;
+                                            return RedirectToAction("EditThemeRequisit", "FanZone", new { reqID = ntrVM.RequisitID });
+                                        }
                                     }
-                                    else
-                                    {
-                                        ModelState.AddModelError("", "Error: Unsuported image type.");
-                                        TempData["ModelState"] = ModelState;
-                                        return RedirectToAction("EditThemeRequisit", "FanZone", new { reqID = ntrVM.RequisitID });
-                                    }
+
+                                    ctx.SaveChanges();
+                                    TempData["success"] = "Succesfully edited the given theme requisit.";
+                                    return RedirectToAction("FanZonePage", "FanZone");
                                 }
-
-                                ctx.SaveChanges();
-                                TempData["success"] = "Succesfully edited the given theme requisit.";
-                                return RedirectToAction("FanZonePage", "FanZone");
+                                else
+                                {
+                                    ModelState.AddModelError("", "The requisit with a given name already existst. Please try a different name.");
+                                    TempData["ModelState"] = ModelState;
+                                    return RedirectToAction("EditThemeRequisit", "FanZone", new { reqID = ntrVM.RequisitID });
+                                }
                             }
                             else
                             {
-                                ModelState.AddModelError("", "The requisit with a given name already existst. Please try a different name.");
+                                ModelState.AddModelError("", "Error: Can't find given Theme requisit.");
                                 TempData["ModelState"] = ModelState;
                                 return RedirectToAction("EditThemeRequisit", "FanZone", new { reqID = ntrVM.RequisitID });
                             }
                         }
                         else
                         {
-                            ModelState.AddModelError("", "Error: Can't find given Theme requisit.");
+                            ModelState.AddModelError("", "Error: Can't read the fanzone data.");
                             TempData["ModelState"] = ModelState;
                             return RedirectToAction("EditThemeRequisit", "FanZone", new { reqID = ntrVM.RequisitID });
                         }
@@ -417,18 +461,30 @@ namespace WebApplication2.Controllers
                     {
                         using (ApplicationDbContext ctx = new ApplicationDbContext())
                         {
-                            var resReq = ctx.ThemeRequisits.FirstOrDefault(x => x.Id.ToString() == reqID);
-                            if(resReq != null)
-                            {
-                                ctx.ThemeRequisits.Remove(resReq);
-                                ctx.SaveChanges();
+                            string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                            var fanzone = await ctx.Fanzone.Include(x => x.RequisitsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
 
-                                TempData["success"] = "Succesfully deleted the given theme requisit.";
-                                return RedirectToAction("FanZonePage", "FanZone");
+                            if(fanzone != null)
+                            {
+                                var resReq = fanzone.RequisitsList.FirstOrDefault(x => x.Id.ToString() == reqID);
+                                if (resReq != null)
+                                {
+                                    fanzone.RequisitsList.Remove(resReq);
+                                    ctx.ThemeRequisits.Remove(resReq);
+                                    ctx.SaveChanges();
+
+                                    TempData["success"] = "Succesfully deleted the given theme requisit.";
+                                    return RedirectToAction("FanZonePage", "FanZone");
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError("", "Error: Can't find the given Theme requisit.");
+                                    return View("FanZonePage");
+                                }
                             }
                             else
                             {
-                                ModelState.AddModelError("", "Error: Can't find the given Theme requisit.");
+                                ModelState.AddModelError("", "Error: Can't read the fanzone data.");
                                 return View("FanZonePage");
                             }
                         }
@@ -456,17 +512,18 @@ namespace WebApplication2.Controllers
                     {
                         using (ApplicationDbContext ctx = new ApplicationDbContext())
                         {
-                            var resReq = ctx.ThemeRequisits.FirstOrDefault(x => x.Id.ToString() == reqID);
-                            if (resReq != null)
-                            {
-                                if(resReq.AvailableCount > 0)
-                                {
-                                    string uID = User.Identity.GetUserId();
-                                    var currentUser = await ctx.Users.Include(x => x.ReservedRequisitsList).FirstOrDefaultAsync(x => x.Id.ToString() == uID);
+                            string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                            var fanzone = await ctx.Fanzone.Include(x => x.RequisitsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
 
-                                    if (currentUser != null)
+                            if(fanzone != null)
+                            {
+                                var resReq = fanzone.RequisitsList.FirstOrDefault(x => x.Id.ToString() == reqID);
+                                if (resReq != null)
+                                {
+                                    if (resReq.AvailableCount > 0)
                                     {
-                                        var alreadyReservedCheck =  currentUser.ReservedRequisitsList.FirstOrDefault(x => x.Name == resReq.Name);
+                                        string uID = User.Identity.GetUserId();
+                                        var alreadyReservedCheck = fanzone.RequisitsList.FirstOrDefault(x => x.Name == resReq.Name && x.ParentUserId == uID);
                                         int resCnt = 0;
 
                                         if (alreadyReservedCheck != null)
@@ -475,7 +532,8 @@ namespace WebApplication2.Controllers
                                         if (resCnt >= 3)
                                         {
                                             ModelState.AddModelError("", "You can't reserve more then 3 theme requisits of a kind.");
-                                            return View("FanZonePage");
+                                            TempData["ModelState"] = ModelState;
+                                            return RedirectToAction("FanZonePage", "FanZone");
                                         }
                                         else
                                         {
@@ -494,10 +552,11 @@ namespace WebApplication2.Controllers
                                                     AvailableCount = resCnt,
                                                     Description = resReq.Description,
                                                     ImageUrl = resReq.ImageUrl,
-                                                    Price = resReq.Price
+                                                    Price = resReq.Price,
+                                                    ParentUserId = uID
                                                 };
 
-                                                currentUser.ReservedRequisitsList.Add(copyData);
+                                                fanzone.RequisitsList.Add(copyData);
                                             }
 
                                             resReq.AvailableCount--;
@@ -509,27 +568,31 @@ namespace WebApplication2.Controllers
                                     }
                                     else
                                     {
-                                        ModelState.AddModelError("", "Error: Can't find current user data.");
-                                        return View("FanZonePage");
+                                        ModelState.AddModelError("", "There are no more available theme requisits of this kind. Please try again later.");
+                                        TempData["ModelState"] = ModelState;
+                                        return RedirectToAction("FanZonePage", "FanZone");
                                     }
                                 }
                                 else
                                 {
-                                    ModelState.AddModelError("", "There are no more available theme requisits of this kind. Please try again later.");
-                                    return View("FanZonePage");
+                                    ModelState.AddModelError("", "Error: Can't find the given Theme requisit.");
+                                    TempData["ModelState"] = ModelState;
+                                    return RedirectToAction("FanZonePage", "FanZone");
                                 }
                             }
                             else
                             {
-                                ModelState.AddModelError("", "Error: Can't find the given Theme requisit.");
-                                return View("FanZonePage");
+                                ModelState.AddModelError("", "Error: Can't read the fanzone data.");
+                                TempData["ModelState"] = ModelState;
+                                return RedirectToAction("FanZonePage", "FanZone");
                             }
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error: Some attributes are null.");
-                        return View("FanZonePage");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("FanZonePage", "FanZone");
                     }
                 }
             }
@@ -547,91 +610,74 @@ namespace WebApplication2.Controllers
                 {
                     if(anpVM.Name != null && anpVM.Description != null && anpVM.BiddingDate != null)
                     {
-                        if(anpVM.BiddingDate > DateTime.Now)
+                        if (anpVM.BiddingDate > DateTime.Now)
                         {
                             using (ApplicationDbContext ctx = new ApplicationDbContext())
                             {
                                 string uID = User.Identity.GetUserId();
-                                var currentUser = await ctx.Users.Include(x => x.PostsList).FirstOrDefaultAsync(x => x.Id.ToString() == uID);
 
-                                if (currentUser != null)
+                                string imgUrl = null;
+
+                                if (anpVM.ImageUpload != null)
                                 {
-                                    var searchPost = currentUser.PostsList.FirstOrDefault(x => x.Name == anpVM.Name);
-
-                                    if (searchPost == null)
+                                    var validImageTypes = new string[]
                                     {
-                                        string imgUrl = null;
-
-                                        if (anpVM.ImageUpload != null)
-                                        {
-                                            var validImageTypes = new string[]
-                                            {
                                             "image/gif",
                                             "image/jpeg",
                                             "image/pjpeg",
                                             "image/png"
-                                            };
+                                    };
 
-                                            if (validImageTypes.Contains(anpVM.ImageUpload.ContentType))
-                                            {
-                                                var uploadDir = "~/images/themeRequisits";
-                                                var imagePath = Path.Combine(Server.MapPath(uploadDir), anpVM.ImageUpload.FileName);
-                                                var imageUrl = Path.Combine(uploadDir, anpVM.ImageUpload.FileName);
-                                                anpVM.ImageUpload.SaveAs(imagePath);
+                                    if (validImageTypes.Contains(anpVM.ImageUpload.ContentType))
+                                    {
+                                        var uploadDir = "~/images/themeRequisits";
+                                        var imagePath = Path.Combine(Server.MapPath(uploadDir), anpVM.ImageUpload.FileName);
+                                        var imageUrl = Path.Combine(uploadDir, anpVM.ImageUpload.FileName);
+                                        anpVM.ImageUpload.SaveAs(imagePath);
 
-                                                imgUrl = imageUrl;
-                                            }
-                                            else
-                                            {
-                                                ModelState.AddModelError("", "Error: Unsuported image type.");
-                                                return View("AddNewPost");
-                                            }
-                                        }
-
-                                        Post newPost = new Post
-                                        {
-                                            Name = anpVM.Name,
-                                            Description = anpVM.Description,
-                                            OfferExpireDate = anpVM.BiddingDate,
-                                            ImageUrl = imgUrl,
-                                            IsChecked = false,
-                                            IsApproved = false,
-                                            LicitationsList = new List<Licitation>()
-                                        };
-
-                                        string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
-                                        var fanzone = await ctx.Fanzone.Include(x => x.UnapprovedPostsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
-                                        if (fanzone != null)
-                                        {
-                                            currentUser.PostsList.Add(newPost);
-                                            fanzone.UnapprovedPostsList.Add(newPost);
-                                            ctx.SaveChanges();
-
-                                            TempData["success"] = "Succesfully submitted a new post.";
-                                            return RedirectToAction("FanZonePage", "FanZone");
-                                        }
-                                        else
-                                        {
-                                            ModelState.AddModelError("", "Error: Can't load fanzone data.");
-                                            return View("AddNewPost");
-                                        }
+                                        imgUrl = imageUrl;
                                     }
                                     else
                                     {
-                                        ModelState.AddModelError("", "You already have a post with the same name. Plese use a different name for your new post.");
+                                        ModelState.AddModelError("", "Error: Unsuported image type.");
                                         return View("AddNewPost");
                                     }
                                 }
+
+                                Post newPost = new Post
+                                {
+                                    Name = anpVM.Name,
+                                    Description = anpVM.Description,
+                                    OfferExpireDate = anpVM.BiddingDate,
+                                    ImageUrl = imgUrl,
+                                    IsChecked = false,
+                                    IsApproved = false,
+                                    IsTakenByAdmin = false,
+                                    ParentAdminId = null,
+                                    ParentUserId = uID,
+                                    LicitationsList = new List<Licitation>()
+                                };
+
+                                string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                                var fanzone = await ctx.Fanzone.Include(x => x.PostsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
+                                if (fanzone != null)
+                                {
+                                    fanzone.PostsList.Add(newPost);
+                                    ctx.SaveChanges();
+
+                                    TempData["success"] = "Succesfully submitted a new post.";
+                                    return RedirectToAction("FanZonePage", "FanZone");
+                                }
                                 else
                                 {
-                                    ModelState.AddModelError("", "Error: Can't find the given user.");
+                                    ModelState.AddModelError("", "Error: Can't load fanzone data.");
                                     return View("AddNewPost");
                                 }
                             }
                         }
                         else
                         {
-                            ModelState.AddModelError("", "Warning: Some attributes are null.");
+                            ModelState.AddModelError("", "Warning: The bidding date must be a future DateTime element.");
                             return View("AddNewPost");
                         }
                     }
@@ -644,18 +690,193 @@ namespace WebApplication2.Controllers
             }
         }
 
-        /*public async Task<ActionResult> ManagePost(string postID, string rowVersion)
+        public async Task<ActionResult> ManagePost(string postID)
         {
-            if(postID != null && rowVersion != null)
-            {
-                //bookmarkovano u folderu Fax
-            }
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
             else
             {
-                ModelState.AddModelError("", "Error: Some attributes are null.");
-                return View("FanZonePage");
+                if (!User.IsInRole("Fanzone_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    if (postID != null)
+                    {
+                        using (ApplicationDbContext ctx = new ApplicationDbContext())
+                        {
+                            var fzData = ctx.Fanzone.Include(x => x.PostsList).FirstOrDefault();
+                            var post = fzData.PostsList.FirstOrDefault(y => y.Id.ToString() == postID);
+
+                            if (post != null)
+                            {
+                                if (!post.IsTakenByAdmin)
+                                {
+                                    string uID = User.Identity.GetUserId();
+
+                                    post.IsTakenByAdmin = true;
+                                    post.ParentAdminId = uID;
+
+                                    try
+                                    {
+                                        ctx.SaveChanges();
+                                    }catch(DbUpdateConcurrencyException ex)
+                                    {
+                                        ModelState.AddModelError("", "This post has already been taken by another admin (db concurency).");
+                                        TempData["ModelState"] = ModelState;
+                                        return RedirectToAction("FanZonePage", "FanZone");
+                                    }
+
+                                    TempData["success"] = "Succesfully took a post to manage.";
+                                    return RedirectToAction("FanZonePage", "FanZone");
+                                }
+                                else
+                                {
+                                    ModelState.AddModelError("", "This post has already been taken by another admin.");
+                                    TempData["ModelState"] = ModelState;
+                                    return RedirectToAction("FanZonePage", "FanZone");
+                                }
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("", "Error: Can't find the given post.");
+                                return View("FanZonePage");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: Some attributes are null.");
+                        return View("FanZonePage");
+                    }
+                }
             }
-        }*/
+        }
+
+        public async Task<ActionResult> ApprovePost(string postID)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Fanzone_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    if(postID != null)
+                    {
+                        using (ApplicationDbContext ctx = new ApplicationDbContext())
+                        {
+                            var fzData = ctx.Fanzone.Include(x => x.PostsList).FirstOrDefault();
+                            var post = fzData.PostsList.FirstOrDefault(y => y.Id.ToString() == postID);
+
+                            if(post != null)
+                            {
+                                post.IsChecked = true;
+                                post.IsApproved = true;
+                                ctx.SaveChanges();
+
+                                TempData["success"] = "Succesfully approved the given post.";
+                                return RedirectToAction("FanZonePage", "FanZone");
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("", "Error: Can't find the given post.");
+                                return View("FanZonePage");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: Some attributes are null.");
+                        return View("FanZonePage");
+                    }
+                }
+            }
+        }
+
+        public async Task<ActionResult> DissmissPost(string postID)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Fanzone_Admin"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    if (postID != null)
+                    {
+                        using (ApplicationDbContext ctx = new ApplicationDbContext())
+                        {
+                            var fzData = ctx.Fanzone.Include(x => x.PostsList).FirstOrDefault();
+                            var post = fzData.PostsList.FirstOrDefault(y => y.Id.ToString() == postID);
+
+                            if (post != null)
+                            {
+                                post.IsChecked = true;
+                                post.IsApproved = false;
+                                ctx.SaveChanges();
+
+                                TempData["success"] = "Succesfully dissmissed the given post.";
+                                return RedirectToAction("FanZonePage", "FanZone");
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("", "Error: Can't find the given post.");
+                                return View("FanZonePage");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: Some attributes are null.");
+                        return View("FanZonePage");
+                    }
+                }
+            }
+        }
+
+        public async Task<ActionResult> DeletePost(string postID)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Regular_User"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    if (postID != null)
+                    {
+                        using (ApplicationDbContext ctx = new ApplicationDbContext())
+                        {
+                            var fzData = ctx.Fanzone.Include(x => x.PostsList).FirstOrDefault();
+                            var post = fzData.PostsList.FirstOrDefault(y => y.Id.ToString() == postID);
+
+                            if (post != null)
+                            {
+                                fzData.PostsList.Remove(post);
+                                ctx.Posts.Remove(post);
+                                ctx.SaveChanges();
+
+                                TempData["success"] = "Succesfully deleted the given post.";
+                                return RedirectToAction("FanZonePage", "FanZone");
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("", "Error: Can't find the given post.");
+                                return View("FanZonePage");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: Some attributes are null.");
+                        return View("FanZonePage");
+                    }
+                }
+            }
+        }
 
     }
 }

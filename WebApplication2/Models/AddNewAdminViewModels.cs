@@ -1,4 +1,4 @@
-﻿
+﻿using Foolproof;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebApplication2.Models
@@ -25,5 +25,8 @@ namespace WebApplication2.Models
         [Required(ErrorMessage = "The user name is required")]
         [RegularExpression("[A-Za-z0-9]{4,20}", ErrorMessage = "Invalid username")]
         public string UserName { get; set; }
+
+        [RequiredIf("Admin_Type", 1, ErrorMessage = "The Location is required")]
+        public string MyLocationId { get; set; }
     }
 }

@@ -9,9 +9,6 @@ namespace WebApplication2.Models
         [Required(ErrorMessage = "The location type is required")]
         public LocationType Location_Type { get; set; }
 
-        [Required(ErrorMessage = "The location admin is required")]
-        public string Location_Admin_Id { get; set; }
-
         [Required(ErrorMessage = "The location name is required")]
         [MaxLength(20)]
         public string Name { get; set; }
