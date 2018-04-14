@@ -10,7 +10,9 @@ namespace Isa2017Cinema.Models
         [Key]
         public Guid Id { get; set; }
 
-        public Post ParentPost { get; set; }
+        public string ParentPostId { get; set; }
         public double OfferedPrice { get; set; }
+        public string ParentUserId { get; set; }
+        public bool IsAccepted { get; set; }
     }
 }

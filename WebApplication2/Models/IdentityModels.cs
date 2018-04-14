@@ -59,6 +59,7 @@ namespace Isa2017Cinema.Models
         public DbSet<Points> DiscountPoints { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<ThemeRequisit> ThemeRequisits { get; set; }
+        public DbSet<Licitation> Licitations { get; set; }
         public DbSet<FanZone> Fanzone { get; set; }
         protected override void OnModelCreating(DbModelBuilder mb)
         {

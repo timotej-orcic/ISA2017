@@ -20,6 +20,7 @@ namespace Isa2017Cinema.Models
         public string ParentAdminId { get; set; }
         public bool IsChecked { get; set; }
         public bool IsApproved { get; set; }
+        public bool IsGraded { get; set; }
         public List<Licitation> LicitationsList { get; set; }
     }
 }

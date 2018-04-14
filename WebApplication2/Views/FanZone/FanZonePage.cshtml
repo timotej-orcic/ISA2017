@@ -99,12 +99,17 @@
                         </div>
                         <h3 style="font-weight:bold;color:white;font-size: 14px">Offer expires: @post.OfferExpireDate</h3>
 
+                        @if (@post.OfferExpireDate < ViewBag.systemTime)
+                        {
+                            <h2 style="color:red">EXPIRED</h2>
+                        }
+
                         @if (@post.ImageUrl != null)
                         {
                             <img src=@Url.Content(@post.ImageUrl) height="32" width="32" />
                         }                        
 
-                        <input type="button" class="btn btn-success" value="Bid" onclick="location.href='@Url.Action("BidOnPost", "FanZone",new { postID = @post.Id })'" />
+                        <input type="button" class="btn btn-success" value="View offers" onclick="location.href='@Url.Action("PostOffers", "FanZone",new { postID = @post.Id })'" />
 
                     </div>
                     <br />
@@ -147,7 +152,17 @@
                             else
                             {
                                 <h3 style="font-weight:bold;color:green;font-size: 20px">APPROVED BY ADMIN</h3>
-                                <input type="button" class="btn btn-success" value="Check licitations" onclick="location.href='@Url.Action("CheckPostLicitations", "FanZone", new { postID = @post.Id })'" />
+                                <input type="button" class="btn btn-success" value="Check licitations" onclick="location.href='@Url.Action("PostOffers", "FanZone", new { postID = @post.Id })'" />
+                            }
+                        }
+                        
+                        @if (@post.OfferExpireDate < ViewBag.systemTime)
+                        {
+                            <h2 style="color:red">EXPIRED</h2>
+
+                            if (!@post.IsApproved && !@post.IsChecked)
+                            {
+                                <input type="button" class="btn btn-success" value="Delete" onclick="location.href='@Url.Action("DeletePost", "FanZone", new { postID = @post.Id })'" />
                             }
                         }                        
                     </div>
@@ -180,7 +195,14 @@ else if (User.IsInRole("Fanzone_Admin"))
                                 <img src=@Url.Content(@post.ImageUrl) height="64" width="64" />
                             }
 
-                            <input type="button" class="btn btn-success" value="Manage post" onclick="location.href='@Url.Action("ManagePost", "FanZone", new { postID = @post.Id})'" />
+                            @if (@post.OfferExpireDate < ViewBag.systemTime)
+                            {
+                                <h2 style="color:red">EXPIRED</h2>
+                            }
+                            else
+                            {
+                                <input type="button" class="btn btn-success" value="Manage post" onclick="location.href='@Url.Action("ManagePost", "FanZone", new { postID = @post.Id})'" />
+                            }                                                        
                         </div>
                         <br />
                     }
@@ -209,8 +231,15 @@ else if (User.IsInRole("Fanzone_Admin"))
                                 <img src=@Url.Content(@post.ImageUrl) height="64" width="64" />
                             }
 
-                            <input type="button" class="btn btn-success" value="Approve" onclick="location.href='@Url.Action("ApprovePost", "FanZone", new { postID = @post.Id})'" />
-                            <input type="button" class="btn btn-success" value="Dissmiss" onclick="location.href='@Url.Action("DissmissPost", "FanZone", new { postID = @post.Id})'" />
+                            @if (@post.OfferExpireDate < ViewBag.systemTime)
+                            {
+                                <h2 style="color:red">EXPIRED</h2>
+                            }
+                            else
+                            {
+                                <input type="button" class="btn btn-success" value="Approve" onclick="location.href='@Url.Action("ApprovePost", "FanZone", new { postID = @post.Id})'" />
+                                <input type="button" class="btn btn-success" value="Dissmiss" onclick="location.href='@Url.Action("DissmissPost", "FanZone", new { postID = @post.Id})'" />
+                            }
                         </div>
                         <br />
                     }

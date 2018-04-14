@@ -3,50 +3,10 @@
 @using Isa2017Cinema.Models;
 @{
     ViewBag.Title = "Home Page";
-
-    bool enableFanzoneOptions = true;
-    if (User.IsInRole("Fanzone_Admin"))
-    {
-        using (var ctx = new ApplicationDbContext())
-        {
-            var resUsr = ctx.Database.SqlQuery<FanZoneAdmin>("select * from AspNetUsers where id = '" + User.Identity.GetUserId() + "'").FirstOrDefault();
-            if (resUsr != null)
-            {
-                if (!resUsr.HasSetPassword)
-                {
-                    enableFanzoneOptions = false;
-                }
-            }
-            else
-            {
-                enableFanzoneOptions = false;
-            }
-        }
-    }
-    bool enableLocationOptions = true;
-    if (User.IsInRole("Location_Admin"))
-    {
-        using (var ctx = new ApplicationDbContext())
-        {
-            var resUsr = ctx.Database.SqlQuery<LocationAdmin>("select * from AspNetUsers where id = '" + User.Identity.GetUserId() + "'").FirstOrDefault();
-            if (resUsr != null)
-            {
-                if (!resUsr.HasSetPassword)
-                {
-                    enableLocationOptions = false;
-                }
-            }
-            else
-            {
-                enableLocationOptions = false;
-            }
-        }
-    }
-
 }
 <br />
 @{
-    if (enableFanzoneOptions && enableLocationOptions)
+    if (ViewBag.enableFanzoneOptions && ViewBag.enableLocationOptions)
     {
         if (User.IsInRole("Regular_User") || Request.IsAuthenticated==false)
         {
@@ -69,12 +29,12 @@
             </div>
         }
     }
-    else if(enableFanzoneOptions == false)
+    else if(ViewBag.enableFanzoneOptions == false)
     {
         <h2>Welcome new Fanzone Administrator! <br> As this is your first login, please change your password at the link below:</h2>
         <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
     }
-    else if (enableLocationOptions == false)
+    else if (ViewBag.enableLocationOptions == false)
     {
         <h2>Welcome new Location Administrator! <br> As this is your first login, please change your password at the link below:</h2>
         <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>

@@ -215,11 +215,13 @@
     </Compile>
     <Compile Include="Initializer.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AddMyPostOfferViewModels.cs" />
     <Compile Include="Models\AddNewPostViewModels.cs" />
     <Compile Include="Models\AddNewThemeRequisitViewModels.cs" />
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\ChangePointsScaleViewModels.cs" />
     <Compile Include="Models\CinemaViewModels.cs" />
+    <Compile Include="Models\EditMyPostOfferViewModels.cs" />
     <Compile Include="Models\EditThemeRequisitViewModels.cs" />
     <Compile Include="Models\FanZone.cs" />
     <Compile Include="Models\FanZoneAdmin.cs" />
@@ -405,6 +407,9 @@
     <Content Include="Views\Reservation\ShowRepertoar.cshtml" />
     <Content Include="Views\Hall\AddHallTimeProjection.cshtml" />
     <Content Include="Views\Reservation\Seats.cshtml" />
+    <Content Include="Views\FanZone\PostOffers.cshtml" />
+    <Content Include="Views\FanZone\AddMyPostOffer.cshtml" />
+    <Content Include="Views\FanZone\EditMyPostOffer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
