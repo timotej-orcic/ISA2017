@@ -1,0 +1,25 @@
+﻿@model WebApplication2.Models.CallFriendsViewModel
+@{
+    ViewBag.Title = "CallFriends";
+}
+
+<h2>CallFriends</h2>
+<div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 500px; margin:0 auto ">
+    <p style="color:white">Hello @Model.user.Name. You successfully reserved your tickets.</p>
+    @if (Model.brKarata > 1)
+    {
+        <p style="color:white">You can call your friends.</p>
+        foreach (Isa2017Cinema.Models.ApplicationUser friend in Model.user.FriendList)
+        {
+            <div class="jumbotron" style="background-color:white;  width: 300px; margin:0 auto ">
+                <p style="color:black">@friend.Name @friend.LastName - @friend.City</p>
+                <p style="color:black">Username: @friend.UserName</p>
+                @Html.ActionLink("Invite friend", "InviteFriend", "Reservation", new {  idPrijatelja = friend.Id, idPozivaoca = Model.user.Id, terminNaKojiPoziva = Model.projectionHallTime.Id}, null)
+
+            </div>
+            <br/>
+        }
+    }
+
+
+            

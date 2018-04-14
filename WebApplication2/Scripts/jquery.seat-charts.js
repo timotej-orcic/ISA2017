@@ -11,7 +11,7 @@
 	//'use strict';	
 		
 	$.fn.seatCharts = function (setup) {
-
+        
 		//if there's seatCharts object associated with the current element, return it
 		if (this.data('seatCharts')) {
 			return this.data('seatCharts');

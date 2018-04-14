@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Isa2017Cinema.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -52,5 +53,13 @@ namespace WebApplication2.Models
         
         [DataType(DataType.Upload)]
         public HttpPostedFileBase ImageUpload { get; set; }
+    }
+    public class CallFriendsViewModel
+    {
+        public ApplicationUser user;
+
+        public HallTimeProjection projectionHallTime;
+
+        public int brKarata;
     }
 }

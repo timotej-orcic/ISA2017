@@ -21,17 +21,18 @@ namespace WebApplication2.Controllers
         }
         
         [HttpPost] 
-        public async Task<ActionResult> Test(String[] arr)
+        public JsonResult Test(String[] arr)
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             Guid id = new Guid(arr[0]);
 
-            var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == id);
-            var saHalom = await dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var mama = dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefault(x => x.Id == id);
+            var saHalom = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == mama.Id);
 
-            var saProjekcijom = await dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var saProjekcijom =  dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefault(x => x.Id == mama.Id);
             var indexRow = -1;
             var indexColumn = -1;
+            List<Ticket> ticketsList = new List<Ticket>();
             if (arr.Length > 1)
             {
                 for(int i = 1; i < arr.Length; i++)
@@ -59,9 +60,10 @@ namespace WebApplication2.Controllers
                             DiscountMultiplier = 1.0
 
                         };
+                        ticketsList.Add(newReservation);
                         dbCtx.Reservations.Add(newReservation);
                         string userIdString = User.Identity.GetUserId();
-                        var loggedUser = await dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefaultAsync(x => x.Id == userIdString);
+                        var loggedUser =  dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == userIdString);
                         loggedUser.ReservationsList.Add(newReservation);
 
                         indexRow = -1;
@@ -69,11 +71,19 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
-           
+
             // var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where MyLocation = '" + hala.Id + "'").FirstOrDefault();
-          
+            string userId = User.Identity.GetUserId();
+
             dbCtx.SaveChanges();
-            return View("Seats", saHalom);
+            var obj = new
+            {
+                logUser = userId,
+                brRezKarata = arr.Length-1,
+                idProjekcije = saProjekcijom.Id
+            };
+            return Json(obj);
+           // return View("Seats", saProjekcijom);
         }
 
         public ActionResult ViewRepertoar(Guid locationId)
@@ -138,5 +148,49 @@ namespace WebApplication2.Controllers
            
             return View("Seats", saProjekcijom);
         }
-    }
+        public async Task<ActionResult> CallFriends(string logUser, int brRezKarata, Guid idProjekcije)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            var userWithRes = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == logUser);
+            var userWithFriends = dbCtx.Users.Include(x => x.FriendList).FirstOrDefault(x => x.Id == userWithRes.Id);
+            HallTimeProjection projectionWithHall = new HallTimeProjection();
+
+            var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == idProjekcije);
+            var saHalom = await dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var saProjekcijom = await dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            CallFriendsViewModel model = new CallFriendsViewModel
+            {
+                user = userWithFriends,
+                brKarata = brRezKarata,
+                projectionHallTime = saProjekcijom
+            };
+          
+            return View("CallFriends",model);
+        }
+        public async Task<ActionResult> InviteFriend(Guid idPrijatelja, Guid idPozivaoca, Guid terminNaKojiPoziva)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+
+            var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == terminNaKojiPoziva);
+            var saHalom = await dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var saProjekcijom = await dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var inviter = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == idPozivaoca.ToString());
+            var invited = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == idPrijatelja.ToString());
+
+            var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where Id = '" + saProjekcijom.Projection.Id + "'").FirstOrDefault();
+            var hala = dbCtx.Database.SqlQuery<Hall>("select * from Halls where Id = '" + saProjekcijom.Hall.Id + "'").FirstOrDefault();
+            var halaSaLokacijom = await dbCtx.Halls.Include(x => x.ParentLocation).FirstOrDefaultAsync(x => x.Id == saProjekcijom.Hall.Id);
+           /* List<Ticket> karte = new List<Ticket>();
+
+            foreach(Ticket ticket in inviter.ReservationsList)
+            {
+                if (ticket.ParentProjection.Id.Equals(projekcija.Id) && ticket.ProjectionHall.Id.Equals(hala.Id) && ticket.ProjectionTime.Equals(saProjekcijom.Time))
+                    karte.Add(ticket);
+            }*/
+            //sad ovde poslati mejl i u mejlu link na koji ce se ici za potvrdu / odbijanje
+            //imam lokaciju halu datum projekciju sve
+
+            return View();
+        }
+        }
 }
