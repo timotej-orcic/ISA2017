@@ -10,7 +10,7 @@
     @using (Html.BeginForm("Search", "App", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         @Html.AntiForgeryToken()
-       
+
         @Html.ValidationSummary("", new { @class = "text-danger" })
         <form class="form-horizontal">
             <div class="row container">
@@ -19,8 +19,8 @@
                     <div class="form-group">
                         <label class="control-label col-xs-3" style="color:white; "> </label>
                             
-                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder="Search" , align="right" })
-                        @Html.TextBoxFor(m => m.Type, new { @class = "form-control", align = "right", @Value=ViewBag.type, style="visibility:hidden"  })
+                         @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Search", align = "right" })
+                        @Html.TextBoxFor(m => m.Type, new { @class = "form-control", align = "right", @Value = ViewBag.type, style = "visibility:hidden" })
                          
                     </div>
                 </div>
@@ -39,9 +39,9 @@
         </form>
     } 
     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  
-    <input type="button" class="btn btn-basic" value="Sort by name" onclick="location.href='@Url.Action("SortLocationsByName", "App",new { name = @Model.Name , type = @Model.Type})'" />
+    <input type="button" class="btn btn-basic" value="Sort by name" onclick="location.href='@Url.Action("SortLocationsByName", "App", new { name = @Model.Name, type = @Model.Type })'" />
     &nbsp; &nbsp; &nbsp; &nbsp;
-    <input type="button" class="btn btn-basic" value="Sort by city" onclick="location.href='@Url.Action("SortLocationsByCity", "App",new { name = @Model.Name , type = @Model.Type})'" />
+    <input type="button" class="btn btn-basic" value="Sort by city" onclick="location.href='@Url.Action("SortLocationsByCity", "App", new { name = @Model.Name, type = @Model.Type })'" />
 
     <hr />
     <ul>
@@ -55,7 +55,8 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                [ @Html.ActionLink("Repertoar", "ViewRepertoar", "Reservation", new { locationId = l.Id },null) ]
+                    [@Html.ActionLink("Repertoar", "ViewRepertoar", "Reservation", new { locationId = l.Id }, null)]
+                
                     <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
                     
                         <a href="https://maps.google.com/?q=58250 @l.Address">

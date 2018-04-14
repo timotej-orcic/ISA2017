@@ -21,15 +21,13 @@
 
             </div>
             <div class="booking-details">
-                <h2 style="color:white">Booking Details</h2>
-
+               
                 <h3 style="color:white"> Selected Seats (<span id="counter">0</span>):</h3>
                 <ul id="selected-seats" style="color:white"></ul>
 
-                Total: <b>$<span id="total" style="color:white">0</span></b>
+                <p style="color:white">Total price: <b><span id="total" style="color:white">0</span> RSD</b></p>
 
-                <button id="buttonreserve" onclick="Reserve()" class="checkout-button">Rezervisi &raquo;</button>
-
+                <button id="buttonreserve" onclick="Reserve()" class="checkout-button">Reserve &raquo;</button>
                 <div id="legend" style="color:white"></div>
             </div>
         </div>
@@ -66,13 +64,12 @@
             type: 'POST',
             contentType: 'application/json;',
             data: JSON.stringify(arr),
-            success: function (valid)
+            success: function (data)
             {
-                if(valid) {
-                    //show that id is valid
-                } else {
-                    //show that id is not valid
-                }
+                debugger;
+              
+                window.location.href = 'CallFriends?logUser='+ data.logUser + '&brRezKarata='+data.brRezKarata +'&idProjekcije='+data.idProjekcije + '';
+               
             }
         });
     }
@@ -92,7 +89,7 @@
 
                 },
                 e: {
-                    price   : 40,
+                    price   : @Model.Projection.TicketPrice,
                     classes : 'economy-class', //your custom CSS class
                     category: 'Economy Class'
 
@@ -109,16 +106,16 @@
                 node : $('#legend'),
                 items : [
 
-                    [ 'f', 'unavailable',   'First Class' ],
+                    [ 'f', 'available',   'Taken Seats' ],
 
-                    [ 'e', 'available',   'Free seats'],
-                    [ 'b', 'unavailable', 'Already Booked']
+                    [ 'e', 'available',   'Free seats']
+                    //[ 'b', 'unavailable', 'Already Booked']
                 ]
             },
             click: function () {
                 if (this.status() == 'available') {
                     //let's create a new <li> which we'll add to the cart items
-                    $('<li>'+this.data().category+' Seat # '+this.settings.label+': <b>$'+this.data().price+'</b> <a href="#" class="cancel-cart-item">[cancel]</a></li>')
+                    $('<li> Seat # '+this.settings.label+': <b>'+this.data().price+' RSD</b> <a href="#" class="cancel-cart-item">[cancel]</a></li>')
                         .attr('id', 'cart-item-'+this.settings.id)
                         .data('seatId', this.settings.id)
                         .appendTo($cart);
