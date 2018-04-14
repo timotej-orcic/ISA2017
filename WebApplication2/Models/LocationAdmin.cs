@@ -5,6 +5,6 @@ namespace Isa2017Cinema.Models
 {
     public class LocationAdmin : Admin
     {
-        public string MyLocationId { get; set; }
+        public Location MyLocation { get; set; }
     }
 }

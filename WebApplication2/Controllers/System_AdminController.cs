@@ -129,6 +129,12 @@ namespace WebApplication2.Controllers
                         {
                             if(adminVM.MyLocationId != null)
                             {
+                                Location loc = new Location();
+                                ApplicationDbContext ctx = ApplicationDbContext.Create();
+                                foreach(Location lokacija in ctx.Locations)
+                                {
+                                    if (lokacija.Id.Equals(adminVM.MyLocationId)) loc = lokacija;
+                                }
                                 newAdmin = new LocationAdmin
                                 {
                                     Admin_Type = adminVM.Admin_Type,
@@ -136,7 +142,7 @@ namespace WebApplication2.Controllers
                                     LastName = adminVM.LastName,
                                     Email = adminVM.Email,
                                     UserName = adminVM.UserName,
-                                    MyLocationId = adminVM.MyLocationId
+                                    MyLocation = loc
                                 };
                             }
                             else
