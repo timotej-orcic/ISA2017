@@ -5,6 +5,6 @@ namespace Isa2017Cinema.Models
 {
     public class FanZoneAdmin : Admin
     {
-        public bool HasSetPassword { get; set; }
+        
     }
 }

@@ -93,6 +93,8 @@ namespace WebApplication2.Controllers
                         }
                     }
 
+                    ViewBag.systemTime = DateTime.Now;
+
                     ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
                     return View();
                 }
@@ -196,6 +198,123 @@ namespace WebApplication2.Controllers
                     return RedirectToAction("Index", "Home");
                 else
                     return View();
+            }
+        }
+
+        // GET: FanZone/PostOffers
+        public ActionResult PostOffers(string postID)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Regular_User"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    bool isExpired = false;
+                    bool isGraded = false;
+                    bool iHaveOffer = false;
+                    bool iAmParent = false;
+                    List<Licitation> postLicitations = new List<Licitation>();
+                    Dictionary<string, string> userNames = new Dictionary<string, string>();
+
+                    using (ApplicationDbContext ctx = new ApplicationDbContext())
+                    {
+                        string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                        var fzData = ctx.Fanzone.Include(x => x.PostsList.Select(y => y.LicitationsList)).FirstOrDefault();
+                        var resPost = fzData.PostsList.FirstOrDefault(p => p.Id.ToString() == postID);
+
+                        if (resPost.OfferExpireDate < DateTime.Now)
+                            isExpired = true;
+
+                        if (resPost.IsGraded)
+                            isGraded = true;
+
+                        string uID = User.Identity.GetUserId().ToString();
+
+                        if (resPost.ParentUserId == uID)
+                            iAmParent = true;
+
+                        if(resPost != null)
+                        {
+                            foreach (var l in resPost.LicitationsList)
+                            {
+                                postLicitations.Add(l);
+
+                                if(!userNames.ContainsKey(l.ParentUserId))
+                                {
+                                    using (var um = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+                                    {
+                                        userNames.Add(l.ParentUserId, um.FindById(l.ParentUserId).UserName);
+                                    }
+                                }                                    
+
+                                if (l.ParentUserId == uID)
+                                    iHaveOffer = true;
+                            }                                
+                        }
+                    }
+
+                    ViewBag.postLicitations = postLicitations;
+                    ViewBag.userNames = userNames;
+                    ViewBag.isExpired = isExpired;
+                    ViewBag.isGraded = isGraded;
+                    ViewBag.iHaveOffer = iHaveOffer;
+                    ViewBag.iAmParent = iAmParent;
+                    ViewBag.postID = postID;
+
+                    return View();
+                }                    
+            }
+        }
+
+        // GET: FanZone/AddMyPostOffer
+        public ActionResult AddMyPostOffer(string postID)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Regular_User"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    AddMyPostOfferViewModel ampoVM = new AddMyPostOfferViewModel
+                    {
+                        PostId = postID
+                    };
+                    return View(ampoVM);
+                }                    
+            }
+        }
+
+        // GET: FanZone/EditMyPostOffer
+        public ActionResult EditMyPostOffer(string licitationID)
+        {
+            if (!Request.IsAuthenticated)
+                return RedirectToAction("Login", "Account");
+            else
+            {
+                if (!User.IsInRole("Regular_User"))
+                    return RedirectToAction("Index", "Home");
+                else
+                {
+                    EditMyPostOfferViewModel empoVM = new EditMyPostOfferViewModel();
+                    using (ApplicationDbContext ctx = new ApplicationDbContext())
+                    {
+                        var licData = ctx.Licitations.FirstOrDefault(x => x.Id.ToString() == licitationID);
+
+                        if(licData != null)
+                        {
+                            empoVM.OfferValue = licData.OfferedPrice;
+                            empoVM.LicitationId = licitationID;
+                            empoVM.PostId = licData.ParentPostId;
+                        }
+                    }
+                                            
+                    return View(empoVM);
+                }
             }
         }
 
@@ -655,6 +774,7 @@ namespace WebApplication2.Controllers
                                     IsTakenByAdmin = false,
                                     ParentAdminId = null,
                                     ParentUserId = uID,
+                                    IsGraded = false,
                                     LicitationsList = new List<Licitation>()
                                 };
 
@@ -875,6 +995,136 @@ namespace WebApplication2.Controllers
                         return View("FanZonePage");
                     }
                 }
+            }
+        }
+
+        public async Task<ActionResult> AddPostOffer(AddMyPostOfferViewModel ampoVM)
+        {
+            if(ampoVM.PostId != null)
+            {
+                using (ApplicationDbContext ctx = new ApplicationDbContext())
+                {
+                    string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                    var fzData = ctx.Fanzone.Include(x => x.PostsList.Select(y => y.LicitationsList)).FirstOrDefault();
+                    var resPost = fzData.PostsList.FirstOrDefault(p => p.Id.ToString() == ampoVM.PostId);
+
+                    if(resPost != null)
+                    {
+                        string uID = User.Identity.GetUserId().ToString();
+                        var chData = resPost.LicitationsList.FirstOrDefault(l => l.ParentUserId == uID);
+                        if(chData == null)
+                        {
+                            Licitation lic = new Licitation
+                            {
+                                OfferedPrice = ampoVM.OfferValue,
+                                ParentPostId = ampoVM.PostId.ToString(),
+                                ParentUserId = uID,
+                                IsAccepted = false                                
+                            };
+
+                            resPost.LicitationsList.Add(lic);
+                            ctx.SaveChanges();
+
+                            TempData["success"] = "Succesfully added my offer for the given post.";
+                            return RedirectToAction("PostOffers", "FanZone", new { postID = ampoVM.PostId });
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "You already posted an offer for this post.");
+                            return RedirectToAction("PostOffers", "FanZone", new { postID = ampoVM.PostId });
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: Can't find the given post.");
+                        return RedirectToAction("AddMyPostOffer", "FanZone", new { postID = ampoVM.PostId });
+                    }
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error: Some attributes are null.");
+                return RedirectToAction("FanZonePage", "FanZone");
+            }
+        }
+
+        public async Task<ActionResult> EditPostOffer(EditMyPostOfferViewModel empoVM)
+        {
+            if (empoVM.LicitationId != null)
+            {
+                using (ApplicationDbContext ctx = new ApplicationDbContext())
+                {
+                    var licData = ctx.Licitations.FirstOrDefault(l => l.Id.ToString() == empoVM.LicitationId);
+
+                    if(licData != null)
+                    {
+                        licData.OfferedPrice = empoVM.OfferValue;
+                        ctx.SaveChanges();
+
+                        TempData["success"] = "Succesfully edited my offer for the given post.";
+                        return RedirectToAction("PostOffers", "FanZone", new { postID = empoVM.PostId });
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Error: Can't find the given licitation.");
+                        return RedirectToAction("AddMyPostOffer", "FanZone", new { licitationID = empoVM.LicitationId });
+                    }
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error: Some attributes are null.");
+                return RedirectToAction("FanZonePage", "FanZone");
+            }
+        }
+
+        public async Task<ActionResult> AcceptPostOffer(string licitationID)
+        {
+            if (licitationID != null)
+            {
+                using (ApplicationDbContext ctx = new ApplicationDbContext())
+                {
+                    var licData = ctx.Licitations.FirstOrDefault(x => x.Id.ToString() == licitationID);
+
+                    if(licData != null)
+                    {
+                        string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
+                        var fzData = ctx.Fanzone.Include(x => x.PostsList.Select(y => y.LicitationsList)).FirstOrDefault();
+                        var resPost = fzData.PostsList.FirstOrDefault(p => p.Id.ToString() == licData.ParentPostId);
+
+                        if(resPost != null)
+                        {
+                            resPost.IsGraded = true;
+                            licData.IsAccepted = true;
+                            ctx.SaveChanges();
+
+                            foreach (var l in resPost.LicitationsList)
+                            {
+                                //email to all users
+                                break;
+                            }
+                            
+
+                            TempData["success"] = "Succesfully accepted the given offer for the given post.";
+                            return RedirectToAction("PostOffers", "FanZone", new { postID = licData.ParentPostId });
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Can't find the given post data.");
+                            return RedirectToAction("FanZonePage", "FanZone");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Can't find the given offer data.");
+                        return RedirectToAction("FanZonePage", "FanZone");
+                    }
+                } 
+            }
+            else
+            {
+                ModelState.AddModelError("", "Error: Some attributes are null.");
+                return RedirectToAction("FanZonePage", "FanZone");
             }
         }
 

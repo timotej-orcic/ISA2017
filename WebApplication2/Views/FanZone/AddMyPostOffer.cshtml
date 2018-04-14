@@ -1,0 +1,36 @@
+﻿@model WebApplication2.Models.AddMyPostOfferViewModel
+@{
+    ViewBag.Title = "Add my post offer";
+}
+
+<h2 style="color:white">My offer:</h2>
+@using (Html.BeginForm("AddPostOffer", "FanZone", FormMethod.Post, new { @class = "form-horizontal", role = "form"}))
+{
+    <form class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <label class="control-label col-xs-3" style="color:white">Offer value</label>
+                    <div class="col-xs-9">
+                        @Html.TextBoxFor(m => m.OfferValue, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.OfferValue, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(m => m.PostId);
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="col-xs-9"></div>
+                <div class="col-xs-3">
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
