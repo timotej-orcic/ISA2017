@@ -4,8 +4,8 @@
 }
 
 <h2 style="color:white">My Reservations</h2>
- &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
 <h3 style="font-weight:bold;color:white;font-size: 14px">History of visits: </h3>
+@Html.DropDownList("VisitedPlaces", new SelectList(ViewBag.visitedPlaces, "Value", "Text"))
 @if (Model.Count > 0)
 {
 

@@ -224,7 +224,19 @@ namespace WebApplication2.Controllers
                     }
                 }else
                 {
-                    isCancelable = true;
+                    ProjectionWithFlagViewModel forCheck = new ProjectionWithFlagViewModel
+                    {
+                        Karta = resWithProjection,
+                        isCancelable = true
+                    };
+                    if (checkIfReservationIsInPast(forCheck))
+                    {
+                        isCancelable = false;
+                    }
+                    else
+                    {
+                        isCancelable = true;
+                    }
                 }
                 ProjectionWithFlagViewModel vm = new ProjectionWithFlagViewModel
                 {
@@ -233,9 +245,81 @@ namespace WebApplication2.Controllers
                 };
                 reservations.Add(vm);
             }
-            ViewBag.userReservations = reservations;
+            List<ProjectionWithFlagViewModel> sve = new List<ProjectionWithFlagViewModel>();
+            foreach(ProjectionWithFlagViewModel t in reservations)
+            {
+                sve.Add(t);
+            }
+            List<ProjectionWithFlagViewModel> preciscene = removeSameProjectionTickets(reservations);
+            List<Location> visitedPlaces = findVisitHistory(preciscene);
+            var visited = new List<SelectListItem>();
+            foreach(Location posecena in visitedPlaces)
+            {
+                visited.Add(new SelectListItem { Text = posecena.Name, Value = posecena.Name });
 
-            return View("ShowReservations",reservations);
+            }
+            ViewBag.visitedPlaces = visited;
+            return View("ShowReservations",sve);
+        }
+        public List<ProjectionWithFlagViewModel> removeSameProjectionTickets(List<ProjectionWithFlagViewModel> reservations)
+        {
+            for (int i = reservations.Count - 1; i >= 0; i--)
+            {
+                if (i > 0)
+                {
+                    if (reservations[i].Karta.Projection.Time.Equals(reservations[i - 1].Karta.Projection.Time) && reservations[i].Karta.Projection.Projection.Id.Equals(reservations[i - 1].Karta.Projection.Projection.Id) && reservations[i].Karta.Projection.Hall.Id.Equals(reservations[i - 1].Karta.Projection.Hall.Id))
+                    {
+                        reservations.RemoveAt(i);
+                    }
+                }
+            }
+            for (int i = reservations.Count - 1; i >= 0; i--)
+            {
+                if (i > 0)
+                {
+                    if (reservations[i].Karta.Projection.Time.Equals(reservations[0].Karta.Projection.Time) && reservations[i].Karta.Projection.Projection.Id.Equals(reservations[0].Karta.Projection.Projection.Id) && reservations[i].Karta.Projection.Hall.Id.Equals(reservations[0].Karta.Projection.Hall.Id))
+                    {
+                        reservations.RemoveAt(i);
+                    }
+                }
+            }
+            return reservations;
+        }
+        public List<Location> findVisitHistory(List<ProjectionWithFlagViewModel> reservations)
+        {
+            List<Location> visitedPlaces = new List<Location>();
+           
+            for(int i = reservations.Count-1; i >=0; i--)
+            {
+                bool past = checkIfReservationIsInPast(reservations[i]);
+                if(past == true)
+                {
+                    visitedPlaces.Add(reservations[i].Karta.Projection.Hall.ParentLocation);
+                }
+            }
+            return visitedPlaces;
+        }
+        public bool checkIfReservationIsInPast(ProjectionWithFlagViewModel reservation)
+        {
+            DateTime now = DateTime.Now;
+            bool RetVal = false;
+            if (reservation.Karta.Projection.Time.Date.Year < now.Date.Year)
+            {
+                RetVal = true;
+            }else if(reservation.Karta.Projection.Time.Date.Year == now.Date.Year)
+            {
+                if(reservation.Karta.Projection.Time.Date.Month < now.Date.Month)
+                {
+                    RetVal = true;
+                }else if(reservation.Karta.Projection.Time.Date.Month == now.Date.Month)
+                {
+                    if(reservation.Karta.Projection.Time.Date.Day < now.Date.Day)
+                    {
+                        RetVal = true;
+                    }
+                }
+            }
+            return RetVal;
         }
         public async Task<ActionResult> CancelReservation(Guid rezervacija)
         {
@@ -261,6 +345,7 @@ namespace WebApplication2.Controllers
             List<ProjectionWithFlagViewModel> reservations = new List<ProjectionWithFlagViewModel>();
             userWithReservations.ReservationsList.Remove(resWithProjection);
             ctx.SaveChanges();
+
             return await ShowReservations();
         }
     }
