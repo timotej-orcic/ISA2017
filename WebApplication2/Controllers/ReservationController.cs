@@ -51,9 +51,7 @@ namespace WebApplication2.Controllers
                         saProjekcijom.Seats[indexRow-1] = red;
                         Ticket newReservation = new Ticket
                         {
-                            ParentProjection = saProjekcijom.Projection,
-                            ProjectionTime = saProjekcijom.Time,
-                            ProjectionHall = saProjekcijom.Hall,
+                            Projection = saProjekcijom,
                             SeatColumn = indexColumn - 1,
                             SeatRow = indexRow - 1,
                             Price = saProjekcijom.Projection.TicketPrice,
@@ -192,5 +190,78 @@ namespace WebApplication2.Controllers
 
             return View();
         }
+
+        public async Task<ActionResult> ShowReservations()
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            String id = User.Identity.GetUserId();
+            Guid idUsera = new Guid(id);
+            var userWithReservations = await ctx.Users.Include(x => x.ReservationsList).FirstOrDefaultAsync(x => x.Id == id);
+            List<ProjectionWithFlagViewModel> reservations = new List<ProjectionWithFlagViewModel>();
+            foreach(Ticket res in userWithReservations.ReservationsList)
+            {
+               Ticket resWithProjection = await ctx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == res.Id);
+                var mama = await ctx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == res.Projection.Id);
+                var saHalom = await ctx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+                var saProjekcijom = await ctx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+
+                var hala = ctx.Database.SqlQuery<Hall>("select * from Halls where Id = '" + resWithProjection.Projection.Hall.Id + "'").FirstOrDefault();
+                var halaSaLokacijom = await ctx.Halls.Include(x => x.ParentLocation).FirstOrDefaultAsync(x => x.Id == resWithProjection.Projection.Hall.Id);
+                resWithProjection.Projection.Hall = halaSaLokacijom;
+                var saSedistima = await ctx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == resWithProjection.Projection.Id);
+                resWithProjection.Projection = saSedistima;
+
+              //  reservations.Add(resWithProjection);
+                DateTime now = DateTime.Now;
+                bool isCancelable = true;
+                if(now.Date.Equals(resWithProjection.Projection.Time.Date) && now.TimeOfDay.Hours.Equals(resWithProjection.Projection.Time.TimeOfDay.Hours)){
+                    if(resWithProjection.Projection.Time.TimeOfDay.Minutes - now.TimeOfDay.Minutes < 30)
+                    {
+                        isCancelable = false;
+                    }else
+                    {
+                        isCancelable = true;
+                    }
+                }else
+                {
+                    isCancelable = true;
+                }
+                ProjectionWithFlagViewModel vm = new ProjectionWithFlagViewModel
+                {
+                    Karta = resWithProjection,
+                    isCancelable = isCancelable
+                };
+                reservations.Add(vm);
+            }
+            ViewBag.userReservations = reservations;
+
+            return View("ShowReservations",reservations);
         }
+        public async Task<ActionResult> CancelReservation(Guid rezervacija)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            
+            Ticket resWithProjection = await ctx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == rezervacija);
+            var mama = await ctx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == resWithProjection.Projection.Id);
+            var saHalom = await ctx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var saProjekcijom = await ctx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+
+
+            Row red = saProjekcijom.Seats[resWithProjection.SeatRow];
+            var aStringBuilder = new StringBuilder(red.Seats);
+            aStringBuilder.Remove(resWithProjection.SeatColumn, 1);
+            aStringBuilder.Insert(resWithProjection.SeatColumn, "e");
+            red.Seats = aStringBuilder.ToString();
+            saProjekcijom.Seats[resWithProjection.SeatRow] = red;
+            
+
+            String id = User.Identity.GetUserId();
+            Guid idUsera = new Guid(id);
+            var userWithReservations = await ctx.Users.Include(x => x.ReservationsList).FirstOrDefaultAsync(x => x.Id == id);
+            List<ProjectionWithFlagViewModel> reservations = new List<ProjectionWithFlagViewModel>();
+            userWithReservations.ReservationsList.Remove(resWithProjection);
+            ctx.SaveChanges();
+            return await ShowReservations();
+        }
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication2.Models;
 
 namespace Isa2017Cinema.Models
 {
@@ -9,9 +10,7 @@ namespace Isa2017Cinema.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public Guid Id { get; set; }
-        public Projection ParentProjection { get; set; }
-        public DateTime ProjectionTime { get; set; }
-        public Hall ProjectionHall { get; set; }
+        public HallTimeProjection Projection { get; set; }
         public int SeatColumn { get; set; }
         public int SeatRow { get; set; }
         public Double Price { get; set; }

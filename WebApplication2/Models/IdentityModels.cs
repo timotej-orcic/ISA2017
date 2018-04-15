@@ -53,6 +53,7 @@ namespace Isa2017Cinema.Models
         public DbSet<Projection> Projections { get; set; }
         public DbSet<Row> Rows { get; set; }
         public DbSet<Location> Locations { get; set; }
+
         public DbSet<HallTimeProjection> HallTimeProjection { get; set; }
         public DbSet<Ticket> Reservations { get; set; }
         public DbSet<Request> Requests { get; set; }

@@ -25,7 +25,7 @@ namespace WebApplication2.Controllers
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
             var locationToShow = new Location();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
 
             var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + locationId + "'").ToList();
 
@@ -49,7 +49,7 @@ namespace WebApplication2.Controllers
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
             var locationToShow = new Location();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
 
             var halls = ctx.Database.SqlQuery<Hall>("select * from Halls where ParentLocation_Id = '" + locationId + "'").ToList();
 

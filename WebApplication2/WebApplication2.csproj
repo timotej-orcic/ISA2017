@@ -410,6 +410,7 @@
     <Content Include="Views\FanZone\PostOffers.cshtml" />
     <Content Include="Views\FanZone\AddMyPostOffer.cshtml" />
     <Content Include="Views\FanZone\EditMyPostOffer.cshtml" />
+    <Content Include="Views\Reservation\ShowReservations.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -62,4 +62,9 @@ namespace WebApplication2.Models
 
         public int brKarata;
     }
+    public class ProjectionWithFlagViewModel
+    {
+        public Ticket Karta { get; set; }
+        public bool isCancelable { get; set; }
+    }
 }
