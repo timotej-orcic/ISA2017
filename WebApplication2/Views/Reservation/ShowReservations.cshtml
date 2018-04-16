@@ -1,0 +1,47 @@
+﻿@model List<WebApplication2.Models.ProjectionWithFlagViewModel>
+@{
+    ViewBag.Title = "ShowReservations";
+}
+
+<h2 style="color:white">My Reservations</h2>
+<h3 style="font-weight:bold;color:white;font-size: 14px">History of visits: </h3>
+@Html.DropDownList("VisitedPlaces", new SelectList(ViewBag.visitedPlaces, "Value", "Text"))
+@if (Model.Count > 0)
+{
+
+    foreach (var res in Model)
+    {
+        <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+            <div style="background-color:gray">
+                <h2 style="color:white">Reservation for: @res.Karta.Projection.Projection.Name</h2>
+            </div>
+            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+            @if (res.isCancelable == true)
+            {
+                <input type="button" class="btn btn-basic" value="Cancel" onclick="location.href='@Url.Action("CancelReservation", "Reservation",new { rezervacija = res.Karta.Id })'" />
+                
+            }
+            <h3 style="font-weight:bold;color:white;font-size: 14px">Time and hall: </h3>
+
+            <h3 style="color:white;font-size: 14px"> @res.Karta.Projection.Time in @res.Karta.Projection.Hall.Name at @res.Karta.Projection.Hall.ParentLocation.Name</h3>
+           
+            <label style="color:white; font-weight:bold; font-size: 14px">Seat row and column:  </label>
+            @{ 
+                var red = res.Karta.SeatRow + 1;
+                var kolona = res.Karta.SeatColumn + 1;
+            }
+            <label style="color:white; font-size: 14px">@red , @kolona </label>
+            <label style="color:white; font-weight:bold; font-size: 14px">Price:  </label>
+
+            <label style="color:white; font-size: 14px"> @res.Karta.Price </label>
+
+        </div>
+        <br/>
+    }
+
+}else
+{
+    <h3 style="font-weight:bold;color:white;font-size: 14px">You have no reservations. </h3>
+}

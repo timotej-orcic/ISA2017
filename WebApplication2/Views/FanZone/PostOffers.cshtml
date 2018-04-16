@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Post offers";
+}
+
+@if (TempData["success"] != null)
+{
+    <div id="IndexSuccessMessage" class="row">
+        <h3>@TempData["success"]</h3>
+    </div>
+}
+
+@if (!ViewBag.iHaveOffer && !ViewBag.iAmParent && !ViewBag.isExpired && !ViewBag.isGraded)
+{
+    <br />
+    <input type="button" class="btn btn-success" value="Add my offer" onclick="location.href='@Url.Action("AddMyPostOffer", "FanZone",new { postID = ViewBag.postID })'" />
+}
+
+<div style="position:relative">
+    @if (ViewBag.postLicitations.Count > 0)
+    {
+        foreach (var l in ViewBag.postLicitations)
+        {
+            <br />
+            <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                <div style="background-color:gray">
+                    <h2 style="color:white">@l.OfferedPrice</h2>
+                </div>
+                <h3 style="font-weight:bold;color:white;font-size: 14px">
+                    Offered by:
+                    @if (!(User.Identity.GetUserId().ToString() == @l.ParentUserId))
+                    {
+                        <b style="color:green">@ViewBag.userNames[@l.ParentUserId]</b>
+                    }
+                    else
+                    {
+                        <b style="color:green">ME</b>
+                    }
+                </h3>
+
+                @if ((@l.ParentUserId == User.Identity.GetUserId().ToString()) && !ViewBag.isExpired && !ViewBag.isGraded)
+                {
+                    <input type="button" class="btn btn-success" value="Edit offer" onclick="location.href='@Url.Action("EditMyPostOffer", "FanZone",new { licitationID = @l.Id })'" />
+                }
+
+                @if (ViewBag.iAmParent && !ViewBag.isExpired && !ViewBag.isGraded)
+                {
+                    <input type="button" class="btn btn-success" value="Accept offer" onclick="location.href='@Url.Action("AcceptPostOffer", "FanZone",new { licitationID = @l.Id })'" />
+                }
+
+                @if (ViewBag.isExpired)
+                {
+                    <h3 style="font-weight:bold;color:red;font-size: 14px">Post licitation date is expired!</h3>
+                }
+
+                @if (ViewBag.isGraded)
+                {
+                    if (@l.IsAccepted)
+                    {
+                        <h3 style="font-weight:bold;color:green;font-size: 14px">This offer is accepted</h3>
+                    }
+                    else
+                    {
+                        <h3 style="font-weight:bold;color:green;font-size: 14px">This offer is denied</h3>
+                    }
+                }
+
+            </div>
+            <br />
+        }
+    }
+</div>
+

@@ -26,8 +26,6 @@ namespace Isa2017Cinema.Models
         public List<ApplicationUser> RequestsUserNames { get; set; }
         public List<Ticket> ReservationsList { get; set; }
         public List<Recension> RecensionList { get; set; }
-        public List<ThemeRequisit> ReservedRequisitsList { get; set; }
-        public List<Post> PostsList { get; set; }
         public List<Request> RequestsList { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -55,12 +53,14 @@ namespace Isa2017Cinema.Models
         public DbSet<Projection> Projections { get; set; }
         public DbSet<Row> Rows { get; set; }
         public DbSet<Location> Locations { get; set; }
+
         public DbSet<HallTimeProjection> HallTimeProjection { get; set; }
         public DbSet<Ticket> Reservations { get; set; }
         public DbSet<Request> Requests { get; set; }
         public DbSet<Points> DiscountPoints { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<ThemeRequisit> ThemeRequisits { get; set; }
+        public DbSet<Licitation> Licitations { get; set; }
         public DbSet<FanZone> Fanzone { get; set; }
         protected override void OnModelCreating(DbModelBuilder mb)
         {

@@ -44,10 +44,10 @@ namespace Isa2017Cinema
             var locations = new List<Location>
             {
                 new Location { LocType = LocationType.CINEMA, Name = "Arena Cineplex", Address = "Novosadskog sajma" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
-                ,ProjectionsList = projections, HallsList = new List<Hall>(), RecensionsList = new List<Recension>()
+                ,ProjectionsList = projections, HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), MyAdminId = null
                    },
                  new Location { LocType = LocationType.CINEMA, Name = "Big Cinestar", Address = "Bulevar" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
-                 ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>()
+                 ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), MyAdminId = null
                  }
 
             };
@@ -74,16 +74,6 @@ namespace Isa2017Cinema
                 PointsCount = 1000
             };
             context.DiscountPoints.Add(goldPoints);
-
-            ThemeRequisit thReq1 = new ThemeRequisit
-            {
-                Name = "Batman hat",
-                AvailableCount = 5,
-                Description = "Cool hat",
-                ImageUrl = "~/images/placeholder4.png",
-                Price = 1000
-            };
-            context.ThemeRequisits.Add(thReq1);
 
             context.SaveChanges();
         }
