@@ -44,8 +44,10 @@ namespace WebApplication2.Services
             var toAddress = new MailAddress(invitedUser.Email, "ISA NS");
             string fromPassword = "isa2017_123";
             string subject = "Invitation";
+            int red = reservation.SeatRow + 1;
+            int kolona = reservation.SeatColumn + 1;
             string body = "You are invited to projection:" + System.Environment.NewLine + "Event name: " + reservation.Projection.Projection.Name + System.Environment.NewLine + " Event is starting from: " + reservation.Projection.Time + System.Environment.NewLine +
-                " at:  " + reservation.Projection.Hall.ParentLocation.Name + "," + reservation.Projection.Hall.ParentLocation.Address + "." + System.Environment.NewLine  + "User: " + inviter.Name + " " + inviter.LastName + " called you." 
+                " at:  " + reservation.Projection.Hall.ParentLocation.Name + "," + reservation.Projection.Hall.ParentLocation.Address + "." + System.Environment.NewLine  + "Seat(row-column):" + red +"-" + kolona + System.Environment.NewLine + "User: " + inviter.Name + " " + inviter.LastName + " called you." 
                +System.Environment.NewLine + System.Environment.NewLine + System.Environment.NewLine + "Click on this link to accept invitation: " + callbackUrl + System.Environment.NewLine + System.Environment.NewLine + 
                "Click on this link to decline invitation: " + callbackUrl1;
             var smtp = new SmtpClient

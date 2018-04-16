@@ -2,23 +2,83 @@
 @{
     ViewBag.Title = "CallFriends";
 }
+<script>
 
-<h2>CallFriends</h2>
+ $(document).ready(function() {
+
+      var last_valid_selection = null;
+
+      $('#friends').change(function (event) {
+          @{
+              var naRaspolaganju = Model.brKarata-1;
+          }
+        if ($(this).val().length > @naRaspolaganju) {
+          alert('You can choose only @naRaspolaganju');
+
+          $(this).val(last_valid_selection);
+        } else {
+          last_valid_selection = $(this).val();
+        }
+      });
+    });
+    function InviteFriends(){
+        debugger;
+        var arr = [];
+        var sel = document.getElementById('friends');
+        var selected = getSelectValues(sel);
+        var i = 0;
+        arr.push('@Model.user.Id');
+        arr.push('@Model.projectionHallTime.Id');
+        for(i=0;i<selected.length;i++){
+            arr.push(selected[i]);
+        }
+        $.ajax({
+            url: '../Reservation/Invite',
+            type: 'POST',
+            contentType: 'application/json;',
+            data: JSON.stringify(arr),
+            success: function (data)
+            {
+                debugger;
+              
+                window.location.href = 'FriendsInvitedSuccessfully';
+            }
+        });
+    }
+    function getSelectValues(select) {
+        var result = [];
+        var options = select && select.options;
+        var opt;
+
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+                result.push(opt.value || opt.text);
+            }
+        }
+        return result;
+    }
+</script>
+
+<h2 style="color:white">Reserved successfully!</h2>
 <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 500px; margin:0 auto ">
     <p style="color:white">Hello @Model.user.Name. You successfully reserved your tickets.</p>
     @if (Model.brKarata > 1)
     {
-        <p style="color:white">You can call your friends.</p>
-        foreach (Isa2017Cinema.Models.ApplicationUser friend in Model.user.FriendList)
-        {
-            <div class="jumbotron" style="background-color:white;  width: 300px; margin:0 auto ">
-                <p style="color:black">@friend.Name @friend.LastName - @friend.City</p>
-                <p style="color:black">Username: @friend.UserName</p>
-                @Html.ActionLink("Invite friend", "InviteFriend", "Reservation", new {  idPrijatelja = friend.Id, idPozivaoca = Model.user.Id, terminNaKojiPoziva = Model.projectionHallTime.Id, brRezKarata = Model.brKarata}, null)
-
-            </div>
-            <br/>
+        <p style="color:white">You can invite your friends if you want.</p>
+        <text>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</text>
+        <select multiple id="friends" data-style="btn-info">
+            @foreach (Isa2017Cinema.Models.ApplicationUser friend in Model.user.FriendList)
+            {
+           
+            <option value="@friend.Id">@friend.Name @friend.LastName - @friend.UserName</option>
+           
         }
+            </select>
+            <text>&nbsp;</text>
+            <button id="invite" onclick="InviteFriends()" class="checkout-button">Invite &raquo;</button>
+
     }
 
 
