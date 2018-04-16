@@ -415,6 +415,8 @@
     <Content Include="Views\Reservation\CallFriends.cshtml" />
     <Content Include="Views\Reservation\ConfirmInvitation.cshtml" />
     <Content Include="Views\Reservation\DeclineInvitation.cshtml" />
+    <Content Include="Views\Hall\FastReserveTicket.cshtml" />
+    <Content Include="Views\Hall\AddSeatsAndDiscount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

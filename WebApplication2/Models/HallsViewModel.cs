@@ -22,4 +22,13 @@ namespace WebApplication2.Models
         public int Columns { get; set; }
 
     }
+
+    public class FastReserveTicket
+    {
+        public HallTimeProjection hallTimeProj { get; set; }
+
+        [Required]
+        [Display(Name = "Ticket discount in % :(between 0 and 100)")]
+        public double Krmaca { get; set; }
+    }
 }

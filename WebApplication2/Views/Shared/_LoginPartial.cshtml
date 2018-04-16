@@ -55,7 +55,9 @@
                 <li>@Html.ActionLink("Friend requests", "ShowFriendRequests", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
                 <li>@Html.ActionLink("My reservations", "ShowReservations", "Reservation", routeValues: null, htmlAttributes: new { title = "Reservations" })</li>
                 <li>@Html.ActionLink("Fanzone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Fanzone" })</li>
-                
+                <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+
             </ul>
         }
         else if (User.IsInRole("Location_Admin"))
@@ -64,6 +66,9 @@
             {
                 <ul class="nav navbar-nav navbar-right">
                     <li>@Html.ActionLink("Change my location properties", "ChangeLocation", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
+                    <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+
                 </ul>
             }
         }
@@ -73,6 +78,9 @@
             <li>@Html.ActionLink("Add new admin", "AddNewAdmin", "System_Admin", routeValues: null, htmlAttributes: new { title = "Add new admin" })</li>
             <li>@Html.ActionLink("Register new location", "RegisterNewLocation", "System_Admin", routeValues: null, htmlAttributes: new { title = "Register new location" })</li>
             <li>@Html.ActionLink("Change points scale", "ChangePointsScale", "System_Admin", routeValues: null, htmlAttributes: new { title = "Change points scale" })</li>
+            <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+
         </ul>
         }
         else if (User.IsInRole("Fanzone_Admin"))
@@ -81,16 +89,15 @@
             {
             <ul class="nav navbar-nav navbar-right">
                 <li>@Html.ActionLink("Manage FanZone", "FanZonePage", "FanZone", routeValues: null, htmlAttributes: new { title = "Manage FanZone" })</li>
+                <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+
             </ul>
             }
 
 
         }
-            <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
-                <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-
-            </ul>
+            
         }
         }
         else

@@ -1,0 +1,17 @@
+﻿@model Isa2017Cinema.Models.Projection
+@{
+    ViewBag.Title = "FastReserveTicket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<br />
+<ul>
+    @foreach (var projhall in Model.ProjHallsTimeList)
+    {
+        <li style="color:white; font-weight:bold; font-size: 18px"> @projhall.Time , @projhall.Hall.Name [ @Html.ActionLink("Add Ticket", "AddFastTicket", "Hall", new { projekcija = Model.Id, timehall = projhall.Id }, null) ]</li>
+
+    }
+</ul>
+
+
+
