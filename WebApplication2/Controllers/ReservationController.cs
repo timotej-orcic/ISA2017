@@ -9,11 +9,20 @@ using WebApplication2.Models;
 using System.Threading.Tasks;
 using System.Text;
 using Microsoft.AspNet.Identity;
+using WebApplication2.Services;
+using Microsoft.Owin.Security;
 
 namespace WebApplication2.Controllers
 {
     public class ReservationController : Controller
     {
+        private IAuthenticationManager AuthenticationManager
+        {
+            get
+            {
+                return HttpContext.GetOwinContext().Authentication;
+            }
+        }
         // GET: Reservation
         public ActionResult Index()
         {
@@ -62,6 +71,7 @@ namespace WebApplication2.Controllers
                         dbCtx.Reservations.Add(newReservation);
                         string userIdString = User.Identity.GetUserId();
                         var loggedUser =  dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == userIdString);
+                        loggedUser.Points += 5;
                         loggedUser.ReservationsList.Add(newReservation);
 
                         indexRow = -1;
@@ -81,7 +91,6 @@ namespace WebApplication2.Controllers
                 idProjekcije = saProjekcijom.Id
             };
             return Json(obj);
-           // return View("Seats", saProjekcijom);
         }
 
         public ActionResult ViewRepertoar(Guid locationId)
@@ -165,7 +174,7 @@ namespace WebApplication2.Controllers
           
             return View("CallFriends",model);
         }
-        public async Task<ActionResult> InviteFriend(Guid idPrijatelja, Guid idPozivaoca, Guid terminNaKojiPoziva)
+        public async Task<ActionResult> InviteFriend(Guid idPrijatelja, Guid idPozivaoca, Guid terminNaKojiPoziva, int brRezKarata)
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
 
@@ -178,13 +187,18 @@ namespace WebApplication2.Controllers
             var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where Id = '" + saProjekcijom.Projection.Id + "'").FirstOrDefault();
             var hala = dbCtx.Database.SqlQuery<Hall>("select * from Halls where Id = '" + saProjekcijom.Hall.Id + "'").FirstOrDefault();
             var halaSaLokacijom = await dbCtx.Halls.Include(x => x.ParentLocation).FirstOrDefaultAsync(x => x.Id == saProjekcijom.Hall.Id);
-           /* List<Ticket> karte = new List<Ticket>();
+            var karte = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where Projection_Id = '" + saProjekcijom.Id + "' and ApplicationUser_Id = '" + inviter.Id + "'").ToList();
+            Ticket zaPoziv = karte[karte.Count - brRezKarata + 1];
+            var karta = await dbCtx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == zaPoziv.Id);
 
-            foreach(Ticket ticket in inviter.ReservationsList)
-            {
-                if (ticket.ParentProjection.Id.Equals(projekcija.Id) && ticket.ProjectionHall.Id.Equals(hala.Id) && ticket.ProjectionTime.Equals(saProjekcijom.Time))
-                    karte.Add(ticket);
-            }*/
+            var callbackUrlAccept = Url.Action("ConfirmInvitation", "Reservation",
+                   new { inviterId = inviter.Id, invitedId = invited.Id, ticketId = karta.Id }, protocol: Request.Url.Scheme);
+            var callbackUrlDecline = Url.Action("DeclineInvitation", "Reservation",
+                   new { inviterId = inviter.Id, invitedId = invited.Id, ticketId = karta.Id }, protocol: Request.Url.Scheme);
+
+            EmailService emailService = new EmailService();
+            emailService.SendInvitationEmail(invited, inviter, karta,callbackUrlAccept, callbackUrlDecline);
+           
             //sad ovde poslati mejl i u mejlu link na koji ce se ici za potvrdu / odbijanje
             //imam lokaciju halu datum projekciju sve
 
@@ -321,6 +335,66 @@ namespace WebApplication2.Controllers
             }
             return RetVal;
         }
+        public async Task<ActionResult> ConfirmInvitation(Guid inviterId, Guid invitedId, Guid ticketId)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            Ticket resWithProjection = await dbCtx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == ticketId);
+
+            var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == resWithProjection.Projection.Id);
+            var saHalom = await dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var saProjekcijom = await dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+
+            var inviter = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == inviterId.ToString());
+            var invited = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == invitedId.ToString());
+
+            var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where Id = '" + saProjekcijom.Projection.Id + "'").FirstOrDefault();
+            var hala = dbCtx.Database.SqlQuery<Hall>("select * from Halls where Id = '" + saProjekcijom.Hall.Id + "'").FirstOrDefault();
+            var halaSaLokacijom = await dbCtx.Halls.Include(x => x.ParentLocation).FirstOrDefaultAsync(x => x.Id == saProjekcijom.Hall.Id);
+            var karta = await dbCtx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == ticketId);
+            inviter.Points += 5;
+            inviter.ReservationsList.Remove(karta);
+            invited.ReservationsList.Add(karta);
+            dbCtx.SaveChanges();
+           /* if(!User.Identity.GetUserId().Equals(invitedId.ToString()))
+                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);*/
+            EmailService emailService = new EmailService();
+            emailService.SendNotificationEmail(invited, inviter, karta, true);
+
+            return View("ConfirmInvitation");
+        }
+        public async Task<ActionResult> DeclineInvitation(Guid inviterId, Guid invitedId, Guid ticketId)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            Ticket resWithProjection = await dbCtx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == ticketId);
+
+            var mama = await dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == resWithProjection.Projection.Id);
+            var saHalom = await dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var saProjekcijom = await dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+
+            var inviter = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == inviterId.ToString());
+            var invited = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == invitedId.ToString());
+
+            var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where Id = '" + saProjekcijom.Projection.Id + "'").FirstOrDefault();
+            var hala = dbCtx.Database.SqlQuery<Hall>("select * from Halls where Id = '" + saProjekcijom.Hall.Id + "'").FirstOrDefault();
+            var halaSaLokacijom = await dbCtx.Halls.Include(x => x.ParentLocation).FirstOrDefaultAsync(x => x.Id == saProjekcijom.Hall.Id);
+            var karta = await dbCtx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == ticketId);
+
+            Row red = saProjekcijom.Seats[karta.SeatRow];
+            var aStringBuilder = new StringBuilder(red.Seats);
+            aStringBuilder.Remove(karta.SeatColumn, 1);
+            aStringBuilder.Insert(karta.SeatColumn, "e");
+            red.Seats = aStringBuilder.ToString();
+            saProjekcijom.Seats[karta.SeatRow] = red;
+            inviter.ReservationsList.Remove(karta);
+            dbCtx.SaveChanges();
+           /* if (!User.Identity.GetUserId().Equals(invitedId.ToString()))
+                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);*/
+           
+            EmailService emailService = new EmailService();
+            emailService.SendNotificationEmail(invited, inviter, karta, false);
+
+            return View("DeclineInvitation");
+        }
         public async Task<ActionResult> CancelReservation(Guid rezervacija)
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
@@ -330,7 +404,6 @@ namespace WebApplication2.Controllers
             var saHalom = await ctx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
             var saProjekcijom = await ctx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
 
-
             Row red = saProjekcijom.Seats[resWithProjection.SeatRow];
             var aStringBuilder = new StringBuilder(red.Seats);
             aStringBuilder.Remove(resWithProjection.SeatColumn, 1);
@@ -338,7 +411,6 @@ namespace WebApplication2.Controllers
             red.Seats = aStringBuilder.ToString();
             saProjekcijom.Seats[resWithProjection.SeatRow] = red;
             
-
             String id = User.Identity.GetUserId();
             Guid idUsera = new Guid(id);
             var userWithReservations = await ctx.Users.Include(x => x.ReservationsList).FirstOrDefaultAsync(x => x.Id == id);

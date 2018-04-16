@@ -14,7 +14,7 @@
             <div class="jumbotron" style="background-color:white;  width: 300px; margin:0 auto ">
                 <p style="color:black">@friend.Name @friend.LastName - @friend.City</p>
                 <p style="color:black">Username: @friend.UserName</p>
-                @Html.ActionLink("Invite friend", "InviteFriend", "Reservation", new {  idPrijatelja = friend.Id, idPozivaoca = Model.user.Id, terminNaKojiPoziva = Model.projectionHallTime.Id}, null)
+                @Html.ActionLink("Invite friend", "InviteFriend", "Reservation", new {  idPrijatelja = friend.Id, idPozivaoca = Model.user.Id, terminNaKojiPoziva = Model.projectionHallTime.Id, brRezKarata = Model.brKarata}, null)
 
             </div>
             <br/>

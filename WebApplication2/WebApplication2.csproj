@@ -249,6 +249,7 @@
     <Compile Include="Models\ThemeRequisit.cs" />
     <Compile Include="Models\Ticket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\EmailService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -411,6 +412,9 @@
     <Content Include="Views\FanZone\AddMyPostOffer.cshtml" />
     <Content Include="Views\FanZone\EditMyPostOffer.cshtml" />
     <Content Include="Views\Reservation\ShowReservations.cshtml" />
+    <Content Include="Views\Reservation\CallFriends.cshtml" />
+    <Content Include="Views\Reservation\ConfirmInvitation.cshtml" />
+    <Content Include="Views\Reservation\DeclineInvitation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
