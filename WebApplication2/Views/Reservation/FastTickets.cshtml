@@ -1,0 +1,32 @@
+﻿@model List<Isa2017Cinema.Models.Ticket>
+@{
+    ViewBag.Title = "FastTickets";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Model.Count > 0)
+{
+    foreach (var l in Model)
+    {
+        <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+            <h2 style="color:white;font-weight:bold; font-size: 18px" >Projection: @l.Projection.Projection.Name</h2>
+            <h2 style="color:white;font-weight:bold; font-size: 18px">Date and time: @l.Projection.Time</h2>
+            <h2 style="color:white;font-weight:bold; font-size: 18px">Hall: @l.Projection.Hall.Name</h2>
+            <h2 style="color:white;font-weight:bold; font-size: 18px">Original price: @l.Projection.TicketPrice</h2>
+            @{ var discount = 100 - l.DiscountMultiplier * 100; }
+            <h2 style="color:white;font-weight:bold; font-size: 18px">Discount: @discount %</h2>
+            @{ var discountPrice = l.Projection.TicketPrice * l.DiscountMultiplier;
+                var red = l.SeatRow + 1;
+                var kolona = l.SeatColumn + 1;
+             }
+            <h2 style="color:white;font-weight:bold; font-size: 18px">Discount price: @discountPrice</h2>
+            <h2 style="color:white;font-weight:bold; font-size: 18px">Seat row-column: @red - @kolona</h2>
+            <input type="button" class="btn btn-basic" value="Reserve this ticket" onclick="location.href='@Url.Action("ReserveFastTicket", "Reservation", new { idTicket = l.Id, idLokacije = ViewBag.locationId })'" />
+
+        </div>
+        <br/>
+                    }
+                }
+else
+    {
+        <h2 style="color:white;">No tickets available for fast reservation at this time.</h2>
+    }

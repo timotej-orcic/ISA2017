@@ -49,6 +49,7 @@
         if (User.IsInRole("Regular_User"))
         {
             <ul class="nav navbar-nav navbar-right">
+
                 <li>@Html.ActionLink("Friend list", "ShowFriends", "Friends", routeValues: null, htmlAttributes: new { title = "Friends" })</li>
                 <li>@Html.ActionLink("Find people", "FindPeople", "Friends", routeValues: null, htmlAttributes: new { title = "Find people" })</li>
 
@@ -66,6 +67,8 @@
             {
                 <ul class="nav navbar-nav navbar-right">
                     <li>@Html.ActionLink("Change my location properties", "ChangeLocation", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
+                    <li>@Html.ActionLink("Projections", "ProjectionsShow", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
+                    <li>@Html.ActionLink("Halls", "HallsShow", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
                     <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
                     <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
 

@@ -208,6 +208,7 @@
     <Compile Include="Controllers\CinemaController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RecensionController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
     <Compile Include="Controllers\System_AdminController.cs" />
     <Compile Include="Global.asax.cs">
@@ -262,6 +263,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\jquery.seat-charts.css" />
+    <Content Include="Content\Stars.css" />
     <Content Include="Content\style.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -420,6 +422,8 @@
     <Content Include="Views\Reservation\SuccessInviting.cshtml" />
     <Content Include="Views\Manage\ChangeEmail.cshtml" />
     <Content Include="Views\Manage\ChangeUserName.cshtml" />
+    <Content Include="Views\Reservation\FastTickets.cshtml" />
+    <Content Include="Views\Recension\ShowRecension.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -22,4 +22,6 @@ namespace Isa2017Cinema.Models
         public List<Hall> HallsList { get; set; }
         public List<Recension> RecensionsList { get; set; }
     }
+
+    
 }

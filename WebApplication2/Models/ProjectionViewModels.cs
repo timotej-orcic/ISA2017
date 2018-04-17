@@ -47,9 +47,7 @@ namespace WebApplication2.Models
         public String Description { get; set; }
 
 
-        [Required]
-        [Display(Name = "Ticket price")]
-        public Double TicketPrice { get; set; }
+        
         
         [DataType(DataType.Upload)]
         public HttpPostedFileBase ImageUpload { get; set; }
@@ -66,5 +64,11 @@ namespace WebApplication2.Models
     {
         public Ticket Karta { get; set; }
         public bool isCancelable { get; set; }
+    }
+
+    public class LocationWithNumberOfSeats
+    {
+        public Location location { get; set; }
+        public List<int> NumberOfFreeSeats { get; set; }
     }
 }

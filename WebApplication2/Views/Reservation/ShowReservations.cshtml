@@ -23,6 +23,10 @@
                 <input type="button" class="btn btn-basic" value="Cancel" onclick="location.href='@Url.Action("CancelReservation", "Reservation",new { rezervacija = res.Karta.Id })'" />
                 
             }
+            @if (ViewBag.preciscene.Contains(res))
+            {
+                <input type="button" class="btn btn-basic" value="Rate" onclick="location.href='@Url.Action("ShowRecension", "Recension",new { rezervacija = res.Karta.Id })'" />
+            }
             <h3 style="font-weight:bold;color:white;font-size: 14px">Time and hall: </h3>
 
             <h3 style="color:white;font-size: 14px"> @res.Karta.Projection.Time in @res.Karta.Projection.Hall.Name at @res.Karta.Projection.Hall.ParentLocation.Name</h3>

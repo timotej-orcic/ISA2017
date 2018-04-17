@@ -5,6 +5,7 @@
 <div class="container" style="background-color:black;  left:0; right:0">
     <label style="color:white; font-size:40px; font-style:italic; font-family:'Times New Roman', Times, serif ">@ViewBag.Message</label>
 </div>
+
 <div class="container" style="margin: 0 auto; left:0; right:0">
     
     @using (Html.BeginForm("Search", "App", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
@@ -55,20 +56,28 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                
-                    [@Html.ActionLink("Repertoar", "ViewRepertoar", "Reservation", new { locationId = l.Id }, null)]
-                
-                    <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
-                    
-                        <a href="https://maps.google.com/?q=58250 @l.Address">
-                            <h3 style="color:white;font-size: 14px"> @l.Address</h3>
-                        </a>
-                    
-                        <label style="color:white; font-weight:bold; font-size: 14px">Description:  </label>
-                    
-                        <label style="color:white; font-size: 14px"> @l.Description </label>
+                <label style="color:white">
+                    [ @Html.ActionLink("Repertoar", "ViewRepertoar", "Reservation", new { locationId = l.Id }, null) ]
                    
-            </div>
+                </label>        
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                <label style="color:white">
+                    [@Html.ActionLink("Fast Reservation", "ShowFastTickets", "Reservation", new { locationId = l.Id }, null)]
+                </label> 
+                        <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
+
+                    <a href="https://maps.google.com/?q=58250 @l.Address">
+                        <h3 style="color:white;font-size: 14px"> @l.Address</h3>
+                    </a>
+
+                    <label style="color:white; font-weight:bold; font-size: 14px">Description:  </label>
+
+                    <label style="color:white; font-size: 14px"> @l.Description </label>
+
+</div>
             <br />
         }
 

@@ -28,6 +28,61 @@ namespace WebApplication2.Controllers
         {
             return View();
         }
+
+        public async Task<ActionResult> ShowFastTickets(Guid locationId)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            var lokacija = dbCtx.Locations.Include(x => x.ProjectionsList).FirstOrDefault(x => x.Id == locationId);
+           
+            List<HallTimeProjection> list = new List<HallTimeProjection>();
+            foreach (Projection p in lokacija.ProjectionsList)
+            {
+                Projection proj = new Projection();
+                proj = dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefault(x => x.Id == p.Id);
+                foreach (HallTimeProjection htp in proj.ProjHallsTimeList)
+                {
+                    list.Add(htp);
+                }
+            }
+            double multiplier = 1.0;
+            List<Ticket> fastTickets = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where DiscountMultiplier < 1.0 and ApplicationUser_Id ='" + lokacija.MyAdminId + "'").ToList();
+
+            List<Ticket> fastTicketsAtLocation = new List<Ticket>();
+          
+            foreach (Ticket t in fastTickets)
+            {
+                Ticket t1 = dbCtx.Reservations.Include(x => x.Projection).FirstOrDefault(x => x.Id == t.Id);
+                foreach (HallTimeProjection htp in list)
+                {
+                    var saHalom = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == htp.Id);
+                    if (t1.Projection.Id.Equals(htp.Id) && !fastTicketsAtLocation.Contains(t))
+                    {
+                        fastTicketsAtLocation.Add(t1);
+                    }
+                }
+            }
+           
+            ViewBag.locationId = locationId;
+            return View("FastTickets",fastTicketsAtLocation);
+        }
+
+        public async Task<ActionResult> ReserveFastTicket(Guid idTicket,Guid idLokacije)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            var lokacija = dbCtx.Locations.Include(x => x.ProjectionsList).FirstOrDefault(x => x.Id == idLokacije);
+            
+            var adminLokacije = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == lokacija.MyAdminId);
+            Ticket rezKarta = dbCtx.Reservations.Include(x => x.Projection).FirstOrDefault(x => x.Id == idTicket);
+            adminLokacije.ReservationsList.Remove(rezKarta);
+
+            String idUsera = User.Identity.GetUserId();
+            var reserver = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == idUsera);
+            reserver.ReservationsList.Add(rezKarta);
+            reserver.Points += 5;
+            dbCtx.SaveChanges();
+
+            return View();
+        }
         
         [HttpPost] 
         public JsonResult Test(String[] arr)
@@ -63,7 +118,7 @@ namespace WebApplication2.Controllers
                             Projection = saProjekcijom,
                             SeatColumn = indexColumn - 1,
                             SeatRow = indexRow - 1,
-                            Price = saProjekcijom.Projection.TicketPrice,
+                            Price = saProjekcijom.TicketPrice,
                             DiscountMultiplier = 1.0
 
                         };
@@ -163,6 +218,7 @@ namespace WebApplication2.Controllers
             }
             var projs = new List<Projection>();
             var projHalls = new List<HallTimeProjection>();
+            List<int> freeSeats = new List<int>();
             foreach (Projection p in projections)
             {
                 Projection proj = new Projection();
@@ -171,18 +227,31 @@ namespace WebApplication2.Controllers
                 {
                     HallTimeProjection projHall = new HallTimeProjection();
                     projHall = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == htp.Id);
+                    projHall = dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefault(x => x.Id == htp.Id);
+                    int brojac = 0;
+                    for (int i=0; i< projHall.Seats.Count; i++)
+                    {
+                       brojac += projHall.Seats[i].Seats.Count(f => f == 'e');
+                     
+                    }
+                    freeSeats.Add(brojac);
                     projHalls.Add(projHall);
+
                 }
                 proj.ProjHallsTimeList = projHalls;
-               
+                
                 projs.Add(proj);
                 projHalls = new List<HallTimeProjection>();
             }
             string id = User.Identity.GetUserId();
             ViewBag.user = id;
             locationToShow.ProjectionsList = projs;
-            
-            return View("ShowRepertoar", locationToShow);
+           
+            LocationWithNumberOfSeats locationWithSeats = new LocationWithNumberOfSeats{
+                location = locationToShow,
+                NumberOfFreeSeats = freeSeats
+            };
+            return View("ShowRepertoar", locationWithSeats);
         }
 
         public async Task<ActionResult> ViewReservation(Guid projectionId , Guid projHall)
@@ -223,8 +292,7 @@ namespace WebApplication2.Controllers
             };
           
             return View("CallFriends",model);
-        }
-       
+        }      
 
         public async Task<ActionResult> ShowReservations()
         {
@@ -294,6 +362,7 @@ namespace WebApplication2.Controllers
 
             }
             ViewBag.visitedPlaces = visited;
+            ViewBag.preciscene = preciscene;
             return View("ShowReservations",sve);
         }
         public List<ProjectionWithFlagViewModel> removeSameProjectionTickets(List<ProjectionWithFlagViewModel> reservations)
@@ -338,7 +407,14 @@ namespace WebApplication2.Controllers
         {
             DateTime now = DateTime.Now;
             bool RetVal = false;
-            if (reservation.Karta.Projection.Time.Date.Year < now.Date.Year)
+            if(DateTime.Compare(now,reservation.Karta.Projection.Time) < 0)
+            {
+                RetVal = false;
+            }else
+            {
+                RetVal = true;
+            }
+          /*  if (reservation.Karta.Projection.Time.Date.Year < now.Date.Year)
             {
                 RetVal = true;
             }else if(reservation.Karta.Projection.Time.Date.Year == now.Date.Year)
@@ -353,7 +429,7 @@ namespace WebApplication2.Controllers
                         RetVal = true;
                     }
                 }
-            }
+            }*/
             return RetVal;
         }
         public async Task<ActionResult> ConfirmInvitation(Guid inviterId, Guid invitedId, Guid ticketId)

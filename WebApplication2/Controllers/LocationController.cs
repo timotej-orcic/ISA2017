@@ -25,7 +25,7 @@ namespace WebApplication2.Controllers
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
             return Projections(locationId);
         }
 
@@ -33,7 +33,7 @@ namespace WebApplication2.Controllers
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
             return Halls(locationId);
         }
 
@@ -140,7 +140,6 @@ namespace WebApplication2.Controllers
                     AvgRating = model.AvgRating,
                     ActorsList = model.ActorsList,
                     DurationTime = model.DurationTime,
-                    TicketPrice = model.TicketPrice,
                     Genre = model.Genre,
                     PosterUrl = imageUrl,
                 };
@@ -758,7 +757,7 @@ namespace WebApplication2.Controllers
             ChangeProjectionViewModel vm = new ChangeProjectionViewModel
             {
                 Id = projectionForEdit.Id,
-                Field = projectionForEdit.TicketPrice.ToString()
+                
             };
             return View("ChangePriceProjection", vm);
         }
@@ -789,7 +788,7 @@ namespace WebApplication2.Controllers
                             ModelState.AddModelError("", "Duration can not be empty and must contains only numbers.");
                             return View("ChangeProjection", projectionForEdit);
                         }
-                        p.TicketPrice = price;
+                        
                         projectionForEdit = p;
                     }
                 }

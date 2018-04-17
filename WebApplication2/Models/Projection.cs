@@ -20,6 +20,6 @@ namespace Isa2017Cinema.Models
         public Double AvgRating { get; set; }
         public String Description { get; set; }
         public List<HallTimeProjection> ProjHallsTimeList { get; set; }
-        public Double TicketPrice { get; set; } 
+         
     }
 }

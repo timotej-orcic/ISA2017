@@ -56,7 +56,7 @@ namespace WebApplication2.Controllers
                             Projection = saProjekcijom,
                             SeatColumn = indexColumn - 1,
                             SeatRow = indexRow - 1,
-                            Price = saProjekcijom.Projection.TicketPrice,
+                            Price = saProjekcijom.TicketPrice,
                             DiscountMultiplier = discount
 
                         };
@@ -208,7 +208,8 @@ namespace WebApplication2.Controllers
                 Hall = h,
                 Time = datum,
                 Seats = seats,
-                Projection = projection
+                Projection = projection,
+                TicketPrice = model.TicketPrice
 
             };
             projection.ProjHallsTimeList.Add(ToAdd);

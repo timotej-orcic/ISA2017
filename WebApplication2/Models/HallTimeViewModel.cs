@@ -20,6 +20,10 @@ namespace WebApplication2.Models
         [Display(Name = "Time")]
         public string Time { get; set; }
 
+        [Required]
+        [Display(Name = "Ticket price")]
+        public double TicketPrice { get; set; }
+
         public List<String> Hale { get; set; }
     }
 }

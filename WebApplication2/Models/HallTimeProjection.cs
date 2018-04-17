@@ -17,5 +17,6 @@ namespace WebApplication2.Models
         public DateTime Time { get; set; }
         public List<Row> Seats { get; set; }
         public Projection Projection { get; set; }
+        public Double TicketPrice { get; set; }
     }
 }
