@@ -11,6 +11,7 @@ using Microsoft.Owin.Security;
 using Isa2017Cinema.Models;
 using System.Collections.Generic;
 using System.Web.Security;
+using WebApplication2.Services;
 
 namespace Isa2017Cinema.Controllers
 {
@@ -19,7 +20,7 @@ namespace Isa2017Cinema.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        private WebApplication2.Services.EmailService emailService = new WebApplication2.Services.EmailService();
         public AccountController()
         {
         }
@@ -163,16 +164,28 @@ namespace Isa2017Cinema.Controllers
                     Points = 0.0, UserType = Models.Type.DEFAULT, FriendList = new List<ApplicationUser>(), ReservationsList = new List<Ticket>(), RecensionList = new List<Recension>()};
                  
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
-                    var roleresult = UserManager.AddToRole(user.Id, "Regular_User");
+                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account",
+                       new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
 
-                    var updatedUser = await UserManager.FindByEmailAsync(user.Email);
-                    var newIdentity = await updatedUser.GenerateUserIdentityAsync(UserManager);
-                    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    emailService.SendConfirmationEmail(user, callbackUrl);
+                    //  return RedirectToAction("Index", "Home");
+                    ViewBag.Title = "Confirm your account";
+                    return View("Info");
+
+                    /* await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+
+                     var roleresult = UserManager.AddToRole(user.Id, "Regular_User");
+
+                     var updatedUser = await UserManager.FindByEmailAsync(user.Email);
+                     var newIdentity = await updatedUser.GenerateUserIdentityAsync(UserManager);
+                     AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);*/
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -180,9 +193,12 @@ namespace Isa2017Cinema.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    //return RedirectToAction("Index", "Home");
                 }
-                AddErrors(result);
+                else
+                {
+                    AddErrors(result);
+                }
             }
 
             // If we got this far, something failed, redisplay form

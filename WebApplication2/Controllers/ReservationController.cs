@@ -414,22 +414,7 @@ namespace WebApplication2.Controllers
             {
                 RetVal = true;
             }
-          /*  if (reservation.Karta.Projection.Time.Date.Year < now.Date.Year)
-            {
-                RetVal = true;
-            }else if(reservation.Karta.Projection.Time.Date.Year == now.Date.Year)
-            {
-                if(reservation.Karta.Projection.Time.Date.Month < now.Date.Month)
-                {
-                    RetVal = true;
-                }else if(reservation.Karta.Projection.Time.Date.Month == now.Date.Month)
-                {
-                    if(reservation.Karta.Projection.Time.Date.Day < now.Date.Day)
-                    {
-                        RetVal = true;
-                    }
-                }
-            }*/
+        
             return RetVal;
         }
         public async Task<ActionResult> ConfirmInvitation(Guid inviterId, Guid invitedId, Guid ticketId)
