@@ -21,6 +21,7 @@ namespace Isa2017Cinema.Models
         public List<Projection> ProjectionsList { get; set; }
         public List<Hall> HallsList { get; set; }
         public List<Recension> RecensionsList { get; set; }
+        public Double AvgRating { get; set; }
     }
 
     

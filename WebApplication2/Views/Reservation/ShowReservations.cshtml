@@ -25,7 +25,11 @@
             }
             @if (ViewBag.preciscene.Contains(res))
             {
-                <input type="button" class="btn btn-basic" value="Rate" onclick="location.href='@Url.Action("ShowRecension", "Recension",new { rezervacija = res.Karta.Id })'" />
+                <input type="button" class="btn btn-basic" value="Rate projection" onclick="location.href='@Url.Action("ShowRecension", "Recension",new { rezervacija = res.Karta.Id })'" />
+                <br/>
+               <text> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp; </text>
+                <input type="button" class="btn btn-basic" value="Rate location" onclick="location.href='@Url.Action("ShowRecensionForLocation", "Recension",new { lokacija = res.Karta.Projection.Hall.ParentLocation.Id })'" />
+
             }
             <h3 style="font-weight:bold;color:white;font-size: 14px">Time and hall: </h3>
 
@@ -40,6 +44,10 @@
             <label style="color:white; font-weight:bold; font-size: 14px">Price:  </label>
 
             <label style="color:white; font-size: 14px"> @res.Karta.Price </label>
+            <br/>
+            <label style="color:white; font-weight:bold; font-size: 14px">Projection average rating:  </label>
+
+            <label style="color:white; font-size: 14px"> @res.Karta.Projection.Projection.AvgRating </label>
 
         </div>
         <br/>

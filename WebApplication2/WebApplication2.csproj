@@ -424,6 +424,7 @@
     <Content Include="Views\Manage\ChangeUserName.cshtml" />
     <Content Include="Views\Reservation\FastTickets.cshtml" />
     <Content Include="Views\Recension\ShowRecension.cshtml" />
+    <Content Include="Views\Recension\ShowRecensionForLocation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

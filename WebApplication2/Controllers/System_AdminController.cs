@@ -323,7 +323,8 @@ namespace WebApplication2.Controllers
                                     ProjectionsList = new List<Projection>(),
                                     HallsList = new List<Hall>(),
                                     RecensionsList = new List<Recension>(),
-                                    MyAdminId = null
+                                    MyAdminId = null,
+                                    AvgRating = 0
                                 };
 
                                 ctx.Locations.Add(newLocation);
