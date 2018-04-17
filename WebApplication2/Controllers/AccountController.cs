@@ -83,6 +83,10 @@ namespace Isa2017Cinema.Controllers
             {
                 ModelState.AddModelError("", "User with that email is not registered.");
                 return View(model);
+            }else if (!user.EmailConfirmed)
+            {
+                ModelState.AddModelError("", "Please go to your mail and confirm account to continue.");
+                return View(model);
             }
             var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password,false, shouldLockout: false);
             switch (result)
