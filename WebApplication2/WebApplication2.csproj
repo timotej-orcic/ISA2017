@@ -418,6 +418,8 @@
     <Content Include="Views\Hall\FastReserveTicket.cshtml" />
     <Content Include="Views\Hall\AddSeatsAndDiscount.cshtml" />
     <Content Include="Views\Reservation\SuccessInviting.cshtml" />
+    <Content Include="Views\Manage\ChangeEmail.cshtml" />
+    <Content Include="Views\Manage\ChangeUserName.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

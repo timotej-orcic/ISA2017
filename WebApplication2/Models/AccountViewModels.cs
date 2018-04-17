@@ -99,7 +99,11 @@ namespace Isa2017Cinema.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
-
+    public class ChangeEmailViewModel
+    {
+        [EmailAddress]
+        public string Email { get; set; }
+    }
     public class ResetPasswordViewModel
     {
         [Required]

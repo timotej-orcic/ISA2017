@@ -65,6 +65,8 @@ namespace Isa2017Cinema.Controllers
                 : message == ManageMessageId.ChangeLastNameSuccess ? "Your lastname has been changed."
                 : message == ManageMessageId.ChangeCitySuccess ? "Your city has been changed."
                 : message == ManageMessageId.ChangePhoneSuccess ? "Your phone has been changed."
+                : message == ManageMessageId.ChangeEmailSuccess ? "Your email has been changed."
+                : message == ManageMessageId.ChangeUserNameSuccess ? "Your username has been changed."
                 : "";
 
             var userId = User.Identity.GetUserId();
@@ -224,6 +226,95 @@ namespace Isa2017Cinema.Controllers
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
 
+        public ActionResult ChangeEmail()
+        {
+
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            ChangeEmailViewModel model = new ChangeEmailViewModel
+            {
+                Email = user.Email
+            };
+            return View(model);
+        }
+
+
+
+        //
+        // POST: /Manage/ChangeName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeEmail(ChangeEmailViewModel model)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            if (model.Email == null)
+            {
+                ModelState.AddModelError("", "Email can not be empty.");
+                return View(model);
+            }
+            var userE = UserManager.FindByEmail(model.Email);
+            if (userE != null)
+            {
+                ModelState.AddModelError("", "User with that email is already registered.");
+                return View(model);
+            }
+            else
+            {
+                user.Email = model.Email;
+                ctx.SaveChanges();
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeEmailSuccess });
+            }
+        }
+
+        public ActionResult ChangeUserName()
+        {
+
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            ChangeFieldViewModel model = new ChangeFieldViewModel
+            {
+                Field = user.UserName
+            };
+            return View(model);
+        }
+
+
+
+        //
+        // POST: /Manage/ChangeName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeUserName(ChangeFieldViewModel model)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            if (model.Field == null)
+            {
+                ModelState.AddModelError("", "User name can not be empty.");
+                return View(model);
+            }
+            bool exists = false;
+            foreach(ApplicationUser u in ctx.Users)
+            {
+                if (u.UserName.Equals(model.Field))
+                {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists)
+            {
+                ModelState.AddModelError("", "User with that username is already registered.");
+                return View(model);
+            }
+            else
+            {
+                user.UserName = model.Field;
+                ctx.SaveChanges();
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeUserNameSuccess });
+            }
+        }
         //
         // GET: /Manage/ChangeName
         public ActionResult ChangeName()
@@ -526,10 +617,12 @@ namespace Isa2017Cinema.Controllers
             ChangeLastNameSuccess,
             ChangeCitySuccess,
             ChangePhoneSuccess,
+            ChangeEmailSuccess,
             SetTwoFactorSuccess,
             SetPasswordSuccess,
             RemoveLoginSuccess,
             RemovePhoneSuccess,
+            ChangeUserNameSuccess,
 
             Error
         }

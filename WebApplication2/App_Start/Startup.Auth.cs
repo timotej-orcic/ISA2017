@@ -33,8 +33,17 @@ namespace Isa2017Cinema
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
-                }
-            });            
+                },
+                //ExpireTimeSpan = System.TimeSpan.FromMinutes(2)
+            });
+            /*var authOptions = new CookieAuthenticationOptions
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                LoginPath = new PathString("/Account/Login"), //Replace
+                LogoutPath = new PathString("/Account/LogOff"), //Replace
+                ExpireTimeSpan = System.TimeSpan.FromDays(60),
+            };
+            app.UseCookieAuthentication(authOptions);*/
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Enables the application to temporarily store user information when they are verifying the second factor in the two-factor authentication process.
