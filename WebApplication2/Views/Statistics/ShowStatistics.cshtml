@@ -1,0 +1,78 @@
+﻿@model WebApplication2.Models.GraphicViewModel
+@{
+    ViewBag.Title = "ShowStatistics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Scripts.Render("~/Scripts/canvasjs.min.js")
+<h2 style="color:white; font-weight:bold; font-size: 14px">Rating of location: @Model.loc.AvgRating </h2>
+<br />
+<h2 style="color:white; font-weight:bold; font-size: 14px">Average ratings of projections: </h2>
+<br />
+@foreach (var l in Model.loc.ProjectionsList)
+{
+    <h2 style="color:white; font-weight:bold; font-size: 14px">@l.Name : @l.AvgRating </h2>
+}
+<div id="chartContainer" style="height:250px; width: 50%;"></div>
+<br />
+<div id="chartContainer2" style="height:250px; width: 50%;"></div>
+
+<script type="text/javascript">
+window.onload = function () {
+    var dataPoints = [];
+    var dataPoints1 = [];
+    debugger;
+   @for (int x = 0; x < @Model.pairs.Count; x++) {
+       {
+           <text>
+            dataPoints.push({label : '@Model.pairs[x].date' , y: @Model.pairs[x].number});
+    </text>
+          
+       }
+   }
+    @for (int x = 0; x < @Model.nedeljni.Count; x++) {
+        {
+            <text>
+             dataPoints1.push({label : '@Model.nedeljni[x].date' , y: @Model.nedeljni[x].number});
+            </text>
+          
+        }
+    }
+    var chart = new CanvasJS.Chart("chartContainer", {
+        theme: "light1", // "light2", "dark1", "dark2"
+        animationEnabled: false, // change to true
+        title:{
+            text: "Basic Column Chart"
+        },
+        data: [
+        {
+            // Change type to "bar", "area", "spline", "pie",etc.
+            type: "column",
+        
+            dataPoints:dataPoints
+       
+        }
+        ]
+       // data.dataPoints.push("dsada",31);
+});
+    chart.render();
+    var chart2 = new CanvasJS.Chart("chartContainer2", {
+        theme: "light1", // "light2", "dark1", "dark2"
+        animationEnabled: false, // change to true
+        title:{
+            text: "Basic Column "
+        },
+        data: [
+        {
+            // Change type to "bar", "area", "spline", "pie",etc.
+            type: "column",
+        
+            dataPoints:dataPoints1
+       
+        }
+        ]
+        // data.dataPoints.push("dsada",31);
+    });
+    chart2.render();
+
+}
+</script>

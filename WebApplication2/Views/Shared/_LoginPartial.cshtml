@@ -69,7 +69,8 @@
             if (enableLocationOptions)
             {
                 <ul class="nav navbar-nav navbar-right">
-                    <li>@Html.ActionLink("Change my location properties", "ChangeLocation", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
+                    <li>@Html.ActionLink("Statistics", "ShowStatistics", "Statistics", routeValues: null, htmlAttributes: new { title = "Statistics" })</li>
+                    <li>@Html.ActionLink("Change my location properties", "ChangeLocation", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>        
                     <li>@Html.ActionLink("Projections", "ProjectionsShow", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
                     <li>@Html.ActionLink("Halls", "HallsShow", "Location", routeValues: null, htmlAttributes: new { title = "Change" })</li>
                     <li>@Html.ActionLink("My account", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })</li>

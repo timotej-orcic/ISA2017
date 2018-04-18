@@ -210,6 +210,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RecensionController.cs" />
     <Compile Include="Controllers\ReservationController.cs" />
+    <Compile Include="Controllers\StatisticsController.cs" />
     <Compile Include="Controllers\System_AdminController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -228,6 +229,7 @@
     <Compile Include="Models\FanZoneAdmin.cs" />
     <Compile Include="Models\FirstPasswordChangeViewModels.cs" />
     <Compile Include="Models\FriendsViewModels.cs" />
+    <Compile Include="Models\Graphic.cs" />
     <Compile Include="Models\Hall.cs" />
     <Compile Include="Models\HallsViewModel.cs" />
     <Compile Include="Models\HallTimeProjection.cs" />
@@ -327,6 +329,7 @@
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
+    <Content Include="Scripts\canvasjs.min.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />
     <Content Include="Scripts\jquery-1.12.4.min.js" />
     <Content Include="Scripts\jquery-1.12.4.min.map" />
@@ -430,6 +433,7 @@
     <Content Include="Views\Recension\ShowRecensionForLocation.cshtml" />
     <Content Include="Views\Account\Info.cshtml" />
     <Content Include="Views\Location\ChangeCityLocation.cshtml" />
+    <Content Include="Views\Statistics\ShowStatistics.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
