@@ -29,7 +29,7 @@ namespace WebApplication2.Controllers
             return View();
         }
 
-        public async Task<ActionResult> ShowFastTickets(Guid locationId)
+        public ActionResult ShowFastTickets(Guid locationId)
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             var lokacija = dbCtx.Locations.Include(x => x.ProjectionsList).FirstOrDefault(x => x.Id == locationId);
@@ -66,7 +66,7 @@ namespace WebApplication2.Controllers
             return View("FastTickets",fastTicketsAtLocation);
         }
 
-        public async Task<ActionResult> ReserveFastTicket(Guid idTicket,Guid idLokacije)
+        public ActionResult ReserveFastTicket(Guid idTicket,Guid idLokacije)
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             var lokacija = dbCtx.Locations.Include(x => x.ProjectionsList).FirstOrDefault(x => x.Id == idLokacije);
@@ -135,8 +135,7 @@ namespace WebApplication2.Controllers
                 }
             }
 
-            // var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where MyLocation = '" + hala.Id + "'").FirstOrDefault();
-            string userId = User.Identity.GetUserId();
+             string userId = User.Identity.GetUserId();
 
             dbCtx.SaveChanges();
             var obj = new
@@ -313,8 +312,7 @@ namespace WebApplication2.Controllers
                 resWithProjection.Projection.Hall = halaSaLokacijom;
                 var saSedistima = await ctx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == resWithProjection.Projection.Id);
                 resWithProjection.Projection = saSedistima;
-
-              //  reservations.Add(resWithProjection);
+                
                 DateTime now = DateTime.Now;
                 bool isCancelable = true;
                 if(now.Date.Equals(resWithProjection.Projection.Time.Date) && now.TimeOfDay.Hours.Equals(resWithProjection.Projection.Time.TimeOfDay.Hours)){
@@ -354,6 +352,14 @@ namespace WebApplication2.Controllers
                 sve.Add(t);
             }
             List<ProjectionWithFlagViewModel> preciscene = removeSameProjectionTickets(reservations);
+            List<ProjectionWithFlagViewModel> izProslosti = new List<ProjectionWithFlagViewModel>();
+            foreach(ProjectionWithFlagViewModel proj in preciscene)
+            {
+                if (checkIfReservationIsInPast(proj))
+                {
+                    izProslosti.Add(proj);
+                }
+            }
             List<Location> visitedPlaces = findVisitHistory(preciscene);
             var visited = new List<SelectListItem>();
             foreach(Location posecena in visitedPlaces)
@@ -362,7 +368,7 @@ namespace WebApplication2.Controllers
 
             }
             ViewBag.visitedPlaces = visited;
-            ViewBag.preciscene = preciscene;
+            ViewBag.preciscene = izProslosti;
             return View("ShowReservations",sve);
         }
         public List<ProjectionWithFlagViewModel> removeSameProjectionTickets(List<ProjectionWithFlagViewModel> reservations)
@@ -437,8 +443,7 @@ namespace WebApplication2.Controllers
             inviter.ReservationsList.Remove(karta);
             invited.ReservationsList.Add(karta);
             dbCtx.SaveChanges();
-           /* if(!User.Identity.GetUserId().Equals(invitedId.ToString()))
-                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);*/
+
             EmailService emailService = new EmailService();
             emailService.SendNotificationEmail(invited, inviter, karta, true);
 
@@ -469,8 +474,6 @@ namespace WebApplication2.Controllers
             saProjekcijom.Seats[karta.SeatRow] = red;
             inviter.ReservationsList.Remove(karta);
             dbCtx.SaveChanges();
-           /* if (!User.Identity.GetUserId().Equals(invitedId.ToString()))
-                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);*/
            
             EmailService emailService = new EmailService();
             emailService.SendNotificationEmail(invited, inviter, karta, false);

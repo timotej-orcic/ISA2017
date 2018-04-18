@@ -34,7 +34,7 @@ namespace Isa2017Cinema
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 },
-                //ExpireTimeSpan = System.TimeSpan.FromMinutes(2)
+                ExpireTimeSpan = System.TimeSpan.FromMinutes(30)
             });
             /*var authOptions = new CookieAuthenticationOptions
             {

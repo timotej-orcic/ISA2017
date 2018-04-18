@@ -109,50 +109,7 @@ namespace Isa2017Cinema.Controllers
             }
         }
 
-        //
-        // POST: /Account/Login
-        /*[HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var user = UserManager.FindByEmail(model.Email);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "User with that email is not registered.");
-                return View(model);
-            }else { 
-           
-                if (!await UserManager.IsEmailConfirmedAsync(user.Id) && UserManager.IsInRole(user.Id,"Regular_User"))
-                {
-                    return View("Info");
-                }
-                else
-                {
-                    var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, false, shouldLockout: false);
-                    if (result == SignInStatus.Success)
-                    {
-                        /*ViewBag.enableLocationOptions = true;
-                        ViewBag.enableFanzoneOptions = true;
-
-                        return RedirectToLocal(returnUrl);
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Invalid login attempt.");
-                        return View(model);
-                    }
-                }
-            }
-          
-        }*/
+      
 
         //
         // GET: /Account/VerifyCode
@@ -264,6 +221,8 @@ namespace Isa2017Cinema.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
+
+            LogOff();
             if (userId == null || code == null)
             {
                 return View("Error");
