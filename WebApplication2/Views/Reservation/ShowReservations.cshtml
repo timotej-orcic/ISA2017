@@ -15,19 +15,16 @@
             <div style="background-color:gray">
                 <h2 style="color:white">Reservation for: @res.Karta.Projection.Projection.Name</h2>
             </div>
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+           
             @if (res.isCancelable == true)
             {
-                <input type="button" class="btn btn-basic" value="Cancel" onclick="location.href='@Url.Action("CancelReservation", "Reservation",new { rezervacija = res.Karta.Id })'" />
-                
-            }
+                <input type="button" class="btn btn-danger" value="Cancel" onclick="location.href='@Url.Action("CancelReservation", "Reservation",new { rezervacija = res.Karta.Id })'" />
+              
+            } 
             @if (ViewBag.preciscene.Contains(res))
             {
                 <input type="button" class="btn btn-basic" value="Rate projection" onclick="location.href='@Url.Action("ShowRecension", "Recension",new { rezervacija = res.Karta.Id })'" />
-                <br/>
-               <text> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp; </text>
+                
                 <input type="button" class="btn btn-basic" value="Rate location" onclick="location.href='@Url.Action("ShowRecensionForLocation", "Recension",new { lokacija = res.Karta.Projection.Hall.ParentLocation.Id })'" />
 
             }
@@ -47,7 +44,7 @@
             <br/>
             <label style="color:white; font-weight:bold; font-size: 14px">Projection average rating:  </label>
 
-            <label style="color:white; font-size: 14px"> @res.Karta.Projection.Projection.AvgRating </label>
+            <label style="color:white; font-size: 14px"> @res.Karta.Projection.Projection.AvgRating / 5</label>
 
         </div>
         <br/>

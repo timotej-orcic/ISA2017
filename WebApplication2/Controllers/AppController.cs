@@ -198,7 +198,7 @@ namespace WebApplication2.Controllers
                         cinemas.Add(loc);
                     }
                 }
-                List<Location> SortedList = cinemas.OrderBy(o => o.Address).ToList();
+                List<Location> SortedList = cinemas.OrderBy(o => o.City).ToList();
                 ViewBag.type = LocationType.CINEMA;
                 ViewBag.locations = SortedList;
                 CinemaViewModel cvm = new CinemaViewModel
@@ -223,7 +223,7 @@ namespace WebApplication2.Controllers
                         theatres.Add(loc);
                     }
                 }
-                List<Location> SortedList = theatres.OrderBy(o => o.Address).ToList();
+                List<Location> SortedList = theatres.OrderBy(o => o.City).ToList();
                 ViewBag.type = LocationType.THEATRE;
                 ViewBag.locations = SortedList;
                 CinemaViewModel cvm = new CinemaViewModel

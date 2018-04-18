@@ -137,7 +137,7 @@ namespace WebApplication2.Controllers
                     Name = model.Name,
                     Description = model.Description,
                     DirectorName = model.DirectorName,
-                    AvgRating = model.AvgRating,
+                    AvgRating = 0,
                     ActorsList = model.ActorsList,
                     DurationTime = model.DurationTime,
                     Genre = model.Genre,
@@ -343,7 +343,27 @@ namespace WebApplication2.Controllers
             };
             return View("ChangeNameLocation", vm);
         }
+        public ActionResult ChangeCityLocation(Guid idLocation)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
 
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(idLocation))
+                {
+                    locationForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = locationForEdit.Id,
+                Field = locationForEdit.City
+            };
+            return View("ChangeCityLocation", vm);
+        }
         public ActionResult ChangeAddressLocation(Guid idLocation)
         {
             List<Location> allLocations = new List<Location>();
@@ -416,7 +436,34 @@ namespace WebApplication2.Controllers
             dbCtx.SaveChanges();
             return ChangeLocation();
         }
+        public ActionResult EditCityLocation(ChangeProjectionViewModel model)
+        {
+            List<Location> allLocations = new List<Location>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allLocations = dbCtx.Locations.ToList();
+            Location locationForEdit = new Location();
 
+            foreach (Location p in allLocations)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "City can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        p.City = model.Field;
+                        locationForEdit = p;
+                    }
+                }
+            }
+
+            /* */
+            dbCtx.SaveChanges();
+            return ChangeLocation();
+        }
         public ActionResult EditAddressLocation(ChangeProjectionViewModel model)
         {
             List<Location> allLocations = new List<Location>();

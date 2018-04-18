@@ -426,6 +426,7 @@
     <Content Include="Views\Recension\ShowRecension.cshtml" />
     <Content Include="Views\Recension\ShowRecensionForLocation.cshtml" />
     <Content Include="Views\Account\Info.cshtml" />
+    <Content Include="Views\Location\ChangeCityLocation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

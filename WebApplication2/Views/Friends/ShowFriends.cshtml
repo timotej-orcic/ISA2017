@@ -45,23 +45,14 @@
 }
 <div style="overflow-y: scroll; position:relative">
     @if (ViewBag.usersToShow.Count > 0)
-{
-
-    foreach (var reg in ViewBag.usersToShow)
     {
-        int br = 0;
+
+        foreach (var reg in ViewBag.usersToShow)
+        {
+            int br = 0;
         <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
             <dl class="dl-horizontal">
                 <dt style="width: 300px; text-align:left; opacity:1.0"><label style="font-size: 16px; color:white">@reg.Name @reg.LastName, @reg.City </label> </dt>
-                @*<dt><label style="font-size: 16px; color:white ">First name:</label> </dt>
-                    <dd><label style="font-size: 16px;">@reg.Name </label> </dd>
-
-                    <dt><label style="font-size: 16px;color:white">Last name: </label></dt>
-                    <dd><label style="font-size: 16px;">@reg.LastName  </label></dd>
-
-                    <dt><label style="font-size: 16px;color:white">Username:</label> </dt>
-                    <dd><label style="font-size: 16px;">@reg.UserName </label> </dd>-->
-                *@
                 <dd>
                     @if (ViewBag.FriendList.Count > 0 || ViewBag.pendinglist.Count > 0)
                     {
