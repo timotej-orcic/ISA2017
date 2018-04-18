@@ -67,9 +67,9 @@
             success: function (data)
             {
                 debugger;
-              
+
                 window.location.href = 'CallFriends?logUser='+ data.logUser + '&brRezKarata='+data.brRezKarata +'&idProjekcije='+data.idProjekcije + '';
-               
+
             }
         });
     }
@@ -93,7 +93,21 @@
                     classes : 'economy-class', //your custom CSS class
                     category: 'Economy Class'
 
+                },
+                f: {
+                    price   : 100,
+                    classes : 'first-class', //your custom CSS class
+                    category: 'First Class'
+
+
+                },
+                o: {
+                    price   : 0,
+                    classes : 'emptyspace', //your custom CSS class
+                    category: 'Economy Class'
+
                 }
+
 
             },
             naming : {

@@ -9,7 +9,7 @@
 @using (Html.BeginForm("HallSubmit", "Location", new { MyLocation = ViewBag.location }, FormMethod.Post, new { @class = "form-horizontal", role = "form", style = "color:white" }))
 {
     @Html.AntiForgeryToken()
-    <h4 style="color:white">Create a new hall for @ViewBag.location.</h4>
+    <h4 style="color:white">Create a new hall</h4>
     <hr />
     @Html.ValidationSummary("", new { @class = "text-danger" })
 

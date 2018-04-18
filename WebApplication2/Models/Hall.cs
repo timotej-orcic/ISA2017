@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication2.Models;
 
 namespace Isa2017Cinema.Models
 {
@@ -16,5 +17,6 @@ namespace Isa2017Cinema.Models
         public int RowsCount { get; set; }
         public int ColsCount { get; set; }
         public List<List<SeatType>> SeatsList { get; set; }
+        public List<Row> Seats { get; set; }
     }
 }

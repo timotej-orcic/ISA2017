@@ -55,33 +55,56 @@ div.seatCharts-seat.available {
 div.seatCharts-seat.available.first-class {
 /* 	background: url(vip.png); */
 	background-color: red;
-    pointer-events: none;
+    
     
 }
+
 
 div.seatCharts-seat.available.emptyspace {
 /* 	background: url(vip.png); */
 	background-color: white;
-    pointer-events: none;
+   
+    
+}
+div.seatCharts-seat.available.zzz {
+/* 	background: url(vip.png); */
+	background-color: #E6CAC4;
+   
     
 }
 div.seatCharts-seat.focused {
 	background-color: #76B474;
 }
 div.seatCharts-seat.selected {
-	background-color: #E6CAC4;
+	background-color: red;
 }
 div.seatCharts-seat.selected2 {
 	background-color: red;
 }
 div.seatCharts-seat.unavailable {
-	background-color: #472B34;
-    cursor: not-allowed;
+	background-color: grey;
+    
 }
-div.seatCharts-seat.emptyspace {
+div.seatCharts-seat.ccc {
+	background-color: #E6CAC4;
+    
+}
+
+div.seatCharts-seat.sss {
+	background-color: #B9DEA0;
+    
+}
+
+div.seatCharts-seat.xxx {
+	background-color: green;
+    
+}
+
+div.seatCharts-seat.yyy {
 	background-color: white;
-   
+    
 }
+
 div.seatCharts-container {
 	border-right: 1px dotted #adadad;
 	float: left;

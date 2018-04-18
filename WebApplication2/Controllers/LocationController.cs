@@ -234,14 +234,33 @@ namespace WebApplication2.Controllers
         }
         public async Task<ActionResult> HallSubmit(Models.HallViewModel model, Guid MyLocation)
         {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            List<Row> seats = new List<Row>();
+
+            string praznic = "";
+            for (int i = 0; i < model.Rows; i++)
+            {
+                Row row = new Row();
+                for (int j = 0; j < model.Columns; j++)
+                {
+                    praznic += "e";
+
+                }
+                row.Seats = praznic;
+                seats.Add(row);
+                dbCtx.Rows.Add(row);
+                praznic = "";
+            }
             Hall hallToAdd = new Hall
             {
                 Name = model.Name,
                 RowsCount = model.Rows,
-                ColsCount = model.Columns
+                ColsCount = model.Columns,
+                Seats = seats
+                
             };
 
-            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            
             var location = await dbCtx.Locations.Include(x => x.HallsList).FirstOrDefaultAsync(x => x.Id == MyLocation);
             location.HallsList.Add(hallToAdd);
             dbCtx.SaveChanges();

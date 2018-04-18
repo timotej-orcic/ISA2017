@@ -21,6 +21,114 @@ namespace WebApplication2.Controllers
         }
 
         [HttpPost]
+        public JsonResult ChangeSeats(String[] arr)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            Guid id = new Guid(arr[0]);
+            var hala = dbCtx.Database.SqlQuery<Hall>("select * from Halls where Id = '" + id + "'").FirstOrDefault();
+            var mama = dbCtx.Halls.Include(x => x.Seats).FirstOrDefault(x => x.Id == id);
+            
+            var indexRow = -1;
+            var indexColumn = -1;
+            List<Ticket> ticketsList = new List<Ticket>();
+            int slobodna = 0;
+            int balkon = 0;
+            for (int i =1; i<arr.Length; i++)
+            {
+                if (arr[i].Equals("razmak"))
+                {
+                    slobodna = i;
+                }
+                if (arr[i].Equals("razmak2"))
+                {
+                   balkon = i;
+                }
+            }
+            if (arr.Length > 1)
+            {
+                for (int i = 1; i < slobodna - 1; i++)
+                {
+                    if (!arr[i].Equals("")) { 
+                    string[] redKolona = arr[i].Split('_');
+                    int.TryParse(redKolona[0], out indexRow);
+                    int.TryParse(redKolona[1], out indexColumn);
+
+                    if (indexRow != -1 && indexColumn != -1)
+                    {
+                        Row red = mama.Seats[indexRow - 1];
+                        var aStringBuilder = new StringBuilder(red.Seats);
+                        aStringBuilder.Remove(indexColumn - 1, 1);
+                        aStringBuilder.Insert(indexColumn - 1, "o");
+                        red.Seats = aStringBuilder.ToString();
+                        mama.Seats[indexRow - 1] = red;
+                        
+
+                        indexRow = -1;
+                        indexColumn = -1;
+                    }
+                    }
+                }
+                for (int i = slobodna+1; i < balkon-1; i++)
+                {
+                    if (!arr[i].Equals(""))
+                    {
+                        string[] redKolona = arr[i].Split('_');
+                        int.TryParse(redKolona[0], out indexRow);
+                        int.TryParse(redKolona[1], out indexColumn);
+
+                        if (indexRow != -1 && indexColumn != -1)
+                        {
+                            Row red = mama.Seats[indexRow - 1];
+                            var aStringBuilder = new StringBuilder(red.Seats);
+                            aStringBuilder.Remove(indexColumn - 1, 1);
+                            aStringBuilder.Insert(indexColumn - 1, "f");
+                            red.Seats = aStringBuilder.ToString();
+                            mama.Seats[indexRow - 1] = red;
+
+
+                            indexRow = -1;
+                            indexColumn = -1;
+                        }
+                    }
+                }
+                for (int i = balkon+1; i < arr.Length; i++)
+                {
+                    if (!arr[i].Equals(""))
+                    {
+                        string[] redKolona = arr[i].Split('_');
+                        int.TryParse(redKolona[0], out indexRow);
+                        int.TryParse(redKolona[1], out indexColumn);
+
+                        if (indexRow != -1 && indexColumn != -1)
+                        {
+                            Row red = mama.Seats[indexRow - 1];
+                            var aStringBuilder = new StringBuilder(red.Seats);
+                            aStringBuilder.Remove(indexColumn - 1, 1);
+                            aStringBuilder.Insert(indexColumn - 1, "e");
+                            red.Seats = aStringBuilder.ToString();
+                            mama.Seats[indexRow - 1] = red;
+
+
+                            indexRow = -1;
+                            indexColumn = -1;
+                        }
+                    }
+                }
+            }
+
+            // var projekcija = dbCtx.Database.SqlQuery<Projection>("select * from Projections where MyLocation = '" + hala.Id + "'").FirstOrDefault();
+         
+
+            dbCtx.SaveChanges();
+            
+            var obj = new
+            {
+                isok = true
+            };
+            return Json(obj);
+        }
+
+        [HttpPost]
         public JsonResult SaveFastTickets(String[] arr)
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
@@ -127,8 +235,9 @@ namespace WebApplication2.Controllers
                     break;
                 }
             }
-
-            return View("Seats", hallToShow);
+            var mama = dbCtx.Halls.Include(x => x.Seats).FirstOrDefault(x => x.Id == hallToShow.Id);
+            
+            return View("Seats", mama);
         }
 
         public async Task<ActionResult> AddHallTimeProjection(Guid projekcija)
@@ -180,11 +289,26 @@ namespace WebApplication2.Controllers
                     h = hall;
                 }
             }
+            var hallWithSeats = await dbCtx.Halls.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == h.Id);
+            List<Row> seats = new List<Row>();
 
+            string konfiguracija = "";
+            for (int br = 0; br < hallWithSeats.RowsCount; br++)
+            {
+                Row row = new Models.Row();
+                for(int br2 = 0; br2<hallWithSeats.Seats[br].Seats.Length; br2++)
+                {
+                    konfiguracija += hallWithSeats.Seats[br].Seats[br2];
+                }
+                row.Seats = konfiguracija;
+                seats.Add(row);
+                dbCtx.Rows.Add(row);
+                konfiguracija = "";
+            }
             string date = model.Date;
             string time = model.Time;
             string datetime = date + " " + time;
-            List<Row> seats = new List<Row>();
+            /*List<Row> seats = new List<Row>();
             
             string praznic = "";
             for(int i = 0; i< rows; i++)
@@ -199,7 +323,7 @@ namespace WebApplication2.Controllers
                 seats.Add(row);
                 dbCtx.Rows.Add(row);
                 praznic = "";
-            }
+            }*/
             DateTime datum = DateTime.Parse(datetime);
             
             var projection = await dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefaultAsync(x => x.Id == projekcija);
