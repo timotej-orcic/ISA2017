@@ -64,8 +64,6 @@ namespace Isa2017Cinema.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-
-        //
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
@@ -84,9 +82,55 @@ namespace Isa2017Cinema.Controllers
             {
                 ModelState.AddModelError("", "User with that email is not registered.");
                 return View(model);
+            }
+            else
+            {
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id) && UserManager.IsInRole(user.Id, "Regular_User"))
+                {
+                    return View("Info");
+                }
+                else
+                {
+                    var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, false, shouldLockout: false);
+                    switch (result)
+                    {
+                        case SignInStatus.Success:
+                            return RedirectToAction("Index", "Home");
+                        case SignInStatus.LockedOut:
+                            return View("Lockout");
+                        case SignInStatus.RequiresVerification:
+                            return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
+                        case SignInStatus.Failure:
+                        default:
+                            ModelState.AddModelError("", "Invalid login attempt.");
+                            return View(model);
+                    }
+                }
+            }
+        }
+
+        //
+        // POST: /Account/Login
+        /*[HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            var user = UserManager.FindByEmail(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "User with that email is not registered.");
+                return View(model);
             }else { 
            
-                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id) && UserManager.IsInRole(user.Id,"Regular_User"))
                 {
                     return View("Info");
                 }
@@ -95,6 +139,9 @@ namespace Isa2017Cinema.Controllers
                     var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, false, shouldLockout: false);
                     if (result == SignInStatus.Success)
                     {
+                        /*ViewBag.enableLocationOptions = true;
+                        ViewBag.enableFanzoneOptions = true;
+
                         return RedirectToLocal(returnUrl);
                     }
                     else
@@ -105,7 +152,7 @@ namespace Isa2017Cinema.Controllers
                 }
             }
           
-        }
+        }*/
 
         //
         // GET: /Account/VerifyCode
@@ -179,7 +226,7 @@ namespace Isa2017Cinema.Controllers
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account",
                        new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    var userResult = UserManager.AddToRole(user.Id, "Regular_User");
+                    var resultUser = UserManager.AddToRole(user.Id, "Regular_User");
                     emailService.SendConfirmationEmail(user, callbackUrl);
                     //  return RedirectToAction("Index", "Home");
                     ViewBag.Title = "Confirm your account";
