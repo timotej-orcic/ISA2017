@@ -52,7 +52,26 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
-          
+            List<Request> requests = new List<Request>();
+            requests = ctx.Requests.ToList();
+            var usersToShowReq = new List<ApplicationUser>();
+
+            foreach (Request req in requests)
+            {
+                if (req.Receiver_id.Equals(Guid.Parse(id)))
+                {
+                    foreach (ApplicationUser appuser in users)
+                    {
+                        if (req.Sender_id.Equals(Guid.Parse(appuser.Id)))
+                        {
+                            usersToShowReq.Add(appuser);
+                        }
+                    }
+                }
+            }
+
+
+            ViewBag.usersRequest = usersToShowReq;
             ViewBag.pendinglist = pendinglist;
             ViewBag.FriendList = user.FriendList;
             ViewBag.usersToShow = user.FriendList;
@@ -90,7 +109,7 @@ namespace WebApplication2.Controllers
             return View();
         }
 
-        public async Task<ActionResult> AcceptRequest(String username)
+        public async Task<ActionResult> AcceptRequest(String username, bool isFriendPage,bool isRequestPage)
         {
             List<Request> requests = new List<Request>();
             ApplicationDbContext ctx = ApplicationDbContext.Create();
@@ -142,11 +161,16 @@ namespace WebApplication2.Controllers
                 }
             }
 
-
+            ViewBag.isFriendPage = isFriendPage;
             ViewBag.usersRequest = usersToShow;
-            return View("ShowFriendRequests");
+            if (isRequestPage)
+                return View("ShowFriendRequests");
+            else if (isFriendPage)
+                return await Search(new FriendsViewModel(), true);
+            else
+                return await Search(new FriendsViewModel(), false);
         }
-        public async Task<ActionResult> DeclineRequest(String username)
+        public async Task<ActionResult> DeclineRequest(String username,bool isFriendPage,bool isRequestPage)
         {
             List<Request> requests = new List<Request>();
             ApplicationDbContext ctx = ApplicationDbContext.Create();
@@ -181,7 +205,13 @@ namespace WebApplication2.Controllers
 
 
             ViewBag.usersRequest = usersToShow;
-            return View("ShowFriendRequests");
+            ViewBag.isFriendPage = isFriendPage;
+            if (isRequestPage)
+                return View("ShowFriendRequests");
+            else if(isFriendPage)
+                return await Search(new FriendsViewModel(),true);
+            else
+                return await Search(new FriendsViewModel(), false);
         }
 
         [HttpPost]
@@ -221,6 +251,11 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
+            List<ApplicationUser> friendsToShow = new List<ApplicationUser>();
+            foreach(ApplicationUser us in user.FriendList)
+            {
+                if (usersToShow.Contains(us)) friendsToShow.Add(us);
+            }
             List<ApplicationUser> pendinglist = new List<ApplicationUser>();
             foreach(ApplicationUser appuser in usersToShow)
             {
@@ -236,19 +271,39 @@ namespace WebApplication2.Controllers
             }
             ctx.SaveChanges();
             ViewBag.pendinglist = pendinglist;
+            List<Request> requests = new List<Request>();
+            requests = ctx.Requests.ToList();
+            var usersToShowReq = new List<ApplicationUser>();
+
+            foreach (Request req in requests)
+            {
+                if (req.Receiver_id.Equals(Guid.Parse(id)))
+                {
+                    foreach (ApplicationUser appuser in users)
+                    {
+                        if (req.Sender_id.Equals(Guid.Parse(appuser.Id)))
+                        {
+                            usersToShowReq.Add(appuser);
+                        }
+                    }
+                }
+            }
+
+
+            ViewBag.usersRequest = usersToShowReq;
             if (isFriendPage == false)
             {
                 ViewBag.usersToShow = usersToShow;
             }
             else
             {
-                ViewBag.usersToShow = user.FriendList;
+                ViewBag.usersToShow = friendsToShow;
             }
             ViewBag.FriendList = user.FriendList;
             ViewBag.isFriendPage = isFriendPage;
             return View("ShowFriends",model);
         }
-        public async Task<ActionResult> AddFriend(String username, String name, String lastname)
+        public async Task<ActionResult> AddFriend(String username, String name, String lastname, bool isFriendPage)
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             String id = User.Identity.GetUserId();
@@ -320,9 +375,30 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
+            List<Request> requests = new List<Request>();
+            requests = ctx.Requests.ToList();
+            var usersToShowReq = new List<ApplicationUser>();
+
+            foreach (Request req in requests)
+            {
+                if (req.Receiver_id.Equals(Guid.Parse(id)))
+                {
+                    foreach (ApplicationUser appuser in users)
+                    {
+                        if (req.Sender_id.Equals(Guid.Parse(appuser.Id)))
+                        {
+                            usersToShowReq.Add(appuser);
+                        }
+                    }
+                }
+            }
+
+
+            ViewBag.usersRequest = usersToShowReq;
             ViewBag.pendinglist = pendinglist;
             ViewBag.usersToShow = usersToShow;
             ViewBag.FriendList = us.FriendList;
+            ViewBag.isFriendPage = isFriendPage;
             return View("ShowFriends", model);
         }
 
@@ -410,12 +486,32 @@ namespace WebApplication2.Controllers
             {
                 ViewBag.usersToShow = user.FriendList;
             }
+            List<Request> requests = new List<Request>();
+            requests = ctx.Requests.ToList();
+            var usersToShowReq = new List<ApplicationUser>();
+
+            foreach (Request req in requests)
+            {
+                if (req.Receiver_id.Equals(Guid.Parse(id)))
+                {
+                    foreach (ApplicationUser appuser in users)
+                    {
+                        if (req.Sender_id.Equals(Guid.Parse(appuser.Id)))
+                        {
+                            usersToShowReq.Add(appuser);
+                        }
+                    }
+                }
+            }
+
+
+            ViewBag.usersRequest = usersToShowReq;
             ViewBag.FriendList = user.FriendList;
             ViewBag.isFriendPage = isFriendPage;
             return View("ShowFriends",model);
         }
 
-        public async Task<ActionResult> CancelFriend(String username, String name, String lastname)
+        public async Task<ActionResult> CancelFriend(String username, String name, String lastname, bool isFriendPage)
         {
             List<Request> requests = new List<Request>();
             ApplicationDbContext ctx = ApplicationDbContext.Create();
@@ -480,9 +576,31 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
+        
+
+
+           
             ViewBag.pendinglist = pendinglist;
             ViewBag.usersToShow = usersToShow;
             ViewBag.FriendList = user.FriendList;
+            ViewBag.isFriendPage = isFriendPage;
+            requests = ctx.Requests.ToList();
+            var usersToShowReq = new List<ApplicationUser>();
+
+            foreach (Request req in requests)
+            {
+                if (req.Receiver_id.Equals(Guid.Parse(id)))
+                {
+                    foreach (ApplicationUser appuser in users)
+                    {
+                        if (req.Sender_id.Equals(Guid.Parse(appuser.Id)))
+                        {
+                            usersToShowReq.Add(appuser);
+                        }
+                    }
+                }
+            }
+            ViewBag.usersRequest = usersToShowReq;
             return View("ShowFriends", model);
         }
 
@@ -546,7 +664,26 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
+            List<Request> requests = new List<Request>();
+            requests = ctx.Requests.ToList();
+            var usersToShowReq = new List<ApplicationUser>();
 
+            foreach (Request req in requests)
+            {
+                if (req.Receiver_id.Equals(Guid.Parse(id)))
+                {
+                    foreach (ApplicationUser appuser in users)
+                    {
+                        if (req.Sender_id.Equals(Guid.Parse(appuser.Id)))
+                        {
+                            usersToShowReq.Add(appuser);
+                        }
+                    }
+                }
+            }
+
+
+            ViewBag.usersRequest = usersToShowReq;
             ViewBag.pendinglist = pendinglist;
             ViewBag.FriendList = user.FriendList;
             ViewBag.isFriendPage = isFriendPage;
@@ -618,7 +755,26 @@ namespace WebApplication2.Controllers
             ViewBag.FriendList = user.FriendList;
             ViewBag.isFriendPage = isFriendPage;
             ViewBag.pendinglist = pendinglist;
+            List<Request> requests = new List<Request>();
+            requests = ctx.Requests.ToList();
+            var usersToShowReq = new List<ApplicationUser>();
 
+            foreach (Request req in requests)
+            {
+                if (req.Receiver_id.Equals(Guid.Parse(id)))
+                {
+                    foreach (ApplicationUser appuser in users)
+                    {
+                        if (req.Sender_id.Equals(Guid.Parse(appuser.Id)))
+                        {
+                            usersToShowReq.Add(appuser);
+                        }
+                    }
+                }
+            }
+
+
+            ViewBag.usersRequest = usersToShowReq;
             return View("ShowFriends", model);
         }
 

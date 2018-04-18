@@ -3,6 +3,7 @@
 @using Isa2017Cinema.Models;
 @{
     ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <br />
 @{
@@ -31,12 +32,12 @@
     }
     else if(ViewBag.enableFanzoneOptions == false)
     {
-        <h2>Welcome new Fanzone Administrator! <br> As this is your first login, please change your password at the link below:</h2>
+        <h2 style="color:white;">Welcome new Fanzone Administrator! <br> As this is your first login, please change your password at the link below:</h2>
         <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
     }
     else if (ViewBag.enableLocationOptions == false)
     {
-        <h2>Welcome new Location Administrator! <br> As this is your first login, please change your password at the link below:</h2>
+        <h2 style="color:white;">Welcome new Location Administrator! <br> As this is your first login, please change your password at the link below:</h2>
         <a href="@Url.Action("FirstLoginPasswordChange", "FanZone")">Change my password</a>
     }
 }

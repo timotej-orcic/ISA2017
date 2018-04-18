@@ -1,0 +1,75 @@
+﻿@model Isa2017Cinema.Models.Location
+@{
+    ViewBag.Title = "ShowRecension";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/Content/Stars.css")
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class="container">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h3 style="color:white"> Recension for : @Model.Name</h3>
+            <div class="star-rating" style="background-color:antiquewhite ; width: 150px;">
+
+                <span class="fa fa-star-o" data-rating="1"></span>
+                <span class="fa fa-star-o" data-rating="2"></span>
+                <span class="fa fa-star-o" data-rating="3"></span>
+                <span class="fa fa-star-o" data-rating="4"></span>
+                <span class="fa fa-star-o" data-rating="5"></span>
+                <input type="hidden" name="whatever1" class="rating-value" value="1">
+
+            </div>
+        </div>
+    </div>
+    <br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" id="rateprojection" class="btn btn-basic" value="Rate" onclick="Rate()" />
+
+
+</div>
+<script>
+
+    function Rate() {
+        var arr = [];
+        arr.push('@Model.Id');
+        var ocena = parseInt($star_rating.siblings('input.rating-value').val());
+        arr.push(ocena);
+        $.ajax({
+            url: '../Recension/RateLocation',
+            type: 'POST',
+            contentType: 'application/json;',
+            data: JSON.stringify(arr),
+            success: function (data) {
+                debugger;
+
+                window.location.reload();
+
+            }
+        });
+    }
+    var $star_rating = $('.star-rating .fa');
+
+    var SetRatingStar = function () {
+        return $star_rating.each(function () {
+
+            if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
+                return $(this).removeClass('fa-star-o').addClass('fa-star');
+            } else {
+                return $(this).removeClass('fa-star').addClass('fa-star-o');
+            }
+        });
+    };
+
+    $star_rating.on('click', function () {
+        $star_rating.siblings('input.rating-value').val($(this).data('rating'));
+        return SetRatingStar();
+    });
+
+    SetRatingStar();
+    $(document).ready(function () {
+
+    });
+
+</script>

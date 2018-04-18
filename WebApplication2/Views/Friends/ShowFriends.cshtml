@@ -2,8 +2,14 @@
 @{
     ViewBag.Title = "Friends page";
 }
-
-<h2 style="color:white">Find friends</h2>
+@if (ViewBag.isFriendPage)
+{
+    <h2 style="color:white">Your friends</h2>
+}
+else
+{
+    <h2 style="color:white">Find people</h2>
+}
 @using (Html.BeginForm("Search", "Friends",new { isFriendPage = @ViewBag.isFriendPage}, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
  @Html.AntiForgeryToken()
@@ -45,72 +51,94 @@
 }
 <div style="overflow-y: scroll; position:relative">
     @if (ViewBag.usersToShow.Count > 0)
-{
-
-    foreach (var reg in ViewBag.usersToShow)
     {
-        int br = 0;
-        <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
-            <dl class="dl-horizontal">
-                <dt style="width: 300px; text-align:left; opacity:1.0"><label style="font-size: 16px; color:white">@reg.Name @reg.LastName, @reg.City </label> </dt>
-                @*<dt><label style="font-size: 16px; color:white ">First name:</label> </dt>
-                    <dd><label style="font-size: 16px;">@reg.Name </label> </dd>
 
-                    <dt><label style="font-size: 16px;color:white">Last name: </label></dt>
-                    <dd><label style="font-size: 16px;">@reg.LastName  </label></dd>
-
-                    <dt><label style="font-size: 16px;color:white">Username:</label> </dt>
-                    <dd><label style="font-size: 16px;">@reg.UserName </label> </dd>-->
-                *@
-                <dd>
-                    @if (ViewBag.FriendList.Count > 0 || ViewBag.pendinglist.Count > 0)
-                    {
-                        if (ViewBag.FriendList.Count > 0)
-                        {
-                            foreach (var friend in ViewBag.FriendList)
+        foreach (var reg in ViewBag.usersToShow)
+        {
+            if (reg.City != null)
+            {
+                int br = 0;
+                <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+                    <dl class="dl-horizontal">
+                        <dt style="width: 300px; text-align:left; opacity:1.0"><label style="font-size: 16px; color:white">@reg.Name @reg.LastName, @reg.City </label> </dt>
+                        <dd>
+                            @if (ViewBag.FriendList.Count > 0 || ViewBag.pendinglist.Count > 0 || ViewBag.usersRequest.Count > 0)
                             {
-                                if (reg.Equals(friend))
+                                if (ViewBag.FriendList.Count > 0)
                                 {
-                                    br++;
-                                    <input type="button" class="btn btn-danger" value="Remove Friend" onclick="location.href='@Url.Action("RemoveFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName, isFriendPage = @ViewBag.isFriendPage})'" />
-                                    break;
-                                }
-
-                            }
-                        }
-                        if (br == 0)
-                        {
-                            if (ViewBag.pendinglist.Count > 0)
-                            {
-
-                                foreach (var wait in ViewBag.pendinglist)
-                                {
-                                    if (reg.Id.Equals(wait.Id))
+                                    foreach (var friend in ViewBag.FriendList)
                                     {
-                                        br++;
-                                        <input type="button" class="btn btn-warning" value="Cancel request" onclick="location.href='@Url.Action("CancelFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
+                                        if (reg.Id.Equals(friend.Id))
+                                        {
+                                            br++;
+                                            <input type="button" class="btn btn-danger" value="Remove Friend" onclick="location.href='@Url.Action("RemoveFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName, isFriendPage = @ViewBag.isFriendPage})'" />
+                                            break;
+                                        }
 
-                                        break;
                                     }
-
                                 }
+                                if (br == 0)
+                                {
+                                    if (ViewBag.pendinglist.Count > 0)
+                                    {
+
+                                        foreach (var wait in ViewBag.pendinglist)
+                                        {
+                                            if (reg.Id.Equals(wait.Id))
+                                            {
+                                                br++;
+                                                <input type="button" class="btn btn-warning" value="Cancel request" onclick="location.href='@Url.Action("CancelFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName, isFriendPage = @ViewBag.isFriendPage})'" />
+
+                                                break;
+                                            }
+
+                                        }
+                                    }
+                                }
+                                if (br == 0)
+                                {
+                                    if (ViewBag.usersRequest.Count > 0)
+                                    {
+
+                                        foreach (var waiter in ViewBag.usersRequest)
+                                        {
+                                            if (reg.Id.Equals(waiter.Id))
+                                            {
+                                                br++;
+                                                <input type="button" class="btn btn-success" value="Accept" onclick="location.href='@Url.Action("AcceptRequest", "Friends",new { username = @reg.UserName, isFriendPage = @ViewBag.isFriendPage, isRequestPage = false})'" />
+                                                <input type="button" class="btn btn-danger" value="Decline" onclick="location.href='@Url.Action("DeclineRequest", "Friends",new { username = @reg.UserName, isFriendPage = @ViewBag.isFriendPage, isRequestPage = false})'" />
+
+                                                break;
+                                            }
+
+                                        }
+                                    }
+                                }
+                                if (br == 0)
+                                {
+                                    <input type="button" class="btn btn-success" value="Add Friend" onclick="location.href='@Url.Action("AddFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName, isFriendPage = @ViewBag.isFriendPage})'" />
+                                }
+
                             }
-                        }
-                        if (br == 0)
-                        {
-                            <input type="button" class="btn btn-success" value="Add Friend" onclick="location.href='@Url.Action("AddFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
-                        }
+                            else
+                            {
+                                <input type="button" class="btn btn-success" value="Add Friend" onclick="location.href='@Url.Action("AddFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName, isFriendPage = @ViewBag.isFriendPage})'" />
 
-                    }
-                    else
-                    {
-                        <input type="button" class="btn btn-success" value="Add Friend" onclick="location.href='@Url.Action("AddFriend", "Friends",new { username = @reg.UserName , name = @Model.FirstName , lastname = @Model.LastName})'" />
+                            }
 
-                    }
-                </dd>
-            </dl>
-        </div>
-        <br />
+                        </dd>
+                    </dl>
+                </div>
+                <br />}
+
+        }
     }
-}
+    else
+    {
+        if (ViewBag.isFriendPage)
+        {
+
+            <h3 style="color:white">You have no friends.</h3>
+        }
+    }
 </div>

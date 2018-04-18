@@ -16,6 +16,10 @@
         <h3 style="color:white;font-size: 14px"> @Model.Address</h3>
     </a>
 
+    <label style="color:white; font-weight:bold; font-size: 14px">City: [ @Html.ActionLink("Change", "ChangeCityLocation", "Location", new { idLocation = Model.Id }, null) ] </label>
+    <br />
+    <label style="color:white; font-size: 14px"> @Model.City </label>
+    <br />
 
     <label style="color:white; font-weight:bold; font-size: 14px">Description: [ @Html.ActionLink("Change", "ChangeDescriptionLocation", "Location", new { idLocation = Model.Id }, null) ] </label>
     <br />

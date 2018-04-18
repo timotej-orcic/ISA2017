@@ -44,10 +44,10 @@ namespace Isa2017Cinema
             var locations = new List<Location>
             {
                 new Location { LocType = LocationType.CINEMA, Name = "Arena Cineplex", Address = "Novosadskog sajma" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
-                ,ProjectionsList = projections, HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), MyAdminId = null
+                ,ProjectionsList = projections, HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), MyAdminId = null, City="Novi Sad"
                    },
                  new Location { LocType = LocationType.CINEMA, Name = "Big Cinestar", Address = "Bulevar" , Description="Nema opis" , DiscountedTicketsList = new List<Ticket>()
-                 ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), MyAdminId = null
+                 ,ProjectionsList = new List<Projection>(), HallsList = new List<Hall>(), RecensionsList = new List<Recension>(), MyAdminId = null, City="Beograd"
                  }
 
             };

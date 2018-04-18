@@ -17,25 +17,33 @@ namespace WebApplication2.Services
 
         public void SendConfirmationEmail(ApplicationUser user, string url)
         {
-
-          /*  SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 25);
-            NetworkCredential basicCredential =
-                    new NetworkCredential("conferenceroom40@gmail.com", "scheduler2017");
-            MailAddress fromAddress = new MailAddress("conferenceroom40@gmail.com");
-
-            smtpClient.UseDefaultCredentials = false;
-            smtpClient.Credentials = basicCredential;
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtpClient.EnableSsl = true;
-
-            MailMessage message = new MailMessage(fromAddress.ToString(), user.Email);
-            message.From = fromAddress;
-            message.Subject = "Confirm your account on ConferenceRoomScheduler";
-            message.IsBodyHtml = true;
-            message.Body = "<h1>You are successfully registered to Conference Room Scheduler!</h1> <h3> Your info: </h3> <br/> <p>User name: " + user.UserName + "</p> <br/> <p> Password:" + user.Password + "<p>"
-                + "<br/><p> <strong> Please confirm your account by clicking <a href =\""
-                  + url + "\">here</a></strong> <br/><br/> Conference Room Scheduler </p>";
-            smtpClient.Send(message);*/
+            var fromAddress = new MailAddress("isaNS2017@gmail.com", "ISA NS");
+            var toAddress = new MailAddress(user.Email, "ISA NS");
+            string fromPassword = "isa2017_123";
+            string subject = "Confirm your account";
+            
+            string body = "You are successfully registered to ISA2017 - Cinema!" + System.Environment.NewLine + " Your info:"+ System.Environment.NewLine + "User name: " + user.UserName + System.Environment.NewLine + " Password:" + user.Password + System.Environment.NewLine +
+                 " Please confirm your account by clicking at the following link: "
+                  + url + System.Environment.NewLine + System.Environment.NewLine + " ISA2017 - Cinema, Admin";
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+            using (var message = new MailMessage(fromAddress, toAddress)
+            {
+               
+                Subject = subject,
+                Body = body
+            })
+            {
+                smtp.Send(message);
+            }
+          
         }
         public void SendInvitationEmail(ApplicationUser invitedUser, ApplicationUser inviter, Ticket reservation, string callbackUrl, string callbackUrl1)
         {

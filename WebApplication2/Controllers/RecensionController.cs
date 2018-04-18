@@ -31,7 +31,15 @@ namespace WebApplication2.Controllers
 
             return View("ShowRecension",projekcija.Projection);
         }
+        public async Task<ActionResult> ShowRecensionForLocation(Guid lokacija)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            Location lokacijaCela = dbCtx.Locations.Include(x => x.ProjectionsList).FirstOrDefault(x => x.Id == lokacija);
+           // HallTimeProjection projekcija = dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefault(x => x.Id == rezKarta.Projection.Id);
 
+
+            return View("ShowRecensionForLocation", lokacijaCela);
+        }
         [HttpPost]
         public JsonResult RateProjection(String[] arr)
         {
@@ -69,5 +77,42 @@ namespace WebApplication2.Controllers
             };
             return Json(obj);
         }
-  }
+        [HttpPost]
+        public JsonResult RateLocation(String[] arr)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            Guid idLokacije = new Guid(arr[0]);
+            int ocena = -1;
+            int.TryParse(arr[1], out ocena);
+            Location lokacija = dbCtx.Locations.Include(x => x.RecensionsList).FirstOrDefault(x => x.Id == idLokacije);
+            string userId = User.Identity.GetUserId();
+            var reserver = dbCtx.Users.Include(x => x.RecensionList).FirstOrDefault(x => x.Id == userId);
+
+            Recension newRecension = new Recension
+            {
+                location = lokacija,
+                projection = null,
+                RatingLocation = ocena,
+                RatingProjection = -1,
+                RecensionUser = reserver
+            };
+            reserver.RecensionList.Add(newRecension);
+            dbCtx.Recensions.Add(newRecension);
+            dbCtx.SaveChanges();
+            var recenzije = dbCtx.Database.SqlQuery<Recension>("select * from Recensions where location_Id = '" + lokacija.Id + "'").ToList();
+            double suma = 0;
+            foreach (Recension rec in recenzije)
+            {
+                suma += rec.RatingLocation;
+            }
+            double prosecna = suma / recenzije.Count;
+            lokacija.AvgRating = prosecna;
+            dbCtx.SaveChanges();
+            var obj = new
+            {
+                tr = true
+            };
+            return Json(obj);
+        }
+    }
 }

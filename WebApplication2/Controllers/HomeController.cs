@@ -1,9 +1,11 @@
 ﻿using Isa2017Cinema.Models;
 using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -11,8 +13,10 @@ namespace Isa2017Cinema.Controllers
 {
     public class HomeController : Controller
     {
+        
         public ActionResult Index()
         {
+            
             bool enableFanzoneOptions = true;
             if (User.IsInRole("Fanzone_Admin"))
             {

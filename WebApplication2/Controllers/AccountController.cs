@@ -11,6 +11,8 @@ using Microsoft.Owin.Security;
 using Isa2017Cinema.Models;
 using System.Collections.Generic;
 using System.Web.Security;
+using WebApplication2.Services;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Isa2017Cinema.Controllers
 {
@@ -19,7 +21,7 @@ namespace Isa2017Cinema.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        private WebApplication2.Services.EmailService emailService = new WebApplication2.Services.EmailService();
         public AccountController()
         {
         }
@@ -62,8 +64,6 @@ namespace Isa2017Cinema.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-
-        //
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
@@ -78,26 +78,38 @@ namespace Isa2017Cinema.Controllers
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var user = UserManager.FindByEmail(model.Email);
-            if(user == null)
+            if (user == null)
             {
                 ModelState.AddModelError("", "User with that email is not registered.");
                 return View(model);
             }
-            var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password,false, shouldLockout: false);
-            switch (result)
+            else
             {
-                case SignInStatus.Success:
-                    return RedirectToAction("Index", "Home");
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id) && UserManager.IsInRole(user.Id, "Regular_User"))
+                {
+                    return View("Info");
+                }
+                else
+                {
+                    var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, false, shouldLockout: false);
+                    switch (result)
+                    {
+                        case SignInStatus.Success:
+                            return RedirectToAction("Index", "Home");
+                        case SignInStatus.LockedOut:
+                            return View("Lockout");
+                        case SignInStatus.RequiresVerification:
+                            return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
+                        case SignInStatus.Failure:
+                        default:
+                            ModelState.AddModelError("", "Invalid login attempt.");
+                            return View(model);
+                    }
+                }
             }
         }
+
+      
 
         //
         // GET: /Account/VerifyCode
@@ -163,16 +175,28 @@ namespace Isa2017Cinema.Controllers
                     Points = 0.0, UserType = Models.Type.DEFAULT, FriendList = new List<ApplicationUser>(), ReservationsList = new List<Ticket>(), RecensionList = new List<Recension>()};
                  
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
-                    var roleresult = UserManager.AddToRole(user.Id, "Regular_User");
+                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account",
+                       new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    var resultUser = UserManager.AddToRole(user.Id, "Regular_User");
+                    emailService.SendConfirmationEmail(user, callbackUrl);
+                    //  return RedirectToAction("Index", "Home");
+                    ViewBag.Title = "Confirm your account";
+                    return View("Info");
 
-                    var updatedUser = await UserManager.FindByEmailAsync(user.Email);
-                    var newIdentity = await updatedUser.GenerateUserIdentityAsync(UserManager);
-                    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    /* await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+
+                     var roleresult = UserManager.AddToRole(user.Id, "Regular_User");
+
+                     var updatedUser = await UserManager.FindByEmailAsync(user.Email);
+                     var newIdentity = await updatedUser.GenerateUserIdentityAsync(UserManager);
+                     AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);*/
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -180,9 +204,12 @@ namespace Isa2017Cinema.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    //return RedirectToAction("Index", "Home");
                 }
-                AddErrors(result);
+                else
+                {
+                    AddErrors(result);
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -194,6 +221,8 @@ namespace Isa2017Cinema.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
+
+            LogOff();
             if (userId == null || code == null)
             {
                 return View("Error");

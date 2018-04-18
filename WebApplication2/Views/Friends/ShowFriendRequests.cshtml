@@ -16,22 +16,16 @@
             <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
                 <dl class="dl-horizontal">
                     <dt style="width: 300px; text-align:left; opacity:1.0"><label style="font-size: 16px; color:white">@reg.Name @reg.LastName, @reg.City </label> </dt>
-                    <input type="button" class="btn btn-success" value="Accept" onclick="location.href='@Url.Action("AcceptRequest", "Friends",new { username = @reg.UserName})'" />
-                    <input type="button" class="btn btn-danger" value="Decline" onclick="location.href='@Url.Action("DeclineRequest", "Friends",new { username = @reg.UserName})'" />
+                    <input type="button" class="btn btn-success" value="Accept" onclick="location.href='@Url.Action("AcceptRequest", "Friends",new { username = @reg.UserName,isFriendPage = false,isRequestPage = true})'" />
+                    <input type="button" class="btn btn-danger" value="Decline" onclick="location.href='@Url.Action("DeclineRequest", "Friends",new { username = @reg.UserName,isFriendPage = false,isRequestPage = true})'" />
 
-                     @*<dt><label style="font-size: 16px; color:white ">First name:</label> </dt>
-                        <dd><label style="font-size: 16px;">@reg.Name </label> </dd>
-
-                        <dt><label style="font-size: 16px;color:white">Last name: </label></dt>
-                        <dd><label style="font-size: 16px;">@reg.LastName  </label></dd>
-
-                        <dt><label style="font-size: 16px;color:white">Username:</label> </dt>
-                        <dd><label style="font-size: 16px;">@reg.UserName </label> </dd>-->
-                    *@
-                   
                 </dl>
             </div>
             <br />
         }
+    }
+    else
+    {
+        <h3 style="color:white">No requests.</h3>
     }
 </div>
