@@ -8,6 +8,8 @@ using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebApplication2.Models;
@@ -263,6 +265,8 @@ namespace WebApplication2.Controllers
                     ViewBag.iHaveOffer = iHaveOffer;
                     ViewBag.iAmParent = iAmParent;
                     ViewBag.postID = postID;
+                    
+                    ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
 
                     return View();
                 }                    
@@ -583,7 +587,7 @@ namespace WebApplication2.Controllers
                             string fzID = ctx.Fanzone.FirstOrDefault().Id.ToString();
                             var fanzone = await ctx.Fanzone.Include(x => x.RequisitsList).FirstOrDefaultAsync(x => x.Id.ToString() == fzID);
 
-                            if(fanzone != null)
+                            if (fanzone != null)
                             {
                                 var resReq = fanzone.RequisitsList.FirstOrDefault(x => x.Id.ToString() == reqID);
                                 if (resReq != null)
@@ -598,20 +602,23 @@ namespace WebApplication2.Controllers
                                 else
                                 {
                                     ModelState.AddModelError("", "Error: Can't find the given Theme requisit.");
-                                    return View("FanZonePage");
+                                    TempData["ModelState"] = ModelState;
+                                    return RedirectToAction("FanZonePage", "FanZone");
                                 }
                             }
                             else
                             {
                                 ModelState.AddModelError("", "Error: Can't read the fanzone data.");
-                                return View("FanZonePage");
+                                TempData["ModelState"] = ModelState;
+                                return RedirectToAction("FanZonePage", "FanZone");
                             }
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error: Some attributes are null.");
-                        return View("FanZonePage");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("FanZonePage", "FanZone");
                     }
                 }
             }
@@ -859,14 +866,16 @@ namespace WebApplication2.Controllers
                             else
                             {
                                 ModelState.AddModelError("", "Error: Can't find the given post.");
-                                return View("FanZonePage");
+                                TempData["ModelState"] = ModelState;
+                                return RedirectToAction("FanZonePage", "FanZone");
                             }
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error: Some attributes are null.");
-                        return View("FanZonePage");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("FanZonePage", "FanZone");
                     }
                 }
             }
@@ -889,7 +898,7 @@ namespace WebApplication2.Controllers
                             var fzData = ctx.Fanzone.Include(x => x.PostsList).FirstOrDefault();
                             var post = fzData.PostsList.FirstOrDefault(y => y.Id.ToString() == postID);
 
-                            if(post != null)
+                            if (post != null)
                             {
                                 post.IsChecked = true;
                                 post.IsApproved = true;
@@ -901,14 +910,16 @@ namespace WebApplication2.Controllers
                             else
                             {
                                 ModelState.AddModelError("", "Error: Can't find the given post.");
-                                return View("FanZonePage");
+                                TempData["ModelState"] = ModelState;
+                                return RedirectToAction("FanZonePage", "FanZone");
                             }
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error: Some attributes are null.");
-                        return View("FanZonePage");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("FanZonePage", "FanZone");
                     }
                 }
             }
@@ -943,14 +954,16 @@ namespace WebApplication2.Controllers
                             else
                             {
                                 ModelState.AddModelError("", "Error: Can't find the given post.");
-                                return View("FanZonePage");
+                                TempData["ModelState"] = ModelState;
+                                return RedirectToAction("FanZonePage", "FanZone");
                             }
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error: Some attributes are null.");
-                        return View("FanZonePage");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("FanZonePage", "FanZone");
                     }
                 }
             }
@@ -985,14 +998,16 @@ namespace WebApplication2.Controllers
                             else
                             {
                                 ModelState.AddModelError("", "Error: Can't find the given post.");
-                                return View("FanZonePage");
+                                TempData["ModelState"] = ModelState;
+                                return RedirectToAction("FanZonePage", "FanZone");
                             }
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error: Some attributes are null.");
-                        return View("FanZonePage");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("FanZonePage", "FanZone");
                     }
                 }
             }
@@ -1031,20 +1046,23 @@ namespace WebApplication2.Controllers
                         else
                         {
                             ModelState.AddModelError("", "You already posted an offer for this post.");
+                            TempData["ModelState"] = ModelState;
                             return RedirectToAction("PostOffers", "FanZone", new { postID = ampoVM.PostId });
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error: Can't find the given post.");
-                        return RedirectToAction("AddMyPostOffer", "FanZone", new { postID = ampoVM.PostId });
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("PostOffers", "FanZone", new { postID = ampoVM.PostId });
                     }
                 }
             }
             else
             {
                 ModelState.AddModelError("", "Error: Some attributes are null.");
-                return RedirectToAction("FanZonePage", "FanZone");
+                TempData["ModelState"] = ModelState;
+                return RedirectToAction("PostOffers", "FanZone", new { postID = ampoVM.PostId });
             }
         }
 
@@ -1067,14 +1085,16 @@ namespace WebApplication2.Controllers
                     else
                     {
                         ModelState.AddModelError("", "Error: Can't find the given licitation.");
-                        return RedirectToAction("AddMyPostOffer", "FanZone", new { licitationID = empoVM.LicitationId });
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("EditMyPostOffer", "FanZone", new { licitationID = empoVM.LicitationId });
                     }
                 }
             }
             else
             {
                 ModelState.AddModelError("", "Error: Some attributes are null.");
-                return RedirectToAction("FanZonePage", "FanZone");
+                TempData["ModelState"] = ModelState;
+                return RedirectToAction("EditMyPostOffer", "FanZone", new { licitationID = empoVM.LicitationId });
             }
         }
 
@@ -1098,10 +1118,57 @@ namespace WebApplication2.Controllers
                             licData.IsAccepted = true;
                             ctx.SaveChanges();
 
+                            //email to all users
                             foreach (var l in resPost.LicitationsList)
                             {
-                                //email to all users
-                                break;
+                                var fromAddress = new MailAddress("isaNS2017@gmail.com", "ISA NS");
+
+                                string userEmail = "";
+                                string userName = "";
+                                using (var um = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+                                {
+                                    var user = um.FindById(l.ParentUserId);
+
+                                    if (user != null)
+                                    {
+                                        userEmail = user.Email;
+                                        userName = user.UserName;
+                                    }                                        
+                                    else
+                                        break;
+                                }
+                                    
+                                var toAddress = new MailAddress(userEmail, userName);
+                                string fromPassword = "isa2017_123";
+
+                                string subject = "Offer review on post: " + resPost.Name;
+                                string body = "";
+                                if (l.Id != licData.Id)
+                                {
+                                    body = "Hello " + userName + System.Environment.NewLine + "Your offer has been refused!";
+                                }
+                                else
+                                {
+                                    body = "Hello " + userName + System.Environment.NewLine + "Your offer has been accepted!";
+                                }
+
+                                var smtp = new SmtpClient
+                                {
+                                    Host = "smtp.gmail.com",
+                                    Port = 587,
+                                    EnableSsl = true,
+                                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                                    UseDefaultCredentials = false,
+                                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+                                };
+                                using (var message = new MailMessage(fromAddress, toAddress)
+                                {
+                                    Subject = subject,
+                                    Body = body
+                                })
+                                {
+                                    smtp.Send(message);
+                                }
                             }
                             
 
@@ -1111,19 +1178,22 @@ namespace WebApplication2.Controllers
                         else
                         {
                             ModelState.AddModelError("", "Can't find the given post data.");
-                            return RedirectToAction("FanZonePage", "FanZone");
+                            TempData["ModelState"] = ModelState;
+                            return RedirectToAction("PostOffers", "FanZone", new { postID = licData.ParentPostId });
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Can't find the given offer data.");
-                        return RedirectToAction("FanZonePage", "FanZone");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("PostOffers", "FanZone", new { postID = licData.ParentPostId });
                     }
                 } 
             }
             else
             {
                 ModelState.AddModelError("", "Error: Some attributes are null.");
+                TempData["ModelState"] = ModelState;
                 return RedirectToAction("FanZonePage", "FanZone");
             }
         }
