@@ -43,7 +43,7 @@
                 <div class="form-group">
                     <label class="control-label col-xs-3" style="color:white">Product image</label>
                     <div class="col-xs-9">
-                        @Html.TextBoxFor(m => m.ImageUpload, new { type = "file", @class = "form-control" })
+                        @Html.TextBoxFor(m => m.ImageUpload, new { type = "file", @class = "form-control", @maxlength = 4000})
                         @Html.ValidationMessageFor(m => m.ImageUpload, "", new { @class = "text-danger" })
                     </div>
                 </div>

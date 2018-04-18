@@ -3,7 +3,7 @@
 @if (TempData["success"] != null)
 {
     <div id="IndexSuccessMessage" class="row">
-        <h3>@TempData["success"]</h3>
+        <h3 style="color:white">@TempData["success"]</h3>
     </div>
 }
 
@@ -273,4 +273,10 @@ else if (User.IsInRole("Fanzone_Admin"))
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
     }
+
+    $(function () {
+        setTimeout(function () {
+            $("#IndexSuccessMessage").hide('blind', {}, 500)
+        }, 3000);
+    });
 </script>

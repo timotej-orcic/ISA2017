@@ -25,16 +25,18 @@ namespace WebApplication2.Controllers
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
-            return Projections(locationId);
+            var locationId = ctx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
+            return Projections(idLoc);
         }
 
         public ActionResult HallsShow()
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
-            return Halls(locationId);
+            var locationId = ctx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
+            return Halls(idLoc);
         }
 
         public ActionResult Projections(Guid MyLocation)
@@ -43,16 +45,17 @@ namespace WebApplication2.Controllers
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
             var locationToShow = new Location();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            var locationId = ctx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
 
-            var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + locationId + "'").ToList();
+            var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + idLoc + "'").ToList();
 
             List<Location> allLocations = new List<Location>();
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             allLocations = dbCtx.Locations.ToList();
             foreach (Location loc in allLocations)
             {
-                if (loc.Id.Equals(locationId))
+                if (loc.Id.Equals(idLoc))
                 {
                     locationToShow = loc;
                 }
@@ -67,16 +70,17 @@ namespace WebApplication2.Controllers
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
             var locationToShow = new Location();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            var locationId = ctx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
 
-            var halls = ctx.Database.SqlQuery<Hall>("select * from Halls where ParentLocation_Id = '" + locationId + "'").ToList();
+            var halls = ctx.Database.SqlQuery<Hall>("select * from Halls where ParentLocation_Id = '" + idLoc + "'").ToList();
 
             List<Location> allLocations = new List<Location>();
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             allLocations = dbCtx.Locations.ToList();
             foreach (Location loc in allLocations)
             {
-                if (loc.Id.Equals(locationId))
+                if (loc.Id.Equals(idLoc))
                 {
                     locationToShow = loc;
                 }
@@ -90,15 +94,16 @@ namespace WebApplication2.Controllers
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
             var locationToShow = new Location();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
-            var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + locationId + "'").ToList();
+            var locationId = ctx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
+            var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + idLoc + "'").ToList();
            
             List<Location> allLocations = new List<Location>();
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             allLocations = dbCtx.Locations.ToList();
             foreach(Location loc in allLocations)
             {
-                if (loc.Id.Equals(locationId))
+                if (loc.Id.Equals(idLoc))
                 {
                     locationToShow = loc;
                 }
@@ -236,6 +241,18 @@ namespace WebApplication2.Controllers
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             List<Row> seats = new List<Row>();
+            if(model.Rows <= 0)
+            {
+                ModelState.AddModelError("", "Number of rows can't be 0 or less.");
+                ViewBag.location = MyLocation;
+                return View("AddHall", model);
+            }
+            if (model.Columns <= 0)
+            {
+                ModelState.AddModelError("", "Number of columns can't be 0 or less.");
+                ViewBag.location = MyLocation;
+                return View("AddHall", model);
+            }
 
             string praznic = "";
             for (int i = 0; i < model.Rows; i++)
@@ -302,6 +319,11 @@ namespace WebApplication2.Controllers
                     projectionForEdit = p;
                 }
             }
+            var karte = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where Projection_Id = '" + timehall + "'").ToList();
+            for (int i = 0; i < karte.Count; i++)
+            {
+                dbCtx.Reservations.Remove(karte[i]);
+            }
             Projection proj = new Projection();
             proj = dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefault(x => x.Id == projectionForEdit.Id);
             foreach (HallTimeProjection htp in proj.ProjHallsTimeList)
@@ -312,6 +334,7 @@ namespace WebApplication2.Controllers
                     break;
                 }
             }
+           
             dbCtx.SaveChanges();
             return EditProjection(projectionForEdit.Id);
         }

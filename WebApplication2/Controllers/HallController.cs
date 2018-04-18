@@ -133,8 +133,10 @@ namespace WebApplication2.Controllers
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             Guid id = new Guid(arr[0]);
+
             double discount = -2;
             double.TryParse(arr[1], out discount);
+
             discount = (double)(100-discount) / (double)100;
             var mama = dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefault(x => x.Id == id);
             var saHalom = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == mama.Id);
@@ -274,9 +276,28 @@ namespace WebApplication2.Controllers
         }
         public async Task<ActionResult> HallTimeSubmit(Models.HallTimeViewModel model, Guid MyLocation, Guid projekcija)
         {
-            
+            List<SelectListItem> items = new List<SelectListItem>();
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             var location = await dbCtx.Locations.Include(x => x.HallsList).FirstOrDefaultAsync(x => x.Id == MyLocation);
+            if (model.TicketPrice <= 0)
+            {
+                List<string> halls = new List<string>();
+
+
+                foreach (Hall h1 in location.HallsList)
+                {
+                    items.Add(new SelectListItem { Text = h1.Name });
+                    halls.Add(h1.Name);
+                }
+                model.Hale = halls;
+                ViewBag.projekcija = projekcija;
+                ViewBag.location = MyLocation;
+                ViewBag.Halls = items;
+                ModelState.AddModelError("", "Ticket price can't be 0 or less than 0.");
+                ViewBag.location = MyLocation;
+                return View("AddHallTimeProjection", model);
+            }
+
             Hall h = new Hall();
             h = location.HallsList[0];
             var rows = h.RowsCount;

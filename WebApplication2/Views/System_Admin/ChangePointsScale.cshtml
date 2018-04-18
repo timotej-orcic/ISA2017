@@ -1,19 +1,4 @@
-﻿@model WebApplication2.Models.ChangePointsScaleViewModels
-@using WebApplication2.Models;
-@using Isa2017Cinema.Models;
-@{
-    int[] pointsArr = new int[3];
-    using (var ctx = new ApplicationDbContext())
-    {
-        var pointsList = ctx.Database.SqlQuery<Points>("select * from Points");
-        int cnt = 0;
-        foreach (var point in pointsList)
-        {
-            pointsArr[cnt] = point.PointsCount;
-            cnt++;
-        }
-    }
-}
+﻿@model  WebApplication2.Models.ChangePointsScaleViewModels
 
 <h2 style="color:white">Change discount points scale:</h2>
 @using (Html.BeginForm("SetPointsScale", "System_Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
@@ -27,7 +12,7 @@
                 <div class="form-group">
                     <label class="control-label col-xs-3" style="color:white">Bronze points</label>
                     <div class="col-xs-9">
-                        @Html.TextBoxFor(m => m.BronzeCount, new { @class = "form-control", @Value = pointsArr[0] })
+                        @Html.TextBoxFor(m => m.BronzeCount, new { @class = "form-control", @Value = ViewBag.pointsArr[0] })
                         @Html.ValidationMessageFor(m => m.BronzeCount, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -38,7 +23,7 @@
                 <div class="form-group">
                     <label class="control-label col-xs-3" style="color:white">Silver points</label>
                     <div class="col-xs-9">
-                        @Html.TextBoxFor(m => m.SilverCount, new { @class = "form-control", @Value = pointsArr[1] })
+                        @Html.TextBoxFor(m => m.SilverCount, new { @class = "form-control", @Value = ViewBag.pointsArr[1] })
                         @Html.ValidationMessageFor(m => m.SilverCount, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -49,7 +34,7 @@
                 <div class="form-group">
                     <label class="control-label col-xs-3" style="color:white">Gold points</label>
                     <div class="col-xs-9">
-                        @Html.TextBoxFor(m => m.GoldCount, new { @class = "form-control", @Value = pointsArr[2] })
+                        @Html.TextBoxFor(m => m.GoldCount, new { @class = "form-control", @Value = ViewBag.pointsArr[2] })
                         @Html.ValidationMessageFor(m => m.GoldCount, "", new { @class = "text-danger" })
                     </div>
                 </div>

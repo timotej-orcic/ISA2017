@@ -67,9 +67,12 @@
             success: function (data)
             {
                 debugger;
-
-                window.location.href = 'CallFriends?logUser='+ data.logUser + '&brRezKarata='+data.brRezKarata +'&idProjekcije='+data.idProjekcije + '';
-
+                if(data.isok==false){
+                    alert("OOPS.. that place is already taken");
+                    window.location.reload();
+                }else{
+                    window.location.href = 'CallFriends?logUser='+ data.logUser + '&brRezKarata='+data.brRezKarata +'&idProjekcije='+data.idProjekcije + '';
+                }
             }
         });
     }

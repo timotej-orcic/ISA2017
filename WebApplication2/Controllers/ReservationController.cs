@@ -83,13 +83,27 @@ namespace WebApplication2.Controllers
 
             return View();
         }
-        
+
+        public bool checkReservations(List<Ticket> reservations)
+        {
+            bool retVal = false;
+            foreach(Ticket t in reservations)
+            {
+                retVal = checkIfTicketIsAlreadyTaken(t);
+                if (retVal)
+                {
+                    return true;
+                }
+                
+            }
+            return false;
+        }
         [HttpPost] 
         public JsonResult Test(String[] arr)
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             Guid id = new Guid(arr[0]);
-
+            bool isok = true;
             var mama = dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefault(x => x.Id == id);
             var saHalom = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == mama.Id);
 
@@ -97,6 +111,38 @@ namespace WebApplication2.Controllers
             var indexRow = -1;
             var indexColumn = -1;
             List<Ticket> ticketsList = new List<Ticket>();
+            List<Ticket> toCheck = new List<Ticket>();
+
+            if (arr.Length > 1)
+            {
+                for (int i = 1; i < arr.Length; i++)
+                {
+                    string[] redKolona = arr[i].Split('_');
+                    int.TryParse(redKolona[0], out indexRow);
+                    int.TryParse(redKolona[1], out indexColumn);
+
+                    if (indexRow != -1 && indexColumn != -1)
+                    {
+                        Row red = saProjekcijom.Seats[indexRow - 1];
+                        var aStringBuilder = new StringBuilder(red.Seats);
+                        aStringBuilder.Remove(indexColumn - 1, 1);
+                        aStringBuilder.Insert(indexColumn - 1, "f");
+                        red.Seats = aStringBuilder.ToString();
+                        saProjekcijom.Seats[indexRow - 1] = red;
+                        Ticket newReservation = new Ticket
+                        {
+                            Projection = saProjekcijom,
+                            SeatColumn = indexColumn - 1,
+                            SeatRow = indexRow - 1,
+                            Price = saProjekcijom.TicketPrice,
+                            DiscountMultiplier = 1.0
+
+                        };
+                        toCheck.Add(newReservation);
+
+                    }
+                }
+            }
             if (arr.Length > 1)
             {
                 for(int i = 1; i < arr.Length; i++)
@@ -122,24 +168,43 @@ namespace WebApplication2.Controllers
                             DiscountMultiplier = 1.0
 
                         };
-                        ticketsList.Add(newReservation);
-                        dbCtx.Reservations.Add(newReservation);
-                        string userIdString = User.Identity.GetUserId();
-                        var loggedUser =  dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == userIdString);
-                        loggedUser.Points += 5;
-                        loggedUser.ReservationsList.Add(newReservation);
+                        //  bool isTaken = checkIfTicketIsAlreadyTaken(newReservation);
+                        bool isAnyTaken = checkReservations(toCheck);
 
-                        indexRow = -1;
-                        indexColumn = -1;
+                        if (isAnyTaken)
+                        {
+                            isok = false;
+                            var returnFromHere = new
+                            {
+                                isok = isok
+                            };
+                            return Json(returnFromHere);
+                        }
+                        else
+                        {
+
+                            isok = true;
+                            ticketsList.Add(newReservation);
+                            dbCtx.Reservations.Add(newReservation);
+                            string userIdString = User.Identity.GetUserId();
+                            var loggedUser = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == userIdString);
+                            loggedUser.Points += 5;
+                            loggedUser.ReservationsList.Add(newReservation);
+                            
+                            indexRow = -1;
+                            indexColumn = -1;
+                        }
+                       
                     }
                 }
             }
 
-             string userId = User.Identity.GetUserId();
-
+            string userId = User.Identity.GetUserId();
             dbCtx.SaveChanges();
+
             var obj = new
             {
+                isok=isok,
                 logUser = userId,
                 brRezKarata = arr.Length-1,
                 idProjekcije = saProjekcijom.Id
@@ -147,6 +212,24 @@ namespace WebApplication2.Controllers
             return Json(obj);
         }
         
+        public bool checkIfTicketIsAlreadyTaken(Ticket t)
+        {
+            bool isTaken = false;
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+
+           var karte = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where Projection_Id = '" + t.Projection.Id + "'").ToList();
+            foreach(Ticket ticket in karte)
+            {
+                var saProjekcijom = dbCtx.Reservations.Include(x => x.Projection).FirstOrDefault(x => x.Id == ticket.Id);
+
+                if (saProjekcijom.Projection.Id.Equals(t.Projection.Id) && saProjekcijom.SeatColumn==t.SeatColumn && saProjekcijom.SeatRow==t.SeatRow)
+                {
+                    isTaken = true;
+
+                }
+            }
+            return isTaken;
+        }
         [HttpPost]
         public async Task<ActionResult> Invite(String[] arr)
         {
@@ -501,6 +584,7 @@ namespace WebApplication2.Controllers
             var userWithReservations = await ctx.Users.Include(x => x.ReservationsList).FirstOrDefaultAsync(x => x.Id == id);
             List<ProjectionWithFlagViewModel> reservations = new List<ProjectionWithFlagViewModel>();
             userWithReservations.ReservationsList.Remove(resWithProjection);
+            ctx.Reservations.Remove(resWithProjection);
             ctx.SaveChanges();
 
             return await ShowReservations();
