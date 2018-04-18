@@ -319,6 +319,11 @@ namespace WebApplication2.Controllers
                     projectionForEdit = p;
                 }
             }
+            var karte = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where Projection_Id = '" + timehall + "'").ToList();
+            for (int i = 0; i < karte.Count; i++)
+            {
+                dbCtx.Reservations.Remove(karte[i]);
+            }
             Projection proj = new Projection();
             proj = dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefault(x => x.Id == projectionForEdit.Id);
             foreach (HallTimeProjection htp in proj.ProjHallsTimeList)
@@ -329,6 +334,7 @@ namespace WebApplication2.Controllers
                     break;
                 }
             }
+           
             dbCtx.SaveChanges();
             return EditProjection(projectionForEdit.Id);
         }
