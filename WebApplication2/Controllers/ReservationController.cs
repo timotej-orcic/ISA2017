@@ -89,7 +89,7 @@ namespace WebApplication2.Controllers
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             Guid id = new Guid(arr[0]);
-
+            bool isok = true;
             var mama = dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefault(x => x.Id == id);
             var saHalom = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == mama.Id);
 
@@ -122,15 +122,30 @@ namespace WebApplication2.Controllers
                             DiscountMultiplier = 1.0
 
                         };
-                        ticketsList.Add(newReservation);
-                        dbCtx.Reservations.Add(newReservation);
-                        string userIdString = User.Identity.GetUserId();
-                        var loggedUser =  dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == userIdString);
-                        loggedUser.Points += 5;
-                        loggedUser.ReservationsList.Add(newReservation);
+                        bool isTaken = checkIfTicketIsAlreadyTaken(newReservation);
+                        if (isTaken)
+                        {
+                            isok = false;
+                            var returnFromHere = new
+                            {
+                                isok = isok
+                            };
+                            return Json(returnFromHere);
+                        }
+                        else
+                        {
 
-                        indexRow = -1;
-                        indexColumn = -1;
+                            isok = true;
+                            ticketsList.Add(newReservation);
+                            dbCtx.Reservations.Add(newReservation);
+                            string userIdString = User.Identity.GetUserId();
+                            var loggedUser = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == userIdString);
+                            loggedUser.Points += 5;
+                            loggedUser.ReservationsList.Add(newReservation);
+
+                            indexRow = -1;
+                            indexColumn = -1;
+                        }
                     }
                 }
             }
@@ -140,6 +155,7 @@ namespace WebApplication2.Controllers
             dbCtx.SaveChanges();
             var obj = new
             {
+                isok=isok,
                 logUser = userId,
                 brRezKarata = arr.Length-1,
                 idProjekcije = saProjekcijom.Id
@@ -147,6 +163,24 @@ namespace WebApplication2.Controllers
             return Json(obj);
         }
         
+        public bool checkIfTicketIsAlreadyTaken(Ticket t)
+        {
+            bool isTaken = false;
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+
+           var karte = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where Projection_Id = '" + t.Projection.Id + "'").ToList();
+            foreach(Ticket ticket in karte)
+            {
+                var saProjekcijom = dbCtx.Reservations.Include(x => x.Projection).FirstOrDefault(x => x.Id == ticket.Id);
+
+                if (saProjekcijom.Projection.Id.Equals(t.Projection.Id) && saProjekcijom.SeatColumn==t.SeatColumn && saProjekcijom.SeatRow==t.SeatRow)
+                {
+                    isTaken = true;
+
+                }
+            }
+            return isTaken;
+        }
         [HttpPost]
         public async Task<ActionResult> Invite(String[] arr)
         {
@@ -501,6 +535,7 @@ namespace WebApplication2.Controllers
             var userWithReservations = await ctx.Users.Include(x => x.ReservationsList).FirstOrDefaultAsync(x => x.Id == id);
             List<ProjectionWithFlagViewModel> reservations = new List<ProjectionWithFlagViewModel>();
             userWithReservations.ReservationsList.Remove(resWithProjection);
+            ctx.Reservations.Remove(resWithProjection);
             ctx.SaveChanges();
 
             return await ShowReservations();
