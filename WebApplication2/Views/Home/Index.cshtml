@@ -44,6 +44,14 @@
 @if (TempData["success"] != null)
 {
     <div id="IndexSuccessMessage" class="row">
-        <h3>@TempData["success"]</h3>
+        <h3 style="color:white">@TempData["success"]</h3>
     </div>
 }
+
+<script>
+    $(function () {
+        setTimeout(function () {
+            $("#IndexSuccessMessage").hide('blind', {}, 500)
+        }, 3000);
+    });
+</script>

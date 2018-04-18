@@ -55,6 +55,8 @@ namespace WebApplication2.Controllers
                     ViewBag.items = items;
                     ViewBag.locations = locations;
 
+                    ModelState.Merge((ModelStateDictionary)TempData["ModelState"]);
+
                     return View();
                 }                    
             }
@@ -84,7 +86,23 @@ namespace WebApplication2.Controllers
                 if (!User.IsInRole("System_Admin"))
                     return RedirectToAction("Index", "Home");
                 else
+                {
+                    int[] pointsArr = new int[3];
+                    using (var ctx = new ApplicationDbContext())
+                    {
+                        var pointsList = ctx.Database.SqlQuery<Points>("select * from Points");
+                        int cnt = 0;
+                        foreach (var point in pointsList)
+                        {
+                            pointsArr[cnt] = point.PointsCount;
+                            cnt++;
+                        }
+                    }
+
+                    ViewBag.pointsArr = pointsArr;
+
                     return View();
+                }
             }
         }
 
@@ -142,6 +160,7 @@ namespace WebApplication2.Controllers
                             else
                             {
                                 ModelState.AddModelError("", "Error: Admin location is null.");
+                                TempData["ModelState"] = ModelState;
                                 return RedirectToAction("AddNewAdmin", "System_Admin");
                             }
                         }
@@ -165,8 +184,9 @@ namespace WebApplication2.Controllers
                                                 var userResult = um.AddToRole(newAdmin.Id, "System_Admin");
                                                 if (!userResult.Succeeded)
                                                 {
-                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "System_Admin" + "' role failed with error(s): " + userResult.Errors);
-                                                    return View("AddNewAdmin");
+                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.UserName + "' to '" + "System_Admin" + "' role failed with error(s): " + userResult.Errors);
+                                                    TempData["ModelState"] = ModelState;
+                                                    return RedirectToAction("AddNewAdmin", "System_Admin");
                                                 }
                                             }
                                         }
@@ -177,8 +197,9 @@ namespace WebApplication2.Controllers
                                                 var userResult = um.AddToRole(newAdmin.Id, "Fanzone_Admin");
                                                 if (!userResult.Succeeded)
                                                 {
-                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Fanzone_Admin" + "' role failed with error(s): " + userResult.Errors);
-                                                    return View("AddNewAdmin");
+                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.UserName + "' to '" + "Fanzone_Admin" + "' role failed with error(s): " + userResult.Errors);
+                                                    TempData["ModelState"] = ModelState;
+                                                    return RedirectToAction("AddNewAdmin", "System_Admin");
                                                 }
                                                 else
                                                 {
@@ -216,8 +237,9 @@ namespace WebApplication2.Controllers
                                                 var userResult = um.AddToRole(newAdmin.Id, "Location_Admin");
                                                 if (!userResult.Succeeded)
                                                 {
-                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.Id + "' to '" + "Location_Admin" + "' role failed with error(s): " + userResult.Errors);
-                                                    return View("AddNewAdmin");
+                                                    ModelState.AddModelError("", "Adding user '" + newAdmin.UserName + "' to '" + "Location_Admin" + "' role failed with error(s): " + userResult.Errors);
+                                                    TempData["ModelState"] = ModelState;
+                                                    return RedirectToAction("AddNewAdmin", "System_Admin");
                                                 }
                                                 else
                                                 {
@@ -233,7 +255,8 @@ namespace WebApplication2.Controllers
                                                     {
                                                         um.RemoveFromRole(newAdmin.Id, "Location_Admin");
                                                         ModelState.AddModelError("", "Error: Given admin location is not found! Please try again.");
-                                                        return View("AddNewAdmin");
+                                                        TempData["ModelState"] = ModelState;
+                                                        return RedirectToAction("AddNewAdmin", "System_Admin");
                                                     }
                                                 }
                                             }
@@ -242,26 +265,30 @@ namespace WebApplication2.Controllers
                                     else
                                     {
                                         ModelState.AddModelError("", "Error while trying to create new admin");
-                                        return View("AddNewAdmin");
+                                        TempData["ModelState"] = ModelState;
+                                        return RedirectToAction("AddNewAdmin", "System_Admin");
                                     }
                                 }
                                 else
                                 {
                                     ModelState.AddModelError("", "User with this email adress already exists");
-                                    return View("AddNewAdmin");
+                                    TempData["ModelState"] = ModelState;
+                                    return RedirectToAction("AddNewAdmin", "System_Admin");
                                 }
                             }
                         }
                         else
                         {
                             ModelState.AddModelError("", "Error while trying to add new admin (newAdmin is null)");
-                            return View("AddNewAdmin");
+                            TempData["ModelState"] = ModelState;
+                            return RedirectToAction("AddNewAdmin", "System_Admin");
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("", "Error while trying to add new admin (some fields are null)");
-                        return View("AddNewAdmin");
+                        TempData["ModelState"] = ModelState;
+                        return RedirectToAction("AddNewAdmin", "System_Admin");
                     }
 
                     TempData["success"] = "Succesfully added a new: " + adminVM.Admin_Type.ToString();
