@@ -12,6 +12,7 @@ using Isa2017Cinema.Models;
 using System.Collections.Generic;
 using System.Web.Security;
 using WebApplication2.Services;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Isa2017Cinema.Controllers
 {
@@ -79,29 +80,31 @@ namespace Isa2017Cinema.Controllers
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var user = UserManager.FindByEmail(model.Email);
-            if(user == null)
+            if (user == null)
             {
                 ModelState.AddModelError("", "User with that email is not registered.");
                 return View(model);
-            }else if (!user.EmailConfirmed)
-            {
-                ModelState.AddModelError("", "Please go to your mail and confirm account to continue.");
-                return View(model);
+            }else { 
+           
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                {
+                    return View("Info");
+                }
+                else
+                {
+                    var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, false, shouldLockout: false);
+                    if (result == SignInStatus.Success)
+                    {
+                        return RedirectToLocal(returnUrl);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Invalid login attempt.");
+                        return View(model);
+                    }
+                }
             }
-            var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password,false, shouldLockout: false);
-            switch (result)
-            {
-                case SignInStatus.Success:
-                    return RedirectToAction("Index", "Home");
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
-            }
+          
         }
 
         //
@@ -176,7 +179,7 @@ namespace Isa2017Cinema.Controllers
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account",
                        new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-
+                    var userResult = UserManager.AddToRole(user.Id, "Regular_User");
                     emailService.SendConfirmationEmail(user, callbackUrl);
                     //  return RedirectToAction("Index", "Home");
                     ViewBag.Title = "Confirm your account";
