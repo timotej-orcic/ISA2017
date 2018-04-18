@@ -83,7 +83,21 @@ namespace WebApplication2.Controllers
 
             return View();
         }
-        
+
+        public bool checkReservations(List<Ticket> reservations)
+        {
+            bool retVal = false;
+            foreach(Ticket t in reservations)
+            {
+                retVal = checkIfTicketIsAlreadyTaken(t);
+                if (retVal)
+                {
+                    return true;
+                }
+                
+            }
+            return false;
+        }
         [HttpPost] 
         public JsonResult Test(String[] arr)
         {
@@ -97,6 +111,38 @@ namespace WebApplication2.Controllers
             var indexRow = -1;
             var indexColumn = -1;
             List<Ticket> ticketsList = new List<Ticket>();
+            List<Ticket> toCheck = new List<Ticket>();
+
+            if (arr.Length > 1)
+            {
+                for (int i = 1; i < arr.Length; i++)
+                {
+                    string[] redKolona = arr[i].Split('_');
+                    int.TryParse(redKolona[0], out indexRow);
+                    int.TryParse(redKolona[1], out indexColumn);
+
+                    if (indexRow != -1 && indexColumn != -1)
+                    {
+                        Row red = saProjekcijom.Seats[indexRow - 1];
+                        var aStringBuilder = new StringBuilder(red.Seats);
+                        aStringBuilder.Remove(indexColumn - 1, 1);
+                        aStringBuilder.Insert(indexColumn - 1, "f");
+                        red.Seats = aStringBuilder.ToString();
+                        saProjekcijom.Seats[indexRow - 1] = red;
+                        Ticket newReservation = new Ticket
+                        {
+                            Projection = saProjekcijom,
+                            SeatColumn = indexColumn - 1,
+                            SeatRow = indexRow - 1,
+                            Price = saProjekcijom.TicketPrice,
+                            DiscountMultiplier = 1.0
+
+                        };
+                        toCheck.Add(newReservation);
+
+                    }
+                }
+            }
             if (arr.Length > 1)
             {
                 for(int i = 1; i < arr.Length; i++)
@@ -122,8 +168,10 @@ namespace WebApplication2.Controllers
                             DiscountMultiplier = 1.0
 
                         };
-                        bool isTaken = checkIfTicketIsAlreadyTaken(newReservation);
-                        if (isTaken)
+                        //  bool isTaken = checkIfTicketIsAlreadyTaken(newReservation);
+                        bool isAnyTaken = checkReservations(toCheck);
+
+                        if (isAnyTaken)
                         {
                             isok = false;
                             var returnFromHere = new
@@ -142,17 +190,18 @@ namespace WebApplication2.Controllers
                             var loggedUser = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == userIdString);
                             loggedUser.Points += 5;
                             loggedUser.ReservationsList.Add(newReservation);
-
+                            
                             indexRow = -1;
                             indexColumn = -1;
                         }
+                       
                     }
                 }
             }
 
-             string userId = User.Identity.GetUserId();
-
+            string userId = User.Identity.GetUserId();
             dbCtx.SaveChanges();
+
             var obj = new
             {
                 isok=isok,
