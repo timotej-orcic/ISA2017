@@ -122,6 +122,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ReservationControllerTests.cs" />
     <Compile Include="SystemAdminTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
