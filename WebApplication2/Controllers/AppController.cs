@@ -42,7 +42,13 @@ namespace WebApplication2.Controllers
             {
                 foreach (Location l in locations)
                 {
-                    if (l.LocType.Equals(LocationType.CINEMA) && l.Name.ToLower().Contains(model.Name.ToLower()))
+                    if (model.Name != null)
+                    {
+                        if (l.LocType.Equals(LocationType.CINEMA) && l.Name.ToLower().Contains(model.Name.ToLower()))
+                        {
+                            locToShow.Add(l);
+                        }
+                    }else
                     {
                         locToShow.Add(l);
                     }
@@ -53,7 +59,13 @@ namespace WebApplication2.Controllers
             {
                 foreach (Location l in locations)
                 {
-                    if (l.LocType.Equals(LocationType.THEATRE) && l.Name.ToLower().Contains(model.Name.ToLower()))
+                    if (model.Name != null)
+                    {
+                        if (l.LocType.Equals(LocationType.THEATRE) && l.Name.ToLower().Contains(model.Name.ToLower()))
+                        {
+                            locToShow.Add(l);
+                        }
+                    }else
                     {
                         locToShow.Add(l);
                     }

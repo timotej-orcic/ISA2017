@@ -320,10 +320,7 @@ namespace WebApplication2.Controllers
                 }
             }
             var karte = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where Projection_Id = '" + timehall + "'").ToList();
-            for (int i = 0; i < karte.Count; i++)
-            {
-                dbCtx.Reservations.Remove(karte[i]);
-            }
+            
             Projection proj = new Projection();
             proj = dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefault(x => x.Id == projectionForEdit.Id);
             foreach (HallTimeProjection htp in proj.ProjHallsTimeList)
@@ -359,9 +356,11 @@ namespace WebApplication2.Controllers
             {
                 HallTimeProjection projHall = new HallTimeProjection();
                 projHall = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == htp.Id);
+                projHall = dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefault(x => x.Id == htp.Id);
                 projHalls.Add(projHall);
             }
             proj.ProjHallsTimeList = projHalls;
+            
             return View("ChangeProjection", proj);
         }
         public ActionResult ChangeNameLocation(Guid idLocation)

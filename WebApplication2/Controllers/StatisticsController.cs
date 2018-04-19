@@ -22,16 +22,63 @@ namespace WebApplication2.Controllers
             return View();
         }
 
+        public async Task<ActionResult> ShowIncome(GraphicViewModel model)
+        {
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+            string id = User.Identity.GetUserId();
+            var locationToShow = new Location();
+            var locationId = ctx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
+            List<Location> allLocations = new List<Location>();
+            var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + idLoc + "'").ToList();
+            allLocations = ctx.Locations.ToList();
+            foreach (Location loc in allLocations)
+            {
+                if (loc.Id.Equals(locationId))
+                {
+                    locationToShow = loc;
+                }
+            }
+            locationToShow.ProjectionsList = projections;
+            List<Ticket> tickets = new List<Ticket>();
+            List<Ticket> ticketsToCalculate = new List<Ticket>();
+            tickets = ctx.Reservations.ToList();
+            Ticket ticket = new Ticket();
+            string time = "00:00 PM";
+            string vreme1 = model.DatumOd + " " + time;
+            DateTime datum1 = DateTime.Parse(vreme1);
+            string vreme2 = model.DatumDo + " " + time;
+            DateTime datum2 = DateTime.Parse(vreme2);
+            foreach (Ticket t in tickets)
+            {
+                ticket = await ctx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == t.Id);
+                HallTimeProjection pr = new HallTimeProjection();
+                pr = await ctx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == ticket.Projection.Id);
+
+                if (pr.Hall.ParentLocation.Id.Equals(new Guid(locationId)) && DateTime.Compare(pr.Time,datum1)>0 && DateTime.Compare(pr.Time, datum2) < 0)
+                {
+                    ticketsToCalculate.Add(ticket);
+                }
+            }
+            double prihod = 0;
+            foreach(Ticket t in ticketsToCalculate)
+            {
+                prihod += t.Price * t.DiscountMultiplier;
+            }
+            ViewBag.prihod = prihod;
+            return await ShowStatistics();
+        }
+
         public async Task<ActionResult> ShowStatistics()
         {
             
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             string id = User.Identity.GetUserId();
             var locationToShow = new Location();
-            var locationId = ctx.Database.SqlQuery<Guid>("select MyLocation_Id from AspNetUsers where id = '" + id + "'").FirstOrDefault();
-
+            var locationId = ctx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + id + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
             List<Location> allLocations = new List<Location>();
-            var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + locationId + "'").ToList();
+            var projections = ctx.Database.SqlQuery<Projection>("select * from Projections where Location_Id = '" + idLoc + "'").ToList();
             allLocations = ctx.Locations.ToList();
             foreach (Location loc in allLocations)
             {
@@ -50,7 +97,7 @@ namespace WebApplication2.Controllers
                 HallTimeProjection pr = new HallTimeProjection();
                 pr = await ctx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == ticket.Projection.Id);
 
-                if (pr.Hall.ParentLocation.Id.Equals(locationId))
+                if (pr.Hall.ParentLocation.Id.Equals(new Guid(locationId)))
                 {
                     ticketsToCalculate.Add(ticket);
                 }
@@ -81,7 +128,8 @@ namespace WebApplication2.Controllers
                 }
                 if(ima == 1)
                 {
-                    parovi.Add(par);
+                    if(trenutnidan - par.numberofday < 7)
+                        parovi.Insert(0,par);
                 }
                 ima = 1;
                 
@@ -155,7 +203,8 @@ namespace WebApplication2.Controllers
                 }
                 if (ima == 1)
                 {
-                    mesecno.Add(par);
+                    if(trenutnimesec - par.numberofmonth ==0)
+                        mesecno.Insert(0,par);
                 }
                 ima = 1;
 
@@ -164,7 +213,7 @@ namespace WebApplication2.Controllers
             {
                 for (int i = 0; i < mesecno.Count; i++)
                 {
-                    if (t.Projection.Time.Month.Equals(mesecno[i].numberofday) && t.Projection.Time.Year.Equals(mesecno[i].year))
+                    if (t.Projection.Time.DayOfYear.Equals(mesecno[i].numberofday) && t.Projection.Time.Year.Equals(mesecno[i].year))
                     {
                         mesecno[i].number++;
                         break;
@@ -181,6 +230,8 @@ namespace WebApplication2.Controllers
                 nedeljni = nedeljno,
                 mesecni = mesecno
             };
+            if(ViewBag.prihod == null)
+                ViewBag.prihod = 0;
             return View("ShowStatistics" , graph);
         }
     }

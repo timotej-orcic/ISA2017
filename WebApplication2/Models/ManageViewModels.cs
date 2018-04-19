@@ -96,11 +96,10 @@ namespace Isa2017Cinema.Models
     }
     public class ChangePhoneViewModel
     {
-        
-        public string PhoneNumber { get; set; }
-
+        [Required]
+        [Phone]
         [Display(Name = "Change phone number: ")]
-        public string Name { get; set; }
+        public string PhoneNumber { get; set; }
 
     }
 

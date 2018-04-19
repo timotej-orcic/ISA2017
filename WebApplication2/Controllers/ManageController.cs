@@ -248,22 +248,25 @@ namespace Isa2017Cinema.Controllers
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
             var user = ctx.Users.Find(User.Identity.GetUserId());
-            if (model.Email == null)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Email can not be empty.");
+
+                var userE = UserManager.FindByEmail(model.Email);
+                if (userE != null)
+                {
+                    ModelState.AddModelError("", "User with that email is already registered.");
+                    return View(model);
+                }
+                else
+                {
+                    user.Email = model.Email;
+                    ctx.SaveChanges();
+                    return RedirectToAction("Index", new { Message = ManageMessageId.ChangeEmailSuccess });
+                }
+            }else
+            {
+             //   ModelState.AddModelError("", "Email is not good.");
                 return View(model);
-            }
-            var userE = UserManager.FindByEmail(model.Email);
-            if (userE != null)
-            {
-                ModelState.AddModelError("", "User with that email is already registered.");
-                return View(model);
-            }
-            else
-            {
-                user.Email = model.Email;
-                ctx.SaveChanges();
-                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeEmailSuccess });
             }
         }
 
@@ -426,19 +429,26 @@ namespace Isa2017Cinema.Controllers
         //POST: /Manage/ChangePhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ChangeNumber(ChangePhoneViewModel model)
+        public ActionResult ChangeNumber(ChangePhoneViewModel model)
         {
             ApplicationDbContext ctx = ApplicationDbContext.Create();
-            var user = ctx.Users.Find(User.Identity.GetUserId()); 
-            if (model.PhoneNumber == null)
+            var user = ctx.Users.Find(User.Identity.GetUserId());
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Number can not be empty.");
+
+                user.PhoneNumber = model.PhoneNumber;
+                ctx.SaveChanges();
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangePhoneSuccess });
+
+            }
+        
+            else
+            {
+                //   ModelState.AddModelError("", "Email is not good.");
                 return View(model);
             }
-            user.PhoneNumber = model.PhoneNumber;
-            ctx.SaveChanges();
-            return RedirectToAction("Index", new { Message = ManageMessageId.ChangePhoneSuccess });
-        }
+          
+         }
 
         //
         // GET: /Manage/ChangePassword

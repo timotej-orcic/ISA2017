@@ -16,13 +16,7 @@ namespace WebApplication2.Controllers
 {
     public class ReservationController : Controller
     {
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().Authentication;
-            }
-        }
+        
         // GET: Reservation
         public ActionResult Index()
         {
@@ -61,27 +55,54 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
-           
+            if(ViewBag.isReserved==null)
+                ViewBag.isReserved = false;
             ViewBag.locationId = locationId;
             return View("FastTickets",fastTicketsAtLocation);
         }
 
         public ActionResult ReserveFastTicket(Guid idTicket,Guid idLokacije)
         {
+           
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             var lokacija = dbCtx.Locations.Include(x => x.ProjectionsList).FirstOrDefault(x => x.Id == idLokacije);
             
             var adminLokacije = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == lokacija.MyAdminId);
             Ticket rezKarta = dbCtx.Reservations.Include(x => x.Projection).FirstOrDefault(x => x.Id == idTicket);
-            adminLokacije.ReservationsList.Remove(rezKarta);
+            bool isReserved = checkIfFastTicketIsReserved(rezKarta , adminLokacije.Id);
+            if (isReserved) {
+                ViewBag.isReserved = isReserved;
+                return ShowFastTickets(idLokacije);
+            }
+            else
+            {
+                adminLokacije.ReservationsList.Remove(rezKarta);
 
-            String idUsera = User.Identity.GetUserId();
-            var reserver = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == idUsera);
-            reserver.ReservationsList.Add(rezKarta);
-            reserver.Points += 5;
-            dbCtx.SaveChanges();
+                String idUsera = User.Identity.GetUserId();
+                var reserver = dbCtx.Users.Include(x => x.ReservationsList).FirstOrDefault(x => x.Id == idUsera);
+                reserver.ReservationsList.Add(rezKarta);
+                reserver.Points += 5;
+                dbCtx.SaveChanges();
+                ViewBag.isReserved = isReserved;
+                return ShowFastTickets(idLokacije);
+            }
 
-            return View();
+           
+        }
+
+        public bool checkIfFastTicketIsReserved(Ticket ticket , string idAdmina)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            Guid idAdmin = new Guid(idAdmina);
+            List<Ticket> fastTickets = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where DiscountMultiplier < 1.0 and ApplicationUser_Id ='" + idAdmin + "'").ToList();
+            foreach(Ticket t in fastTickets)
+            {
+                if (t.Id.Equals(ticket.Id))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public bool checkReservations(List<Ticket> reservations)

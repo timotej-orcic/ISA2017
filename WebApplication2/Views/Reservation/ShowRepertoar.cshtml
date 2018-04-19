@@ -33,7 +33,9 @@
        
        @{ var i = 0;}
         @foreach (var projhall in l.ProjHallsTimeList)
-         {
+        {
+            if (DateTime.Compare(DateTime.Now, projhall.Time) <= 0)
+            {
             <div class="carousel" style="background-color:white;  width: 300px; margin:0 auto ">
 
                 <h2 style="color:black; font-weight:bold; font-size: 14px"> Projection: @l.Name</h2>
@@ -45,12 +47,13 @@
                @if (Request.IsAuthenticated)
                {
                  @Html.ActionLink("Reserve", "ViewReservation", "Reservation", new { projectionId = l.Id, projHall = projhall.Id }, null)
-                
-                 }
+
+               }
                 @{ i++;}
 
 
             </div>
+                    }
             <br />
         }
     </div>
