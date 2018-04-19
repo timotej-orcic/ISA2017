@@ -169,6 +169,7 @@ namespace WebApplication2.Controllers
                 return await Search(new FriendsViewModel(), true);
             else
                 return await Search(new FriendsViewModel(), false);
+
         }
         public async Task<ActionResult> DeclineRequest(String username,bool isFriendPage,bool isRequestPage)
         {
@@ -188,7 +189,7 @@ namespace WebApplication2.Controllers
                     break;
                 }
             }
-            ctx.SaveChanges();
+           
             foreach (Request req in requests)
             {
                 if (req.Receiver_id.Equals(Guid.Parse(id)))
@@ -202,16 +203,18 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
-
+            ctx.SaveChanges();
 
             ViewBag.usersRequest = usersToShow;
             ViewBag.isFriendPage = isFriendPage;
+
             if (isRequestPage)
                 return View("ShowFriendRequests");
-            else if(isFriendPage)
-                return await Search(new FriendsViewModel(),true);
+            else if (isFriendPage)
+                return await Search(new FriendsViewModel(), true);
             else
                 return await Search(new FriendsViewModel(), false);
+
         }
 
         [HttpPost]
@@ -269,7 +272,7 @@ namespace WebApplication2.Controllers
                     }
                 }
             }
-            ctx.SaveChanges();
+        
             ViewBag.pendinglist = pendinglist;
             List<Request> requests = new List<Request>();
             requests = ctx.Requests.ToList();
@@ -399,7 +402,10 @@ namespace WebApplication2.Controllers
             ViewBag.usersToShow = usersToShow;
             ViewBag.FriendList = us.FriendList;
             ViewBag.isFriendPage = isFriendPage;
-            return View("ShowFriends", model);
+            if (isFriendPage)
+                return await Search(model, true);
+            else
+                return await Search(model, false);
         }
 
         public async Task<ActionResult> RemoveFriend(String username, String name, String lastname, bool isFriendPage)
@@ -508,7 +514,12 @@ namespace WebApplication2.Controllers
             ViewBag.usersRequest = usersToShowReq;
             ViewBag.FriendList = user.FriendList;
             ViewBag.isFriendPage = isFriendPage;
-            return View("ShowFriends",model);
+           
+            if (isFriendPage)
+                return await Search(model, true);
+            else
+                return await Search(model, false);
+           
         }
 
         public async Task<ActionResult> CancelFriend(String username, String name, String lastname, bool isFriendPage)
@@ -601,7 +612,10 @@ namespace WebApplication2.Controllers
                 }
             }
             ViewBag.usersRequest = usersToShowReq;
-            return View("ShowFriends", model);
+            if (isFriendPage)
+                return await Search(model, true);
+            else
+                return await Search(model, false);
         }
 
         public async Task<ActionResult> SortFriendsByName(String name, String surname, bool isFriendPage)

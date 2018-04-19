@@ -381,6 +381,7 @@ namespace WebApplication2.Controllers
             {
                 HallTimeProjection projHall = new HallTimeProjection();
                 projHall = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == htp.Id);
+                projHall = dbCtx.HallTimeProjection.Include(x => x.Seats).FirstOrDefault(x => x.Id == htp.Id);
                 projHalls.Add(projHall);
             }
             proj.ProjHallsTimeList = projHalls;

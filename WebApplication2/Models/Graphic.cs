@@ -16,6 +16,8 @@ namespace WebApplication2.Models
         public List<Pair> pairs { get; set; }
         public List<Pair> nedeljni { get; set; }
         public List<Pair2> mesecni { get; set; }
+        public string DatumOd { get; set; }
+        public string DatumDo {get;set;}
     }
 
     public class Pair

@@ -101,9 +101,11 @@ namespace Isa2017Cinema.Models
     }
     public class ChangeEmailViewModel
     {
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
     }
+ 
     public class ResetPasswordViewModel
     {
         [Required]

@@ -64,9 +64,12 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                @if (Request.IsAuthenticated)
+                {
                 <label style="color:white">
                     [@Html.ActionLink("Fast Reservation", "ShowFastTickets", "Reservation", new { locationId = l.Id }, null)]
                 </label> 
+                }
                         <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
 
                     <a href="https://maps.google.com/?q=58250 @l.Address">

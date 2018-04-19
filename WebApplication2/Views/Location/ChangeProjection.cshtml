@@ -22,8 +22,23 @@
     <ul>
         @foreach (var projhall in Model.ProjHallsTimeList)
         {
-            <li style="color:white; font-weight:bold; font-size: 18px"> @projhall.Time , @projhall.Hall.Name , @projhall.TicketPrice RSD [ @Html.ActionLink("Delete", "DeleteTimeHallProjection", "Location", new { projekcija = Model.Id , timehall = projhall.Id }, null) ]</li>
+            var i = 0;
+            foreach (var x in projhall.Seats)
+            {
+                if (x.Seats.Contains('f'))
+                {
+                    <li style="color:white; font-weight:bold; font-size: 18px"> @projhall.Time , @projhall.Hall.Name , @projhall.TicketPrice RSD</li>
 
+                    i++;
+                    break;
+                }
+            }
+            if (i == 0)
+            {
+                <li style="color:white; font-weight:bold; font-size: 18px"> @projhall.Time , @projhall.Hall.Name , @projhall.TicketPrice RSD [ @Html.ActionLink("Delete", "DeleteTimeHallProjection", "Location", new { projekcija = Model.Id, timehall = projhall.Id }, null) ]</li>
+
+            }
+            
         }
     </ul>
   <br />
