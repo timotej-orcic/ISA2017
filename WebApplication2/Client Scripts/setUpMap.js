@@ -1,7 +1,6 @@
-﻿$(window).load(function () {
-    //alert('document loaded');
+﻿/*$(window).load(function () {
     initializeMap();
-});
+});*/
 var geocoder;
 var map;
 var myLocation;
@@ -19,6 +18,12 @@ function initializeMap() {
             };
 
             myLocation = pos;
+
+            //find all locations
+            $('.adrDiv').each(function (i, obj) {
+                var address = $(obj).attr("data-address");
+                getMyDistance(address, obj);
+            });
 
             var myOptions = {
                 zoom: 16,
@@ -38,9 +43,31 @@ function initializeMap() {
         // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
     }
-
-    //$(document.getElementById("distance")).css("visibility", "hidden");
 };
+
+function getAddressCoords(address, obj) {
+    geocoder = new google.maps.Geocoder();
+    var lat = '';
+    var lng = '';
+    geocoder.geocode({ 'address': address }, function (results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+            lat = results[0].geometry.location.lat(); //getting the lat
+            lng = results[0].geometry.location.lng(); //getting the lng
+
+            var loc = {
+                lat: lat,
+                lng: lng
+            };
+
+            var locDist = getDistance(myLocation, loc);
+            $(obj).find("#onLoadDist").html(locDist);
+
+
+        } else {
+            alert("Geocode was not successful for the following reason: " + status);
+        }
+    });
+}
 
 function codeAddress(address) {
     geocoder = new google.maps.Geocoder();
@@ -79,13 +106,18 @@ function codeAddress(address) {
     window.scrollTo(0, 0);
 };
 
-var getMyDistance = function () {
+var getMyDistance = function (address, obj) {
 
-    if ((typeof myLocation == 'undefined') || (typeof locLocation == 'undefined')) {
-        return "Undefined";
+    if (typeof address == 'undefined') {
+        if ((typeof myLocation == 'undefined') || (typeof locLocation == 'undefined')) {
+            return "Undefined";
+        }
+        else {
+            return getDistance(myLocation, locLocation);
+        }
     }
     else {
-        return getDistance(myLocation, locLocation);
+        getAddressCoords(address, obj);
     }
 };
 
@@ -102,5 +134,5 @@ var getDistance = function (p1, p2) {
       Math.sin(dLong / 2) * Math.sin(dLong / 2);
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c;
-    return d; // returns the distance in meter
+    return Math.round(d * 100) / 100; // returns the distance in meter, 2 decimals
 };

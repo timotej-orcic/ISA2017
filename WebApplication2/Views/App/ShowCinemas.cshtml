@@ -54,12 +54,14 @@
     <input type="button" class="btn btn-basic" value="Sort by name" onclick="location.href='@Url.Action("SortLocationsByName", "App", new { name = @Model.Name, type = @Model.Type })'" />
     &nbsp; &nbsp; &nbsp; &nbsp;
     <input type="button" class="btn btn-basic" value="Sort by city" onclick="location.href='@Url.Action("SortLocationsByCity", "App", new { name = @Model.Name, type = @Model.Type })'" />
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    <input type="button" class="btn btn-basic" value="Get my location" onclick="initializeMap()" />
 
     <hr />
     <ul>
         @foreach (var l in ViewBag.locations)
         {
-            <div class="jumbotron" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
+            <div data-address="@l.Address" class="jumbotron adrDiv" style="background-color:rgba(211,211,211,0.2);  width: 600px; margin:0 auto ">
                 <div style="background-color:gray">
                     <h2 style="color:white">@l.Name</h2>
                 </div>
@@ -82,8 +84,6 @@
                 </label> 
                 }
 
-                <!--<a href="https://maps.google.com/?q=58250 @l.Address"></a>-->
-
                 <h3 style="color:white;font-size: 14px">Address: <b style="color:dodgerblue;font-size: 14px">@l.Address - @l.City</b></h3>
 
                 <input type="button" class="btn btn-basic" value="Show on map" onclick="codeAddress('@l.Address')"/>
@@ -97,7 +97,7 @@
 
                 <label style="color:white; font-size: 14px"> @l.AvgRating / 5</label>
 
-
+                <h3 style="color:white;font-size: 14px;">Distance: <b id="onLoadDist" style="color:dodgerblue;font-size: 14px;"></b> m</h3>
 
             </div>
             <br />
