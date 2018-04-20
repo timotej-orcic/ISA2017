@@ -27,7 +27,22 @@ namespace WebApplication2.Controllers
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             Ticket rezKarta = dbCtx.Reservations.Include(x => x.Projection).FirstOrDefault(x => x.Id == rezervacija);
             HallTimeProjection projekcija = dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefault(x => x.Id == rezKarta.Projection.Id);
+            string id = User.Identity.GetUserId();
+            
+            Guid idproj = projekcija.Projection.Id;
 
+            List<Recension> recenzije = dbCtx.Recensions.ToList();
+            foreach(Recension r in recenzije)
+            {
+                Recension re = dbCtx.Recensions.Include(x => x.RecensionUser).FirstOrDefault(x => x.Id == r.Id);
+                if (re.projection != null)
+                {
+                    if (re.projection.Id.Equals(idproj) && re.RecensionUser.Id.Equals(id))
+                    {
+                        return View("AlreadyGaveRecensionProjection", r);
+                    }
+                }
+            }
 
             return View("ShowRecension",projekcija.Projection);
         }
@@ -35,8 +50,24 @@ namespace WebApplication2.Controllers
         {
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             Location lokacijaCela = dbCtx.Locations.Include(x => x.ProjectionsList).FirstOrDefault(x => x.Id == lokacija);
-           // HallTimeProjection projekcija = dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefault(x => x.Id == rezKarta.Projection.Id);
+            // HallTimeProjection projekcija = dbCtx.HallTimeProjection.Include(x => x.Projection).FirstOrDefault(x => x.Id == rezKarta.Projection.Id);
+            string id = User.Identity.GetUserId();
 
+           
+
+            List<Recension> recenzije = dbCtx.Recensions.ToList();
+            foreach (Recension r in recenzije)
+            {
+                Recension re = dbCtx.Recensions.Include(x => x.RecensionUser).FirstOrDefault(x => x.Id == r.Id);
+                Recension rec = dbCtx.Recensions.Include(x => x.location).FirstOrDefault(x => x.Id == re.Id);
+                if (rec.location != null)
+                {
+                    if (re.location.Id.Equals(rec.location.Id) && re.RecensionUser.Id.Equals(id))
+                    {
+                        return View("AlreadyGaveRecensionLocation", rec);
+                    }
+                }
+            }
 
             return View("ShowRecensionForLocation", lokacijaCela);
         }

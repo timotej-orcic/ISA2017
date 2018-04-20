@@ -12,11 +12,15 @@
     <img src="@Model.PosterUrl" align="middle" width="200" height="200" /> <h2 style="color:white; font-weight:bold; font-size: 14px">[ @Html.ActionLink("Change", "ChangePictureProjection", "Location", new { projekcija = Model.Id }, null) ] </h2>
     <h2 style="font-weight:bold;color:white;font-size: 14px">Genre: @Model.Genre [ @Html.ActionLink("Change", "ChangeGenreProjection","Location", new { projekcija = Model.Id }, null) ]</h2>  
     <h2 style="color:white; font-weight:bold; font-size: 14px">Name of Director: @Model.DirectorName [ @Html.ActionLink("Change", "ChangeDirectorProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
+    <h2 style="color:white; font-weight:bold; font-size: 14px">Actors: @Model.ActorsList [ @Html.ActionLink("Change", "ChangeActors", "Location", new { projekcija = Model.Id }, null) ] </h2>
+
     <h2 style="color:white; font-weight:bold; font-size: 14px">Description: @Model.Description [ @Html.ActionLink("Change", "ChangeDescriptionProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
     <h2 style="color:white; font-weight:bold; font-size: 14px">Duration time: @Model.DurationTime [ @Html.ActionLink("Change", "ChangeDurationProjection","Location", new { projekcija = Model.Id }, null) ] </h2>
     
     <input type="button" class="btn btn-basic" value="Add new time for projection" onclick="location.href='@Url.Action("AddHallTimeProjection", "Hall",new { projekcija = Model.Id})'" />
     <input type="button" class="btn btn-basic" value="Add fast reserve ticket" onclick="location.href='@Url.Action("AddFastReserveTicket", "Hall",new { projekcija = Model.Id})'" />
+    <input type="button" class="btn btn-basic" value="Delete fast reserve ticket" onclick="location.href='@Url.Action("DeleteFastReserveTicket", "Hall",new { projekcija = Model.Id})'" />
+
     <h1 style="color:white; font-weight:bold; font-size: 24px"><i>Schedule :</i></h1>
 
     <ul>
@@ -25,7 +29,7 @@
             var i = 0;
             foreach (var x in projhall.Seats)
             {
-                if (x.Seats.Contains('f'))
+                if (x.Seats.Contains('f') && !(DateTime.Compare(DateTime.Now, projhall.Time) > 0))
                 {
                     <li style="color:white; font-weight:bold; font-size: 18px"> @projhall.Time , @projhall.Hall.Name , @projhall.TicketPrice RSD</li>
 

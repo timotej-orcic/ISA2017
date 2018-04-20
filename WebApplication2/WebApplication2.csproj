@@ -457,6 +457,10 @@
     <Content Include="Views\Account\Info.cshtml" />
     <Content Include="Views\Location\ChangeCityLocation.cshtml" />
     <Content Include="Views\Statistics\ShowStatistics.cshtml" />
+    <Content Include="Views\Location\ChangeActorsProjection.cshtml" />
+    <Content Include="Views\Hall\DeleteFastReserveTicket.cshtml" />
+    <Content Include="Views\Recension\AlreadyGaveRecensionProjection.cshtml" />
+    <Content Include="Views\Recension\AlreadyGaveRecensionLocation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

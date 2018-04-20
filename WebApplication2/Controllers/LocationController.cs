@@ -270,6 +270,7 @@ namespace WebApplication2.Controllers
             }
             Hall hallToAdd = new Hall
             {
+                
                 Name = model.Name,
                 RowsCount = model.Rows,
                 ColsCount = model.Columns,
@@ -281,8 +282,12 @@ namespace WebApplication2.Controllers
             var location = await dbCtx.Locations.Include(x => x.HallsList).FirstOrDefaultAsync(x => x.Id == MyLocation);
             location.HallsList.Add(hallToAdd);
             dbCtx.SaveChanges();
+           
             ViewBag.location = MyLocation;
-            return Halls(MyLocation);
+
+
+
+            return View("../Hall/Seats",hallToAdd);
 
         }
         public ActionResult DeleteProjection(Guid idProj)
@@ -792,6 +797,29 @@ namespace WebApplication2.Controllers
             };
             return View("ChangeDurationProjection", vm);
         }
+
+        public ActionResult ChangeActors(Guid projekcija)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(projekcija))
+                {
+                    projectionForEdit = p;
+                }
+            }
+            ChangeProjectionViewModel vm = new ChangeProjectionViewModel
+            {
+                Id = projectionForEdit.Id,
+                Field = projectionForEdit.ActorsList
+            };
+            return View("ChangeActorsProjection", vm);
+        }
+
         //POST
         public ActionResult EditDurationProjection(ChangeProjectionViewModel model)
         {
@@ -828,6 +856,38 @@ namespace WebApplication2.Controllers
             dbCtx.SaveChanges();
             return EditProjection(projectionForEdit.Id);
         }
+
+        public ActionResult EditActorsProjection(ChangeProjectionViewModel model)
+        {
+            List<Projection> allProjections = new List<Projection>();
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            allProjections = dbCtx.Projections.ToList();
+            Projection projectionForEdit = new Projection();
+
+
+            foreach (Projection p in allProjections)
+            {
+                if (p.Id.Equals(model.Id))
+                {
+                    if (model.Field == null)
+                    {
+                        ModelState.AddModelError("", "Name can not be empty.");
+                        return View(p);
+                    }
+                    else
+                    {
+                        string actors = model.Field;
+                        
+                        p.ActorsList = actors;
+                        projectionForEdit = p;
+                    }
+                }
+            }
+
+            dbCtx.SaveChanges();
+            return EditProjection(projectionForEdit.Id);
+        }
+
         public ActionResult ChangePriceProjection(Guid projekcija)
         {
             List<Projection> allProjections = new List<Projection>();
