@@ -120,10 +120,13 @@ namespace WebApplication2.Controllers
          
 
             dbCtx.SaveChanges();
-            
+            string idu = User.Identity.GetUserId();
+            var locationId = dbCtx.Database.SqlQuery<String>("select MyLocationId from AspNetUsers where id = '" + idu + "'").FirstOrDefault();
+            Guid idLoc = new Guid(locationId);
             var obj = new
             {
-                isok = true
+                isok = true,
+                idLoc = locationId
             };
             return Json(obj);
         }
@@ -134,7 +137,7 @@ namespace WebApplication2.Controllers
             ApplicationDbContext dbCtx = ApplicationDbContext.Create();
             Guid id = new Guid(arr[0]);
 
-            double discount = -2;
+            double discount = 1;
             double.TryParse(arr[1], out discount);
 
             discount = (double)(100-discount) / (double)100;
@@ -221,6 +224,44 @@ namespace WebApplication2.Controllers
             }
             projWithHalls.ProjHallsTimeList = projHalls;
             return View("FastReserveTicket", projWithHalls);
+        }
+
+        public async Task<ActionResult> DeleteFastReserveTicket(Guid projekcija)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            string id = User.Identity.GetUserId();
+            var projection = dbCtx.Database.SqlQuery<Projection>("select * from Projections where Id = '" + projekcija + "'").FirstOrDefault();
+            var projWithHalls = await dbCtx.Projections.Include(x => x.ProjHallsTimeList).FirstOrDefaultAsync(x => x.Id == projekcija);
+            
+            List<Ticket> tickets = new List<Ticket>();
+            foreach(HallTimeProjection h in projWithHalls.ProjHallsTimeList)
+            {
+                HallTimeProjection htp = new HallTimeProjection();
+                
+                var reservations = dbCtx.Database.SqlQuery<Ticket>("select * from Tickets where ApplicationUser_Id = '" + id + "' and Projection_Id = '" + h.Id + "'").ToList();
+                foreach(Ticket res in reservations)
+                {
+                    Ticket tic = new Ticket();
+                    tic = dbCtx.Reservations.Include(x => x.Projection).FirstOrDefault(x => x.Id == res.Id);
+                    htp = dbCtx.HallTimeProjection.Include(x => x.Hall).FirstOrDefault(x => x.Id == tic.Projection.Id);
+                    tic.Projection = htp;
+                    tickets.Add(tic);
+                }
+            }
+            dbCtx.SaveChanges();
+            ViewBag.projekcija = projekcija;
+            return View("DeleteFastReserveTicket", tickets);
+        }
+
+        public async Task<ActionResult> RemoveFastTicket(Guid projekcija , Guid karta)
+        {
+            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
+            
+            var db = dbCtx.Reservations.Where(u => u.Id.Equals(karta)).FirstOrDefault();
+            dbCtx.Reservations.Remove(db);
+                
+            dbCtx.SaveChanges();
+            return await DeleteFastReserveTicket(projekcija);
         }
 
         public ActionResult ViewHall(Guid IdHall)

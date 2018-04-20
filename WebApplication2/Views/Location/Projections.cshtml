@@ -32,7 +32,10 @@
         <h2 style="color:white; font-weight:bold; font-size: 14px">Duration time: @l.DurationTime min </h2>
         <h2 style="color:white; font-weight:bold; font-size: 14px">Actors: @l.ActorsList </h2>
         <h2 style="color:white; font-weight:bold; font-size: 14px">Genre: @l.Genre </h2>
+        @if (l.AvgRating < 10)
+        {
         <h2 style="color:white; font-weight:bold; font-size: 14px">Average rating: @l.AvgRating </h2>
+        }
         <input type="button" class="btn btn-basic" value="Edit projection" onclick="location.href='@Url.Action("EditProjection", "Location",new { idProj = @l.Id})'" />
         <input type="button" class="btn btn-basic" value="Delete projection" onclick="location.href='@Url.Action("DeleteProjection", "Location",new { idProj = @l.Id} )'" />
         

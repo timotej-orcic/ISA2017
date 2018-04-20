@@ -1,0 +1,16 @@
+﻿@model List<Isa2017Cinema.Models.Ticket>
+@{
+    ViewBag.Title = "DeleteFastReserveTicket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<br />
+<ul>
+    @foreach (var ticket in Model)
+    {
+        <li style="color:white; font-weight:bold; font-size: 18px"> @ticket.Projection.Hall.Name , @ticket.Projection.Time , row @ticket.SeatRow , column @ticket.SeatColumn , price : @ticket.Price  [ @Html.ActionLink("Remove Ticket", "RemoveFastTicket", "Hall", new { karta = @ticket.Id , projekcija = ViewBag.projekcija}, null) ]  </li>
+
+    }
+</ul>
+
