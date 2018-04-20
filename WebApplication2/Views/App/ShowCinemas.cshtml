@@ -7,12 +7,15 @@
     <label style="color:white; font-size:40px; font-style:italic; font-family:'Times New Roman', Times, serif ">@ViewBag.Message</label>
 </div>
 
-<div id="map" onload="initializeMap()">
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfqzDH5Ho559xAogS569JTX4Nn_VZZHRQ&callback=initializeMap">
-    </script>
+@section Scripts {
+    @Scripts.Render("~/Client Scripts/setUpMap.js")
+    <script  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfqzDH5Ho559xAogS569JTX4Nn_VZZHRQ">   </script>
+}
+
+<div id="map">
 </div>
 
+<h3 id="distancePlholder" style="color:white;font-size: 14px; visibility: hidden">Distance: <b id="distance" style="color:dodgerblue;font-size: 14px;"></b> m</h3>
 
 <div class="container" style="margin: 0 auto; left:0; right:0">
     
@@ -111,7 +114,3 @@
         background-color: grey;
     }
 </style>
-
-@section Scripts {
-    @Scripts.Render("~/Client Scripts/setUpMap.js")
-}
