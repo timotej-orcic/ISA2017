@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -73,5 +74,24 @@ namespace WebApplication2.UnitTests
             Assert.That(result, Is.False);
 
         }
+        /*[Test]
+        public void ConfirmInvitation_RedirectToConfirmInvitation()
+        {
+
+            var mockDB = new Mock<Database>();
+           
+            var mockContext = new Mock<ApplicationDbContext>();
+           
+            Guid inviterId = new Guid();
+            Guid invitedId = new Guid();
+            Guid ticketId = new Guid();
+
+            ReservationController rrc = new ReservationController();
+            var result = rrc.ConfirmInvitation(inviterId, invitedId, ticketId).Result;
+            RedirectToRouteResult routeResult = result as RedirectToRouteResult;
+
+            Assert.That(routeResult, Is.Not.Null);
+            Assert.AreEqual(routeResult.RouteValues["action"], "ConfirmInvitation");
+        }*/
     }
 }

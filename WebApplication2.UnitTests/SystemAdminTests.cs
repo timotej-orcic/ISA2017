@@ -160,7 +160,7 @@ namespace WebApplication2.UnitTests
 
 
         //ovaj vec mora biti integration zbog pristupa bazi
-        [Test]
+        /*[Test]
         public async Task AddAdmin_AddSystemAdminAlreadyExist_RedirectToAddNewAdminPage()
         {
             //Arrange
@@ -200,7 +200,7 @@ namespace WebApplication2.UnitTests
             Assert.AreEqual(sac.ModelState.Values.Count, 1);
             string errMsg = sac.ModelState.Values.ElementAt(0).Errors.ElementAt(0).ErrorMessage;
             Assert.AreEqual(errMsg, "User with this email adress already exists");
-        }
+        }*/
 
     }
 }
