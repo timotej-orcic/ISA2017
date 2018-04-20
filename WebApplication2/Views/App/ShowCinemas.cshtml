@@ -1,10 +1,18 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.SelectedAddress = "Trg Dositeja Obradovica 4, Novi Sad";
 }
 @model WebApplication2.Models.CinemaViewModel
 <div class="container" style="background-color:black;  left:0; right:0">
     <label style="color:white; font-size:40px; font-style:italic; font-family:'Times New Roman', Times, serif ">@ViewBag.Message</label>
 </div>
+
+<div id="map" onload="initializeMap()">
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfqzDH5Ho559xAogS569JTX4Nn_VZZHRQ&callback=initializeMap">
+    </script>
+</div>
+
 
 <div class="container" style="margin: 0 auto; left:0; right:0">
     
@@ -70,23 +78,25 @@
                     [@Html.ActionLink("Fast Reservation", "ShowFastTickets", "Reservation", new { locationId = l.Id }, null)]
                 </label> 
                 }
-                        <h3 style="font-weight:bold;color:white;font-size: 14px">Address: </h3>
 
-                    <a href="https://maps.google.com/?q=58250 @l.Address">
-                        <h3 style="color:white;font-size: 14px"> @l.Address - @l.City</h3>
-                    </a>
+                <!--<a href="https://maps.google.com/?q=58250 @l.Address"></a>-->
 
-                    <label style="color:white; font-weight:bold; font-size: 14px">Description:  </label>
+                <h3 style="color:white;font-size: 14px">Address: <b style="color:dodgerblue;font-size: 14px">@l.Address - @l.City</b></h3>
 
-                    <label style="color:white; font-size: 14px"> @l.Description </label>
-                    <br/>
-                    <label style="color:white; font-weight:bold; font-size: 14px">Average rating:  </label>
+                <input type="button" class="btn btn-basic" value="Show on map" onclick="codeAddress('@l.Address')"/>
+                <br />
 
-                    <label style="color:white; font-size: 14px"> @l.AvgRating / 5</label>
+                <label style="color:white; font-weight:bold; font-size: 14px">Description:  </label>
+
+                <label style="color:white; font-size: 14px"> @l.Description </label>
+                <br/>
+                <label style="color:white; font-weight:bold; font-size: 14px">Average rating:  </label>
+
+                <label style="color:white; font-size: 14px"> @l.AvgRating / 5</label>
 
 
 
-</div>
+            </div>
             <br />
         }
 
@@ -94,3 +104,14 @@
 
 </div>
 
+<style>
+    #map {
+        width: 100%;
+        height: 400px;
+        background-color: grey;
+    }
+</style>
+
+@section Scripts {
+    @Scripts.Render("~/Client Scripts/setUpMap.js")
+}
