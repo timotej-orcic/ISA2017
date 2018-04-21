@@ -255,12 +255,24 @@ namespace WebApplication2.Controllers
 
         public async Task<ActionResult> RemoveFastTicket(Guid projekcija , Guid karta)
         {
-            ApplicationDbContext dbCtx = ApplicationDbContext.Create();
-            
-            var db = dbCtx.Reservations.Where(u => u.Id.Equals(karta)).FirstOrDefault();
-            dbCtx.Reservations.Remove(db);
+            ApplicationDbContext ctx = ApplicationDbContext.Create();
+
+            Ticket resWithProjection = await ctx.Reservations.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == karta);
+            var mama = await ctx.HallTimeProjection.Include(x => x.Seats).FirstOrDefaultAsync(x => x.Id == resWithProjection.Projection.Id);
+            var saHalom = await ctx.HallTimeProjection.Include(x => x.Hall).FirstOrDefaultAsync(x => x.Id == mama.Id);
+            var saProjekcijom = await ctx.HallTimeProjection.Include(x => x.Projection).FirstOrDefaultAsync(x => x.Id == mama.Id);
+
+            Row red = saProjekcijom.Seats[resWithProjection.SeatRow];
+            var aStringBuilder = new StringBuilder(red.Seats);
+            aStringBuilder.Remove(resWithProjection.SeatColumn, 1);
+            aStringBuilder.Insert(resWithProjection.SeatColumn, "e");
+            red.Seats = aStringBuilder.ToString();
+            saProjekcijom.Seats[resWithProjection.SeatRow] = red;
+
+            var db = ctx.Reservations.Where(u => u.Id.Equals(karta)).FirstOrDefault();
+            ctx.Reservations.Remove(db);
                 
-            dbCtx.SaveChanges();
+            ctx.SaveChanges();
             return await DeleteFastReserveTicket(projekcija);
         }
 

@@ -24,7 +24,7 @@ function initializeMap() {
                 var address = $(obj).attr("data-address");
                 getMyDistance(address, obj);
             });
-
+           
             var myOptions = {
                 zoom: 16,
                 center: pos,

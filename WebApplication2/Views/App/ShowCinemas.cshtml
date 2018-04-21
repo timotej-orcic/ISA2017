@@ -9,7 +9,7 @@
 
 @section Scripts {
     @Scripts.Render("~/Client Scripts/setUpMap.js")
-    <script  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB2UNbS1tRceR7EIHnqqZ_cQyVYwmqQSo">   </script>
+    <script  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDB2UNbS1tRceR7EIHnqqZ_cQyVYwmqQSo">  </script>
 }
 
 <div id="map">
@@ -56,7 +56,7 @@
     <input type="button" class="btn btn-basic" value="Sort by city" onclick="location.href='@Url.Action("SortLocationsByCity", "App", new { name = @Model.Name, type = @Model.Type })'" />
     &nbsp; &nbsp; &nbsp; &nbsp;
     <input type="button" class="btn btn-basic" value="Get my location" onclick="initializeMap()" />
-
+    
     <hr />
     <ul>
         @foreach (var l in ViewBag.locations)
@@ -98,7 +98,7 @@
                 <label style="color:white; font-size: 14px"> @l.AvgRating / 5</label>
 
                 <h3 style="color:white;font-size: 14px;">Distance: <b id="onLoadDist" style="color:dodgerblue;font-size: 14px;"></b> m</h3>
-
+                
             </div>
             <br />
         }
